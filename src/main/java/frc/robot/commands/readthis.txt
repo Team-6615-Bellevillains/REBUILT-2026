@@ -1,0 +1,3 @@
+please only use command classes in this folder for more complicated and longer commands,
+or commands that require more than one subsystem.
+for simple commands that only require one subsystem, please use inline commands in the appropriate subsystem.
