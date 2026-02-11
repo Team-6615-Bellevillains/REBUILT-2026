@@ -5,7 +5,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-//put code for the hopper in here.
+//put code for the intake in here.
 public class IntakeSubsystem extends SubsystemBase {
 
     // put variables here.
