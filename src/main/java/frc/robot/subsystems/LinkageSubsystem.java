@@ -9,7 +9,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.LinkageSubsystem.LinkageState;
 
 public class LinkageSubsystem extends SubsystemBase {
     
@@ -26,12 +25,12 @@ public class LinkageSubsystem extends SubsystemBase {
     // ========== Linkage Methods and Constants ==========
     // ===================================================
 
-    private static final double LINKAGE_UP_POWER = 0.6;     // Strong upward force
-    private static final double LINKAGE_DOWN_POWER = -0.15; // Gentle gravity-assisted down
-    private static final double CURRENT_LOCK_THRESHOLD = 35.0; // Amps — tune this
+    private static final double LINKAGE_UP_POWER = 0.6;     // TODO: Tune this with REV Client! (Start Low)
+    private static final double LINKAGE_DOWN_POWER = -0.15; // TODO: Tune this with REV Client! (Start Low)
+    private static final double CURRENT_LOCK_THRESHOLD = 35.0; // TODO: Tune this with REV Client! (Start Low)
     private static final double LOCK_TIME_SEC = 0.15;       // Time current must stay high
-    private static final double LINKAGE_HOLD_GROUND_POWER = 0.05;
-    private static final double LINKAGE_HOLD_AIR_POWER    = 0.08;
+    private static final double LINKAGE_HOLD_GROUND_POWER = 0.05; // Power to hold linkage on the ground
+    private static final double LINKAGE_HOLD_AIR_POWER    = 0.08; // Power to hold linkage in the air
 
     public enum LinkageState {
         GROUND,
