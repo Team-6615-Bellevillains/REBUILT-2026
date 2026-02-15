@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -23,7 +22,6 @@ public class RobotContainer {
   CommandXboxController operatorController = new CommandXboxController(1);
 
   ClimberSubsystem climberSubsystem;
-  HopperSubsystem hopperSubsystem;
   IntakeSubsystem intakeSubsystem;
   ShooterSubsystem shooterSubsystem;
   SwerveSubsystem swerveSubsystem;
@@ -31,7 +29,6 @@ public class RobotContainer {
   // initialization for the whole robot.
   public RobotContainer() {
     climberSubsystem = new ClimberSubsystem();
-    hopperSubsystem = new HopperSubsystem();
     intakeSubsystem = new IntakeSubsystem();
     shooterSubsystem = new ShooterSubsystem();
     swerveSubsystem = new SwerveSubsystem();
@@ -41,6 +38,38 @@ public class RobotContainer {
   // where button mappings are set up.
   private void configureBindings() {
 
+    // =====================================
+    // ========== Intake Controls ==========
+    // =====================================
+
+    // Both Triggers: Intake in and out
+    operatorController.leftTrigger().and(operatorController.rightTrigger()).onTrue(LinkageSubsystem.toggleLinkage());
+    linkageSubsystem.setDefaultCommand(linkageSubsystem.holdLinkage());
+
+    // Both Bumpers: Toggle intake spin
+    operatorController.leftBumper().and(operatorController.rightBumper()).toggleOnTrue(intakeSubsystem.spinIntake(3000));
+
+    // ====================================================
+    // ========== Shooter and Spindexer Controls ==========
+    // ====================================================
+
+    operatorController.x()
+      .onTrue(Command.run(() -> shooterSubsystem.stop()));
+    operatorController.a()
+      .onTrue(shooterSubsystem.spinShooter(2500));
+    operatorController.b()
+        .onTrue(shooterSubsystem.spinShooter(3500));
+    operatorController.y()
+        .onTrue(shooterSubsystem.spinShooter(4500));
+
+    // ======================================
+    // ========== Climber Controls ==========
+    // ======================================
+
+    operatorController.povUp().onTrue(climberSubsystem.climb(0.5));
+    operatorController.povDown().onTrue(climberSubsystem.climb(-0.5));
+    operatorController.povUp().or(operatorController.povDown()).onFalse(climberSubsystem.stop());
+    
   }
 
   public Command getAutonomousCommand() {
