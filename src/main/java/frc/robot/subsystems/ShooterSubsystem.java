@@ -15,9 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase{
 
-    // ========================================
-    // ========== Motors and Control ==========
-    // ========================================
+    // Motors and Control
 
     private SparkMax leftMotor = new SparkMax(0, MotorType.kBrushless); // TODO: Update CAN ID
     private SparkMax rightMotor = new SparkMax(0, MotorType.kBrushless); // TODO: Update CAN ID
@@ -43,9 +41,7 @@ public class ShooterSubsystem extends SubsystemBase{
         rightMotor.configure(config2, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    // =====================================
-    // ========== Shooter Methods ==========
-    // =====================================
+    // Shooter Methods
 
     public void runAtRPM(double rpm) {
         targetRPM = rpm;
