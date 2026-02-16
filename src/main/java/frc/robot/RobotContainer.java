@@ -8,11 +8,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LinkageSubsystem;
+//import frc.robot.subsystems.IntakeSubsystem;
+//import frc.robot.subsystems.LinkageSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.State;
 
 public class RobotContainer {
 
@@ -24,20 +26,18 @@ public class RobotContainer {
   CommandXboxController operatorController = new CommandXboxController(1);
 
   ClimberSubsystem climberSubsystem;
-  IntakeSubsystem intakeSubsystem;
   ShooterSubsystem shooterSubsystem;
   SwerveSubsystem swerveSubsystem;
-  LinkageSubsystem linkageSubsystem;
   SpindexerSubsystem spindexerSubsystem;
+  IntakeSubsystem intakeSubsystem;
 
   // initialization for the whole robot.
   public RobotContainer() {
     climberSubsystem = new ClimberSubsystem();
-    intakeSubsystem = new IntakeSubsystem();
     shooterSubsystem = new ShooterSubsystem();
     swerveSubsystem = new SwerveSubsystem();
-    linkageSubsystem = new LinkageSubsystem();
     spindexerSubsystem = new SpindexerSubsystem();
+    intakeSubsystem = new IntakeSubsystem();
     configureBindings();
   }
 
@@ -48,19 +48,16 @@ public class RobotContainer {
     // ========== Intake Controls ==========
     // =====================================
 
-    // Both Triggers: Intake in and out
-    operatorController.leftTrigger().and(operatorController.rightTrigger()).onTrue(linkageSubsystem.toggleLinkage());
-    linkageSubsystem.setDefaultCommand(Commands.run(() -> linkageSubsystem.holdLinkage()));
-
-    // Both Bumpers: Toggle intake spin
-    operatorController.leftBumper().and(operatorController.rightBumper()).toggleOnTrue(intakeSubsystem.spinIntake(3000));
+    operatorController.x().onTrue(intakeSubsystem.setState(State.IN));
+    operatorController.y().onTrue(intakeSubsystem.setState(State.OUT_OFF));
+    operatorController.b().onTrue(intakeSubsystem.setState(State.OUT_ON));
 
     // ====================================================
     // ========== Shooter and Spindexer Controls ==========
     // ====================================================
 
     // X Button: Stop all shooter and spindexer motors
-    operatorController.x()
+    operatorController.leftBumper()
       .onTrue(Commands.run(() -> {
         shooterSubsystem.stop();
         spindexerSubsystem.stopSpindexer();
@@ -68,24 +65,24 @@ public class RobotContainer {
       }));
 
     // A, B, Y Buttons: Different preset speeds for shooting
-    operatorController.a()
+    operatorController.rightBumper()
       .onTrue(
         shooterSubsystem.spinShooter(2500)
         .andThen(spindexerSubsystem.spinSpindexer(3000))
         .andThen(spindexerSubsystem.spinRoad(3000))
         );
-    operatorController.b()
-        .onTrue(
-          shooterSubsystem.spinShooter(3500)
-          .andThen(spindexerSubsystem.spinSpindexer(3000))
-          .andThen(spindexerSubsystem.spinRoad(3000))
-          );
-    operatorController.y()
-        .onTrue(
-          shooterSubsystem.spinShooter(4500)
-          .andThen(spindexerSubsystem.spinSpindexer(3000))
-          .andThen(spindexerSubsystem.spinRoad(3000))
-          );
+    // operatorController.b()
+    //     .onTrue(
+    //       shooterSubsystem.spinShooter(3500)
+    //       .andThen(spindexerSubsystem.spinSpindexer(3000))
+    //       .andThen(spindexerSubsystem.spinRoad(3000))
+    //       );
+    // operatorController.y()
+    //     .onTrue(
+    //       shooterSubsystem.spinShooter(4500)
+    //       .andThen(spindexerSubsystem.spinSpindexer(3000))
+    //       .andThen(spindexerSubsystem.spinRoad(3000))
+    //       );
     
     // ======================================
     // ========== Climber Controls ==========
@@ -94,8 +91,6 @@ public class RobotContainer {
     // D-Pad Up and Down: Climb up and down
     operatorController.povUp().onTrue(climberSubsystem.climb(0.5));
     operatorController.povDown().onTrue(climberSubsystem.climb(-0.5));
-    operatorController.povUp().or(operatorController.povDown()).onFalse(climberSubsystem.stop());
-    
   }
 
   public Command getAutonomousCommand() {
