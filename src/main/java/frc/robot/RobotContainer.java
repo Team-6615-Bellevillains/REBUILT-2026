@@ -60,7 +60,6 @@ public class RobotContainer {
 
     // Shooter and Spindexer Controls
 
-    // X Button: Stop all shooter and spindexer motors
     operatorController.leftBumper()
       .onTrue(Commands.run(() -> {
         shooterSubsystem.stop();
@@ -68,7 +67,6 @@ public class RobotContainer {
         spindexerSubsystem.stopRoad();
       }));
 
-    // A, B, Y Buttons: Different preset speeds for shooting
     operatorController.rightBumper()
       .onTrue(
         shooterSubsystem.spinShooter(2500)

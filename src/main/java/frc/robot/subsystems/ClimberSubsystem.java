@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+// TODO: make auton climb
 public class ClimberSubsystem extends SubsystemBase {
     private SparkMax climbMotor = new SparkMax(0, MotorType.kBrushless); // TODO: put real motor id
 

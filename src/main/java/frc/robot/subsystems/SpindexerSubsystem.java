@@ -15,9 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SpindexerSubsystem extends SubsystemBase{
 
-    // ========================================
-    // ========== Motors and Control ==========
-    // ========================================
+    // Motors and Control
 
     private SparkMax spindexerMotor = new SparkMax(0, MotorType.kBrushless); // TODO: Update CAN ID
     private SparkMax roadMotor = new SparkMax(0, MotorType.kBrushless); // TODO: Update CAN ID
@@ -46,9 +44,7 @@ public class SpindexerSubsystem extends SubsystemBase{
         roadMotor.configure(config2, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    // =======================================
-    // ========== Spindexer Methods ==========
-    // =======================================
+    // Spindexer Methods
 
     public void runSpindexerAtRPM(double rpm) {
         targetSpinRPM = rpm;
@@ -80,9 +76,7 @@ public class SpindexerSubsystem extends SubsystemBase{
         return Math.abs(getSpindexerRPM() - targetSpinRPM) < 75; // tolerance band
     }
 
-    // ==================================
-    // ========== Road Methods ==========
-    // ==================================
+    // Road Methods
 
     public void runRoadAtRPM(double rpm) {
         targetRoadRPM = rpm;
