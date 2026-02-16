@@ -1,22 +1,28 @@
 package frc.robot.subsystems;
 
+import java.io.File;
+
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import swervelib.SwerveDrive;
+import swervelib.parser.SwerveParser;
 
 
-//put code for the swerve drives in here.
 public class SwerveSubsystem extends SubsystemBase{
     
-    // put variables here
+    double maximumSpeed = Units.feetToMeters(4.5);
+    File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     private SwerveDrive drive;
-
-    //this is the constructor. run swerve drive initialization here. 
+ 
     public SwerveSubsystem(){
-
+        try {
+            new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed);
+        } catch (Exception e) {
+            //robot.explode();
+        }
     }
 
-    // this method gets called every loop of the command scheduler.
-    // put code related to the swerve drive that needs to run continuously here.
     @Override
     public void periodic() {
         
