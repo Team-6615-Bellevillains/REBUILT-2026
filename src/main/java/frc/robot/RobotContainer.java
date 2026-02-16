@@ -8,11 +8,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.ClimberSubsystem;
-//import frc.robot.subsystems.IntakeSubsystem;
-//import frc.robot.subsystems.LinkageSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import swervelib.SwerveInputStream;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.State;
 
@@ -31,7 +30,14 @@ public class RobotContainer {
   SpindexerSubsystem spindexerSubsystem;
   IntakeSubsystem intakeSubsystem;
 
-  // initialization for the whole robot.
+  SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
+                                                              () -> driverController.getLeftY() * -1,
+                                                              () -> driverController.getLeftX() * -1)
+                                                          .withControllerRotationAxis(driverController::getRightX)
+                                                          .scaleTranslation(0.8)
+                                                          .allianceRelativeControl(true);
+
+
   public RobotContainer() {
     climberSubsystem = new ClimberSubsystem();
     shooterSubsystem = new ShooterSubsystem();
@@ -41,20 +47,18 @@ public class RobotContainer {
     configureBindings();
   }
 
-  // where button mappings are set up.
   private void configureBindings() {
 
-    // =====================================
-    // ========== Intake Controls ==========
-    // =====================================
+    // swerve config
+    swerveSubsystem.setDefaultCommand(swerveSubsystem.driveFieldOriented(driveAngularVelocity));
+
+    // Intake Controls
 
     operatorController.x().onTrue(intakeSubsystem.setState(State.IN));
     operatorController.y().onTrue(intakeSubsystem.setState(State.OUT_OFF));
     operatorController.b().onTrue(intakeSubsystem.setState(State.OUT_ON));
 
-    // ====================================================
-    // ========== Shooter and Spindexer Controls ==========
-    // ====================================================
+    // Shooter and Spindexer Controls
 
     // X Button: Stop all shooter and spindexer motors
     operatorController.leftBumper()
@@ -84,10 +88,7 @@ public class RobotContainer {
     //       .andThen(spindexerSubsystem.spinRoad(3000))
     //       );
     
-    // ======================================
-    // ========== Climber Controls ==========
-    // ======================================
-
+    // Climber Controls
     // D-Pad Up and Down: Climb up and down
     operatorController.povUp().onTrue(climberSubsystem.climb(0.5));
     operatorController.povDown().onTrue(climberSubsystem.climb(-0.5));
