@@ -19,7 +19,7 @@ public class ShootCommand extends Command{
     @Override
     public void initialize() {
         indexerOff();
-        shooter.setSetPoint(shooterRPM);
+        shooter.RpmSetPoint(shooterRPM);
     }
 
     @Override
