@@ -50,8 +50,12 @@ public class IntakeSubsystem extends SubsystemBase{
         OUT_OFF
     }
 
-    public Command setState(State state){
-        return this.runOnce(()->{this.state = state;});
+    public void setState(State state){
+        this.state = state;
+    }
+
+    public Command setStateCommand(State state){
+        return this.runOnce(()->setState(state));
     }
 
 }
