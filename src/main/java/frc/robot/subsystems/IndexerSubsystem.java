@@ -30,6 +30,10 @@ public class IndexerSubsystem extends SubsystemBase {
         roadMotor.stopMotor();
     }
 
+    public void setState(State state){
+        this.state = state;
+    }
+
     public enum State {
         ON,
         OFF

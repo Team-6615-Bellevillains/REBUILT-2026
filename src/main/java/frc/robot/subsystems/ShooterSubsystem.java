@@ -41,10 +41,14 @@ public class ShooterSubsystem extends SubsystemBase{
         rightMotor.configure(config2, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     }
 
+    @Override
+    public void periodic() {
+        runAtRPM(targetRPM);
+    }
+
     // Shooter Methods
 
-    public void runAtRPM(double rpm) {
-        targetRPM = rpm;
+    private void runAtRPM(double rpm) {
 
         double currentRPM = encoder.getVelocity();
         double pidOutput = pid.calculate(currentRPM, targetRPM);
@@ -74,5 +78,9 @@ public class ShooterSubsystem extends SubsystemBase{
 
     public boolean atSetpoint() {
         return Math.abs(getRPM() - targetRPM) < 75;
+    }
+
+    public void setSetPoint(double rpm){
+        this.targetRPM = rpm;
     }
 }
