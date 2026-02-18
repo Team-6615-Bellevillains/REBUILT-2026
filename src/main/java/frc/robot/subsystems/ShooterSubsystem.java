@@ -35,8 +35,8 @@ public class ShooterSubsystem extends SubsystemBase{
         .withClosedLoopController(1, 0, 0)
         .withSimClosedLoopController(1, 0, 0)
         // feedforward constants
-        .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
-        .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+        .withFeedforward(new SimpleMotorFeedforward(0.1, 0, 0))
+        .withSimFeedforward(new SimpleMotorFeedforward(0.1, 0, 0))
         // telemetry
         .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
         // gearing

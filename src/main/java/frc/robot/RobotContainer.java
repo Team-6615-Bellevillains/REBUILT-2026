@@ -25,26 +25,22 @@ public class RobotContainer {
   CommandXboxController driverController = new CommandXboxController(0);
   CommandXboxController operatorController = new CommandXboxController(1);
 
-  ClimberSubsystem climberSubsystem;
-  ShooterSubsystem shooterSubsystem;
-  SwerveSubsystem swerveSubsystem;
-  IndexerSubsystem indexerSubsystem;
-  IntakeSubsystem intakeSubsystem;
+  ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+  //ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
+  IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
-  SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
+  SwerveInputStream driveAngularVelocity;
+
+
+  public RobotContainer() {
+    driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
                                                               () -> driverController.getLeftY() * -1,
                                                               () -> driverController.getLeftX() * -1)
                                                           .withControllerRotationAxis(driverController::getRightX)
                                                           .scaleTranslation(0.8)
                                                           .allianceRelativeControl(true);
-
-
-  public RobotContainer() {
-    climberSubsystem = new ClimberSubsystem();
-    shooterSubsystem = new ShooterSubsystem();
-    swerveSubsystem = new SwerveSubsystem();
-    intakeSubsystem = new IntakeSubsystem();
-    indexerSubsystem = new IndexerSubsystem();
     configureBindings();
   }
 
@@ -61,7 +57,7 @@ public class RobotContainer {
 
     // Shooter and Spindexer Controls
 
-    operatorController.rightBumper().whileTrue(new ShootCommand(shooterSubsystem, indexerSubsystem, 3500));
+    //operatorController.rightBumper().whileTrue(new ShootCommand(shooterSubsystem, indexerSubsystem, 3500));
 
     // operatorController.rightBumper()
     //   .onTrue(

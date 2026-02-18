@@ -21,7 +21,7 @@ public class SwerveSubsystem extends SubsystemBase{
  
     public SwerveSubsystem(){
         try {
-            new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed);
+            drive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed);
         } catch (Exception e) {
             //robot.explode();
             throw new RuntimeException("swerve config file missing");

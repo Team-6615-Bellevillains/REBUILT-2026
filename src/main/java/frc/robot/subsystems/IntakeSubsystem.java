@@ -30,17 +30,17 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void inPeriodic(){
-        angleMotor.set(-0.2);
+        angleMotor.set(-0.02);
         wheelMotor.set(0);
     }
 
     private void outOffPeriodic(){
-        angleMotor.set(0.2);
+        angleMotor.set(0.02);
         wheelMotor.set(0);
     }
 
     private void outOnPeriodic(){
-        angleMotor.set(0.2);
+        angleMotor.set(0.02);
         wheelMotor.set(0.9);
     }
     
