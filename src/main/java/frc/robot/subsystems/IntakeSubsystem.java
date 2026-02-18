@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class IntakeSubsystem extends SubsystemBase{
     
     private State state = State.IN;
-    private SparkFlex angleMotor = new SparkFlex(0, MotorType.kBrushless);
-    private SparkFlex wheelMotor = new SparkFlex(0, MotorType.kBrushless);
+    private SparkFlex angleMotor = new SparkFlex(20, MotorType.kBrushless);
+    private SparkFlex wheelMotor = new SparkFlex(22, MotorType.kBrushless);
 
     @Override
     public void periodic() {

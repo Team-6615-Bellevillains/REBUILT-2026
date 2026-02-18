@@ -24,8 +24,8 @@ import yams.motorcontrollers.local.SparkWrapper;
 
 public class ShooterSubsystem extends SubsystemBase{
 
-    private SparkMax shooterLeft = new SparkMax(0, MotorType.kBrushless);
-    private SparkMax shooterRight = new SparkMax(0, MotorType.kBrushless);
+    private SparkMax shooterLeft = new SparkMax(12, MotorType.kBrushless);
+    private SparkMax shooterRight = new SparkMax(10, MotorType.kBrushless);
 
     private AngularVelocity setPoint;
 

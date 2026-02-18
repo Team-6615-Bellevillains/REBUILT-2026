@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IndexerSubsystem extends SubsystemBase {
     
-    private SparkMax spindexerMotor = new SparkMax(0, MotorType.kBrushless);
-    private SparkMax roadMotor = new SparkMax(0, MotorType.kBrushless);
+    private SparkMax spindexerMotor = new SparkMax(50, MotorType.kBrushless);
+    private SparkMax roadMotor = new SparkMax(52, MotorType.kBrushless);
     private State state = State.OFF;
 
     @Override
