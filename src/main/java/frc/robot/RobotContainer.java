@@ -7,9 +7,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveInputStream;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -24,26 +25,22 @@ public class RobotContainer {
   CommandXboxController driverController = new CommandXboxController(0);
   CommandXboxController operatorController = new CommandXboxController(1);
 
-  ClimberSubsystem climberSubsystem;
-  ShooterSubsystem shooterSubsystem;
-  SwerveSubsystem swerveSubsystem;
-  SpindexerSubsystem spindexerSubsystem;
-  IntakeSubsystem intakeSubsystem;
+  ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+  //ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
+  IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
-  SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
+  SwerveInputStream driveAngularVelocity;
+
+
+  public RobotContainer() {
+    driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
                                                               () -> driverController.getLeftY() * -1,
                                                               () -> driverController.getLeftX() * -1)
                                                           .withControllerRotationAxis(driverController::getRightX)
                                                           .scaleTranslation(0.8)
                                                           .allianceRelativeControl(true);
-
-
-  public RobotContainer() {
-    climberSubsystem = new ClimberSubsystem();
-    shooterSubsystem = new ShooterSubsystem();
-    swerveSubsystem = new SwerveSubsystem();
-    spindexerSubsystem = new SpindexerSubsystem();
-    intakeSubsystem = new IntakeSubsystem();
     configureBindings();
   }
 
@@ -54,25 +51,20 @@ public class RobotContainer {
 
     // Intake Controls
 
-    operatorController.x().onTrue(intakeSubsystem.setState(State.IN));
-    operatorController.y().onTrue(intakeSubsystem.setState(State.OUT_OFF));
-    operatorController.b().onTrue(intakeSubsystem.setState(State.OUT_ON));
+    operatorController.x().onTrue(intakeSubsystem.setStateCommand(State.IN));
+    operatorController.y().onTrue(intakeSubsystem.setStateCommand(State.OUT_OFF));
+    operatorController.b().onTrue(intakeSubsystem.setStateCommand(State.OUT_ON));
 
     // Shooter and Spindexer Controls
 
-    operatorController.leftBumper()
-      .onTrue(Commands.run(() -> {
-        shooterSubsystem.stop();
-        spindexerSubsystem.stopSpindexer();
-        spindexerSubsystem.stopRoad();
-      }));
+    //operatorController.rightBumper().whileTrue(new ShootCommand(shooterSubsystem, indexerSubsystem, 3500));
 
-    operatorController.rightBumper()
-      .onTrue(
-        shooterSubsystem.spinShooter(2500)
-        .andThen(spindexerSubsystem.spinSpindexer(3000))
-        .andThen(spindexerSubsystem.spinRoad(3000))
-        );
+    // operatorController.rightBumper()
+    //   .onTrue(
+    //     shooterSubsystem.spinShooter(2500)
+    //     .andThen(spindexerSubsystem.spinSpindexer(3000))
+    //     .andThen(spindexerSubsystem.spinRoad(3000))
+    //     );
     // operatorController.b()
     //     .onTrue(
     //       shooterSubsystem.spinShooter(3500)
