@@ -26,21 +26,20 @@ public class RobotContainer {
   CommandXboxController operatorController = new CommandXboxController(1);
 
   ClimberSubsystem climberSubsystem = new ClimberSubsystem();
-  //ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
-  IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  //IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
-  SwerveInputStream driveAngularVelocity;
-
-
-  public RobotContainer() {
-    driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
+  SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
                                                               () -> driverController.getLeftY() * -1,
                                                               () -> driverController.getLeftX() * -1)
                                                           .withControllerRotationAxis(driverController::getRightX)
                                                           .scaleTranslation(0.8)
                                                           .allianceRelativeControl(true);
+
+
+  public RobotContainer() {
     configureBindings();
   }
 
@@ -51,32 +50,14 @@ public class RobotContainer {
 
     // Intake Controls
 
-    operatorController.x().onTrue(intakeSubsystem.setStateCommand(State.IN));
-    operatorController.y().onTrue(intakeSubsystem.setStateCommand(State.OUT_OFF));
-    operatorController.b().onTrue(intakeSubsystem.setStateCommand(State.OUT_ON));
+    //operatorController.x().onTrue(intakeSubsystem.setStateCommand(State.IN));
+    //operatorController.y().onTrue(intakeSubsystem.setStateCommand(State.OUT_OFF));
+    //operatorController.b().onTrue(intakeSubsystem.setStateCommand(State.OUT_ON));
 
     // Shooter and Spindexer Controls
 
-    //operatorController.rightBumper().whileTrue(new ShootCommand(shooterSubsystem, indexerSubsystem, 3500));
-
-    // operatorController.rightBumper()
-    //   .onTrue(
-    //     shooterSubsystem.spinShooter(2500)
-    //     .andThen(spindexerSubsystem.spinSpindexer(3000))
-    //     .andThen(spindexerSubsystem.spinRoad(3000))
-    //     );
-    // operatorController.b()
-    //     .onTrue(
-    //       shooterSubsystem.spinShooter(3500)
-    //       .andThen(spindexerSubsystem.spinSpindexer(3000))
-    //       .andThen(spindexerSubsystem.spinRoad(3000))
-    //       );
-    // operatorController.y()
-    //     .onTrue(
-    //       shooterSubsystem.spinShooter(4500)
-    //       .andThen(spindexerSubsystem.spinSpindexer(3000))
-    //       .andThen(spindexerSubsystem.spinRoad(3000))
-    //       );
+    operatorController.rightBumper().whileTrue(new ShootCommand(shooterSubsystem, indexerSubsystem, 3500));
+    operatorController.leftBumper().whileTrue(indexerSubsystem.indexerRunCommand());
     
     // Climber Controls
     // D-Pad Up and Down: Climb up and down

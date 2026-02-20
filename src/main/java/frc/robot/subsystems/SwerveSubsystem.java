@@ -11,11 +11,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
+import swervelib.telemetry.SwerveDriveTelemetry;
+import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 
 public class SwerveSubsystem extends SubsystemBase{
     
-    double maximumSpeed = Units.feetToMeters(4.5);
+    double maximumSpeed = Units.feetToMeters(2);
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     private SwerveDrive drive;
  
@@ -26,6 +28,7 @@ public class SwerveSubsystem extends SubsystemBase{
             //robot.explode();
             throw new RuntimeException("swerve config file missing");
         }
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     }
 
     @Override

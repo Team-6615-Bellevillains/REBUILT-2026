@@ -11,7 +11,6 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
@@ -27,16 +26,16 @@ public class ShooterSubsystem extends SubsystemBase{
     private SparkMax shooterLeft = new SparkMax(12, MotorType.kBrushless);
     private SparkMax shooterRight = new SparkMax(10, MotorType.kBrushless);
 
-    private AngularVelocity setPoint;
+    private AngularVelocity setPoint = RPM.of(0);
 
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
         .withControlMode(ControlMode.CLOSED_LOOP)
         // feedback constants
-        .withClosedLoopController(1, 0, 0)
-        .withSimClosedLoopController(1, 0, 0)
+        .withClosedLoopController(0.3, 0, 0)
+        .withSimClosedLoopController(0.3, 0, 0)
         // feedforward constants
-        .withFeedforward(new SimpleMotorFeedforward(0.1, 0, 0))
-        .withSimFeedforward(new SimpleMotorFeedforward(0.1, 0, 0))
+        .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+        .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
         // telemetry
         .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
         // gearing
@@ -45,7 +44,7 @@ public class ShooterSubsystem extends SubsystemBase{
         .withMotorInverted(false)
         .withIdleMode(MotorMode.COAST)
         .withStatorCurrentLimit(Amps.of(40))
-        .withFollowers(Pair.of(shooterRight, false));
+        .withFollowers(Pair.of(shooterRight, true));
 
     private SmartMotorController turretController = new SparkWrapper(shooterLeft, DCMotor.getNEO(1), smcConfig);
 
@@ -59,6 +58,7 @@ public class ShooterSubsystem extends SubsystemBase{
     private FlyWheel shooter = new FlyWheel(shooterConfig);
 
     public ShooterSubsystem(){
+        shooter = new FlyWheel(shooterConfig);
         setPoint = RPM.of(0);
     }
 
