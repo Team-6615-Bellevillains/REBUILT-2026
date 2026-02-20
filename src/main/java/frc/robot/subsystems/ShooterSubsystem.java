@@ -88,6 +88,8 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public void stop(){
+        setPoint = RPM.of(0);
+        RpmSetPoint(0);
         shooter.set(0);
     }
 }
