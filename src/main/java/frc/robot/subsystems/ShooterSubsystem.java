@@ -11,6 +11,8 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
@@ -31,10 +33,10 @@ public class ShooterSubsystem extends SubsystemBase{
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
         .withControlMode(ControlMode.CLOSED_LOOP)
         // feedback constants
-        .withClosedLoopController(0.3, 0, 0)
-        .withSimClosedLoopController(0.3, 0, 0)
+        //.withClosedLoopController(0.020247, 0, 0)
+        //.withSimClosedLoopController(0.02, 0, 0)
         // feedforward constants
-        .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+        .withFeedforward(new SimpleMotorFeedforward(0.8137, 0.088318, 0.033204))
         .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
         // telemetry
         .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
@@ -46,14 +48,15 @@ public class ShooterSubsystem extends SubsystemBase{
         .withStatorCurrentLimit(Amps.of(40))
         .withFollowers(Pair.of(shooterRight, true));
 
-    private SmartMotorController turretController = new SparkWrapper(shooterLeft, DCMotor.getNEO(1), smcConfig);
+    private SmartMotorController shooterController = new SparkWrapper(shooterLeft, DCMotor.getNEO(1), smcConfig);
 
-    private FlyWheelConfig shooterConfig = new FlyWheelConfig(turretController)
+    private FlyWheelConfig shooterConfig = new FlyWheelConfig(shooterController)
         .withDiameter(Inches.of(4))
         .withMass(Pounds.of(1))
         // max speed
         .withUpperSoftLimit(RPM.of(2000))
-        .withTelemetry("Shooter Mech", TelemetryVerbosity.HIGH);
+        .withTelemetry("Shooter Mech", TelemetryVerbosity.HIGH)
+        .withSoftLimit(RPM.of(-5000), RPM.of(5000));
 
     private FlyWheel shooter = new FlyWheel(shooterConfig);
 
@@ -72,8 +75,7 @@ public class ShooterSubsystem extends SubsystemBase{
         shooter.simIterate();
     }
 
-    public void RpmSetPoint(double rpm){
-        AngularVelocity velocity = RPM.of(rpm);
+    public void setPoint(AngularVelocity velocity){
         shooter.setMechanismVelocitySetpoint(velocity);
         setPoint = velocity;
     }
@@ -89,7 +91,12 @@ public class ShooterSubsystem extends SubsystemBase{
 
     public void stop(){
         setPoint = RPM.of(0);
-        RpmSetPoint(0);
-        shooter.set(0);
+        setPoint(setPoint);
     }
+
+    public Command stopCommand(){
+        return shooter.set(0);
+    }
+
+    public Command sysId() {return shooter.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));}
 }

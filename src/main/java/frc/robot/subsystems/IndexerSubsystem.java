@@ -26,16 +26,29 @@ public class IndexerSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (state == State.ON){
-            on();
-        } else {
-            off();
+        switch (state) {
+            case OFF:
+                off();
+                break;
+        
+            case INDEX:
+                index();
+                break;
+            
+            case SHOOT:
+                shoot();
+                break;
         }
     }
 
-    private void on(){
-        spindexerMotor.set(0.5);
-        roadMotor.set(0.5);
+    private void shoot(){
+        spindexerMotor.set(0.3);
+        roadMotor.set(0.3);
+    }
+
+    private void index(){
+        spindexerMotor.set(0.3);
+        roadMotor.stopMotor();
     }
 
     private void off(){
@@ -48,13 +61,14 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     public enum State {
-        ON,
-        OFF
+        OFF,
+        INDEX,
+        SHOOT
     }
 
     public Command indexerRunCommand(){
         return this.runEnd(()->{
-            this.setState(State.ON);
+            this.setState(State.SHOOT);
         }, ()->{
             this.setState(State.OFF);
         });

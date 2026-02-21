@@ -1,8 +1,13 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -11,6 +16,13 @@ public class IntakeSubsystem extends SubsystemBase{
     private State state = State.IN;
     private SparkFlex angleMotor = new SparkFlex(20, MotorType.kBrushless);
     private SparkFlex wheelMotor = new SparkFlex(22, MotorType.kBrushless);
+
+    public IntakeSubsystem(){
+        SparkFlexConfig config = new SparkFlexConfig();
+        config.idleMode(IdleMode.kBrake);
+        config.smartCurrentLimit(1);
+        angleMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+    }
 
     @Override
     public void periodic() {
@@ -27,10 +39,11 @@ public class IntakeSubsystem extends SubsystemBase{
                 outOnPeriodic();
                 break;
         }
+        SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
     }
 
     private void inPeriodic(){
-        angleMotor.set(-0.02);
+        angleMotor.set(-0.25);
         wheelMotor.set(0);
     }
 
@@ -52,10 +65,27 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public void setState(State state){
         this.state = state;
+        switch (state){
+            case IN:
+                setAngleCurrent(40);
+                break;
+            case OUT_OFF:
+                setAngleCurrent(1);
+                break;
+            case OUT_ON:
+                setAngleCurrent(1);
+                break;
+        }
     }
 
     public Command setStateCommand(State state){
         return this.runOnce(()->setState(state));
+    }
+
+    private void setAngleCurrent(int amps){
+        SparkFlexConfig config = new SparkFlexConfig();
+        config.smartCurrentLimit(amps);
+        angleMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
 }

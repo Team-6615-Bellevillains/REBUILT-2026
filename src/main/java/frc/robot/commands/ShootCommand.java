@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -8,18 +9,18 @@ public class ShootCommand extends Command{
     
     private final ShooterSubsystem shooter;
     private final IndexerSubsystem indexer;
-    private final double shooterRPM;
+    private final AngularVelocity velocity;
 
-    public ShootCommand(ShooterSubsystem shooter, IndexerSubsystem indexer, double shooterRPM){
+    public ShootCommand(ShooterSubsystem shooter, IndexerSubsystem indexer, AngularVelocity velocity){
         this.shooter = shooter;
         this.indexer = indexer;
-        this.shooterRPM = shooterRPM;
+        this.velocity = velocity;
     }
 
     @Override
     public void initialize() {
         indexerOff();
-        shooter.RpmSetPoint(shooterRPM);
+        shooter.setPoint(velocity);
     }
 
     @Override
@@ -40,7 +41,8 @@ public class ShootCommand extends Command{
     private void indexerOff(){
         indexer.setState(IndexerSubsystem.State.OFF);
     }
+    
     private void indexerOn(){
-        indexer.setState(IndexerSubsystem.State.ON);
+        indexer.setState(IndexerSubsystem.State.SHOOT);
     }
 }
