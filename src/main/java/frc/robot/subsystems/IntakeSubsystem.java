@@ -16,6 +16,7 @@ public class IntakeSubsystem extends SubsystemBase{
     private State state = State.IN;
     private SparkFlex angleMotor = new SparkFlex(20, MotorType.kBrushless);
     private SparkFlex wheelMotor = new SparkFlex(22, MotorType.kBrushless);
+    private static final int PULL_IN_CURRENT = 40;
 
     public IntakeSubsystem(){
         SparkFlexConfig config = new SparkFlexConfig();
@@ -27,6 +28,9 @@ public class IntakeSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         switch (state) {
+            case PULL_IN:
+                inPeriodic();
+                checkPullInCurrent();
             case IN:
                 inPeriodic();
                 break;
@@ -47,6 +51,12 @@ public class IntakeSubsystem extends SubsystemBase{
         wheelMotor.set(0);
     }
 
+    private void checkPullInCurrent(){
+        if (Math.abs(angleMotor.getOutputCurrent() - PULL_IN_CURRENT) < 10){
+            setState(State.IN);
+        }
+    }
+
     private void outOffPeriodic(){
         angleMotor.set(0.02);
         wheelMotor.set(0);
@@ -59,6 +69,7 @@ public class IntakeSubsystem extends SubsystemBase{
     
     public enum State{
         IN,
+        PULL_IN,
         OUT_ON,
         OUT_OFF
     }
@@ -67,7 +78,7 @@ public class IntakeSubsystem extends SubsystemBase{
         this.state = state;
         switch (state){
             case IN:
-                setAngleCurrent(40);
+                setAngleCurrent(10);
                 break;
             case OUT_OFF:
                 setAngleCurrent(1);
@@ -75,6 +86,8 @@ public class IntakeSubsystem extends SubsystemBase{
             case OUT_ON:
                 setAngleCurrent(1);
                 break;
+            case PULL_IN:
+                setAngleCurrent(PULL_IN_CURRENT);
         }
     }
 
