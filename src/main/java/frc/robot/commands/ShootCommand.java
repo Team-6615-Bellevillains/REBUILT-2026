@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -10,11 +12,13 @@ public class ShootCommand extends Command{
     private final ShooterSubsystem shooter;
     private final IndexerSubsystem indexer;
     private final AngularVelocity velocity;
+    private final BooleanSupplier atSetPoint;
 
     public ShootCommand(ShooterSubsystem shooter, IndexerSubsystem indexer, AngularVelocity velocity){
         this.shooter = shooter;
         this.indexer = indexer;
         this.velocity = velocity;
+        this.atSetPoint = shooter.nearVelocity(velocity);
     }
 
     @Override
@@ -25,7 +29,7 @@ public class ShootCommand extends Command{
 
     @Override
     public void execute() {
-        if (!shooter.atSetpoint()){
+        if (!atSetPoint.getAsBoolean()){
             indexerOff();
             return;
         }
