@@ -52,9 +52,8 @@ public class RobotContainer {
 
     // Intake Controls
 
-    operatorController.x().onTrue(intakeSubsystem.setStateCommand(State.IN));
-    operatorController.y().onTrue(intakeSubsystem.setStateCommand(State.OUT_OFF));
-    operatorController.b().onTrue(intakeSubsystem.setStateCommand(State.OUT_ON));
+    operatorController.a().onTrue(intakeSubsystem.setStateCommand(State.OUT_ON));
+    operatorController.a().onFalse(intakeSubsystem.setStateCommand(State.PULL_IN));
 
     // Shooter and Spindexer Controls
 
@@ -64,10 +63,10 @@ public class RobotContainer {
     
     // Climber Controls
     // D-Pad Up and Down: Climb up and down
-    operatorController.povUp().onTrue(climberSubsystem.climb(0.5));
-    operatorController.povDown().onTrue(climberSubsystem.climb(-0.5));
+    operatorController.povUp().whileTrue(climberSubsystem.climb(0.1));
+    operatorController.povDown().whileTrue(climberSubsystem.climb(-0.1));
 
-    //operatorController.a().whileTrue(shooterSubsystem.sysId());
+    operatorController.b().whileTrue(shooterSubsystem.sysId());
   }
 
   public Command getAutonomousCommand() {
