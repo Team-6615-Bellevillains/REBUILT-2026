@@ -9,7 +9,7 @@ import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.ShootCommand;
+import frc.robot.commands.ShootAtRPMCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -57,7 +57,7 @@ public class RobotContainer {
 
     // Shooter and Spindexer Controls
 
-    operatorController.rightBumper().whileTrue(new ShootCommand(shooterSubsystem, indexerSubsystem, RPM.of(3500)));
+    operatorController.rightBumper().whileTrue(new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3500)));
     operatorController.rightBumper().whileFalse(shooterSubsystem.stopCommand());
     operatorController.leftBumper().whileTrue(indexerSubsystem.indexerRunCommand());
     
