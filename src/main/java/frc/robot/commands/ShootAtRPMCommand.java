@@ -7,18 +7,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class ShootCommand extends Command{
+public class ShootAtRPMCommand extends Command{
     
     private final ShooterSubsystem shooter;
     private final IndexerSubsystem indexer;
     private final AngularVelocity velocity;
     private final BooleanSupplier atSetPoint;
 
-    public ShootCommand(ShooterSubsystem shooter, IndexerSubsystem indexer, AngularVelocity velocity){
+    public ShootAtRPMCommand(ShooterSubsystem shooter, IndexerSubsystem indexer, AngularVelocity velocity){
         this.shooter = shooter;
         this.indexer = indexer;
         this.velocity = velocity;
         this.atSetPoint = shooter.nearVelocity(velocity);
+        this.addRequirements(shooter, indexer);
     }
 
     @Override
