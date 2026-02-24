@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.io.File;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -17,7 +18,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase{
     
-    double maximumSpeed = Units.feetToMeters(2);
+    double maximumSpeed = Units.feetToMeters(10);
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     private SwerveDrive drive;
  
@@ -48,5 +49,9 @@ public class SwerveSubsystem extends SubsystemBase{
         return run(() -> {
             drive.driveFieldOriented(velocity.get());
         });
-  }
+    }
+
+    public Pose2d getPose(){
+        return drive.getPose();
+    }
 }

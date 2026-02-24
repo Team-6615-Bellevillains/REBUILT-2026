@@ -66,7 +66,8 @@ public class RobotContainer {
     operatorController.povUp().whileTrue(climberSubsystem.climb(0.1));
     operatorController.povDown().whileTrue(climberSubsystem.climb(-0.1));
 
-    operatorController.b().whileTrue(shooterSubsystem.sysId());
+    //operatorController.b().whileTrue(shooterSubsystem.sysId());
+    //operatorController.b().onTrue(shooterSubsystem.liveRPMCommand());
   }
 
   public Command getAutonomousCommand() {

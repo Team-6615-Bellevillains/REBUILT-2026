@@ -11,7 +11,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.mechanisms.config.FlyWheelConfig;
@@ -36,7 +36,7 @@ public class ShooterSubsystem extends SubsystemBase{
         .withClosedLoopController(0.01, 0, 0)
         .withSimClosedLoopController(0, 0, 0)
         // feedforward constants
-        .withFeedforward(new SimpleMotorFeedforward(0.67008, 0.115, 0.041061))
+        .withFeedforward(new SimpleMotorFeedforward(0.67008, 0.114, 0.041061))
         .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
         // telemetry
         .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
@@ -63,6 +63,7 @@ public class ShooterSubsystem extends SubsystemBase{
     public ShooterSubsystem(){
         shooter = new FlyWheel(shooterConfig);
         setPoint = RPM.of(0);
+        SmartDashboard.putNumber("rpm to run", 0);
     }
 
     @Override
@@ -95,6 +96,12 @@ public class ShooterSubsystem extends SubsystemBase{
 
     public Command stopCommand(){
         return shooter.set(0);
+    }
+
+    public Command liveRPMCommand(){
+        return this.run(()->{
+            setPoint(RPM.of(SmartDashboard.getNumber("rpm to run", 0)));
+        });
     }
 
     public Command sysId() {return shooter.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));}
