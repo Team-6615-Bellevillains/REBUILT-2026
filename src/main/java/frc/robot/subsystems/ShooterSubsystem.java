@@ -86,7 +86,7 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public BooleanSupplier nearVelocity(AngularVelocity velocity){
-        return shooter.isNear(velocity, RPM.of(60));
+        return shooter.isNear(velocity, RPM.of(120));
     }
 
     public void stop(){
