@@ -1,5 +1,10 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
 import java.io.File;
 import java.util.function.Supplier;
 
@@ -11,6 +16,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,7 +34,8 @@ public class SwerveSubsystem extends SubsystemBase{
     private SwerveDrive drive;
     String limelight3g = "limelight-threeg";
     private Pigeon2 gyro = new Pigeon2(0);
- 
+    private Field2d field = new Field2d();
+
     public SwerveSubsystem(){
         try {
             drive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed);
@@ -37,18 +44,25 @@ public class SwerveSubsystem extends SubsystemBase{
             throw new RuntimeException("swerve config file missing");
         }
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
-    }
+
+        LimelightHelpers.setCameraPose_RobotSpace(limelight3g, Inches.of(13.125).in(Meters), 
+        -Inches.of(3.875).in(Meters), Inches.of(8.625).in(Meters), 0, 15, 0);
+        drive.zeroGyro();
+        gyro.setYaw(Degrees.of(0));
+    } 
 
     @Override
     public void periodic() {
         Pose2d currentPose = getPose();
-        SmartDashboard.putNumber("rotation fed to limelight", currentPose.getRotation().getDegrees());
-        LimelightHelpers.SetRobotOrientation(limelight3g, currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        SmartDashboard.putNumber("rotation fed to limelight", gyro.getYaw().getValue().in(Degrees));
+        LimelightHelpers.SetRobotOrientation(limelight3g, gyro.getYaw().getValue().in(Degrees), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight3g);
         if(mt2 != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || mt2.tagCount == 0)){
             drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
             drive.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
         }
+        field.setRobotPose(currentPose);
+        SmartDashboard.putData("field", field);
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative){
@@ -62,6 +76,13 @@ public class SwerveSubsystem extends SubsystemBase{
     public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity){
         return run(() -> {
             drive.driveFieldOriented(velocity.get());
+        });
+    }
+
+    public Command resetGyroCommand(){
+        return this.runOnce(()->{
+            drive.zeroGyro();
+            gyro.setYaw(Degrees.of(0));
         });
     }
 
