@@ -8,7 +8,6 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.filter.MedianFilter;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,11 +17,11 @@ public class IntakeSubsystem extends SubsystemBase{
     private State state = State.IN;
     private SparkFlex angleMotor = new SparkFlex(20, MotorType.kBrushless);
     private SparkFlex wheelMotor = new SparkFlex(22, MotorType.kBrushless);
-    private static final int PULL_IN_CURRENT = 60;
+    private static final int PULL_IN_CURRENT = 5;
     private MedianFilter currentFilter = new MedianFilter(15);
     private double filteredCurrent = 0;
-    //private SlewRateLimiter currentLimitRamp = new SlewRateLimiter(60, -120, 0);
-    private int nonLimitedCurrent = 0;
+    private int nonLimitedCurrent = 5;
+    private boolean wheelSpin = false;
 
     public IntakeSubsystem(){
         SparkFlexConfig config = new SparkFlexConfig();
@@ -44,14 +43,11 @@ public class IntakeSubsystem extends SubsystemBase{
                 inPeriodic();
                 break;
         
-            case OUT_OFF:
+            case OUT:
                 outOffPeriodic();
                 break;
-
-            case OUT_ON:
-                outOnPeriodic();
-                break;
         }
+        wheelMotor.set(wheelSpin ? 0.4 : 0.0);
         updateAngleCurrent();
         SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
         SmartDashboard.putString("Intake state", state.toString());
@@ -59,13 +55,11 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void inPeriodic(){
-        angleMotor.set(-0.5);
-        wheelMotor.set(0);
+        angleMotor.set(-0.3);
     }
 
     private void pullInPeriodic(){
-        angleMotor.set(-0.25);
-        wheelMotor.set(0);
+        angleMotor.set(0);
     }
 
     private void checkPullInCurrent(){
@@ -75,37 +69,51 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void outOffPeriodic(){
-        angleMotor.set(0.02);
-        wheelMotor.set(0);
-    }
-
-    private void outOnPeriodic(){
-        angleMotor.set(0.15);
-        //wheelMotor.set(0.5);
+        angleMotor.set(0.4);
     }
     
     public enum State{
         IN,
         PULL_IN,
-        OUT_ON,
-        OUT_OFF
+        OUT
     }
 
     public void setState(State state){
         this.state = state;
         switch (state){
             case IN:
-                setAngleCurrent(15);
-                break;
-            case OUT_OFF:
-                setAngleCurrent(1);
-                break;
-            case OUT_ON:
                 setAngleCurrent(5);
+                break;
+            case OUT:
+                setAngleCurrent(10);
                 break;
             case PULL_IN:
                 setAngleCurrent(PULL_IN_CURRENT);
         }
+    }
+
+    public Command setWheelsCommand(boolean on){
+        return this.runOnce(()->{
+            wheelSpin = on;
+        });
+    }
+
+    public Command toggleInOut(){
+        return this.runOnce(()->{
+            switch (state) {
+                case IN:
+                    setState(State.OUT);
+                    break;
+            
+                case PULL_IN:
+                    setState(State.OUT);
+                    break;
+
+                case OUT:
+                    setState(State.PULL_IN);
+                    break;
+            }
+        });
     }
 
     public Command setStateCommand(State state){
@@ -118,7 +126,6 @@ public class IntakeSubsystem extends SubsystemBase{
 
     private void updateAngleCurrent(){
         SparkFlexConfig config = new SparkFlexConfig();
-        //config.smartCurrentLimit((int) currentLimitRamp.calculate(nonLimitedCurrent));
         config.smartCurrentLimit(nonLimitedCurrent);
         angleMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }

@@ -40,6 +40,10 @@ public class IndexerSubsystem extends SubsystemBase {
             case SHOOT:
                 shoot();
                 break;
+                
+            case SLOW:
+                slow();
+                break;
         }
     }
 
@@ -58,6 +62,11 @@ public class IndexerSubsystem extends SubsystemBase {
         roadMotor.stopMotor();
     }
 
+    private void slow(){
+        spindexerMotor.set(0.1);
+        roadMotor.set(0);
+    }
+
     public void setState(State state){
         this.state = state;
     }
@@ -65,12 +74,13 @@ public class IndexerSubsystem extends SubsystemBase {
     public enum State {
         OFF,
         INDEX,
-        SHOOT
+        SHOOT,
+        SLOW
     }
 
     public Command indexerRunCommand(){
         return this.runEnd(()->{
-            this.setState(State.SHOOT);
+            this.setState(State.SLOW);
         }, ()->{
             this.setState(State.OFF);
         });

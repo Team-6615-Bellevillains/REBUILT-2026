@@ -16,7 +16,6 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveInputStream;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.State;
 
 public class RobotContainer {
 
@@ -52,19 +51,23 @@ public class RobotContainer {
 
     // Intake Controls
 
-    operatorController.a().onTrue(intakeSubsystem.setStateCommand(State.OUT_ON));
-    operatorController.a().onFalse(intakeSubsystem.setStateCommand(State.PULL_IN));
+    operatorController.b().onTrue(intakeSubsystem.toggleInOut());
+    operatorController.leftBumper().onTrue(intakeSubsystem.setWheelsCommand(true));
+    operatorController.leftBumper().onFalse(intakeSubsystem.setWheelsCommand(false));
 
     // Shooter and Spindexer Controls
 
-    operatorController.rightBumper().whileTrue(new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3500)));
-    operatorController.rightBumper().whileFalse(shooterSubsystem.stopCommand());
+    operatorController.y().whileTrue(new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3500)));
+    operatorController.x().whileTrue(new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000)));
+    operatorController.a().whileTrue(new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(2500)));
+    operatorController.y().or(operatorController.x()).or(operatorController.a()).whileFalse(shooterSubsystem.stopCommand());
     operatorController.leftBumper().whileTrue(indexerSubsystem.indexerRunCommand());
     
     // Climber Controls
     // D-Pad Up and Down: Climb up and down
-    operatorController.povUp().whileTrue(climberSubsystem.climb(0.1));
-    operatorController.povDown().whileTrue(climberSubsystem.climb(-0.1));
+    driverController.rightBumper().whileTrue(climberSubsystem.climb(0.3));
+    driverController.leftBumper().whileTrue(climberSubsystem.climb(-0.3));
+    driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
 
     //operatorController.b().whileTrue(shooterSubsystem.sysId());
     //operatorController.b().onTrue(shooterSubsystem.liveRPMCommand());
