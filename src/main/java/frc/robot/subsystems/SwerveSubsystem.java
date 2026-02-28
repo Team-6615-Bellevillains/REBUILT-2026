@@ -1,13 +1,15 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Degree;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.*;
 
 import java.io.File;
+import java.security.PublicKey;
 import java.util.Optional;
+import java.util.Random;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+
+import org.dyn4j.geometry.Rotation;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -17,9 +19,12 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -61,7 +66,7 @@ public class SwerveSubsystem extends SubsystemBase{
         try {
           config = RobotConfig.fromGUISettings();
         } catch (Exception e) {
-          throw new RuntimeException("PathPlanner config file missing");
+          throw new RuntimeException("PathPlanner config file missing: " + e.getMessage());
         }
 
         AutoBuilder.configure(this::getPose, this::resetPose, this::getRobotVelocity, (speeds, feedforwards)-> {drive.setChassisSpeeds(speeds);},
@@ -98,18 +103,23 @@ public class SwerveSubsystem extends SubsystemBase{
         field.setRobotPose(currentPose);
         SmartDashboard.putData("field", field);
     }
-
-    public void drive(Translation2d translation, double rotation, boolean fieldRelative){
-        drive.drive(translation, rotation, fieldRelative, false);
-    }
+    
 
     public SwerveDrive getSwerveDrive(){
         return drive;
     }
 
-    public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity){
+    public Command driveCommand(Supplier<ChassisSpeeds> velocitySupplier, BooleanSupplier aim){
         return run(() -> {
-            drive.driveFieldOriented(velocity.get());
+            SmartDashboard.putBoolean("Drive Command Aim Button Status", aim.getAsBoolean());
+            ChassisSpeeds velocity = velocitySupplier.get();
+            if (aim.getAsBoolean()) {
+                velocity.omegaRadiansPerSecond = this.drive.swerveController.headingCalculate(
+                    this.getPose().getRotation().getRadians(), 
+                    calculateAimHeading().in(Radians)
+                );
+            }
+            drive.drive(velocity);
         });
     }
 
@@ -122,5 +132,19 @@ public class SwerveSubsystem extends SubsystemBase{
 
     public Pose2d getPose(){
         return drive.getPose();
+    }
+
+    //TODO: get actual shooter offset
+    private static final Translation2d shooterOffset = new Translation2d(-0.7, -0.7);
+    private static final Translation2d hubPosition = new Translation2d(4.626, 4.037);
+    private static final Rotation2d shooterAngle = shooterOffset.getAngle();
+    private static final double shooterDistance = shooterOffset.getNorm();
+    private static final Rotation2d aimAngle = Rotation2d.k180deg.minus(shooterAngle);
+    private Angle calculateAimHeading(){
+        Pose2d robotPose = getPose();
+        double hubDistance = robotPose.getTranslation().getDistance(hubPosition);
+        Rotation2d orbitAngle = robotPose.getTranslation().minus(hubPosition).getAngle();
+        return Radians.of(-Math.asin((shooterDistance * Math.sin(aimAngle.getRadians()))/hubDistance)+orbitAngle.getRadians());
+
     }
 }

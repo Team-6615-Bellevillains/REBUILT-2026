@@ -56,7 +56,7 @@ public class RobotContainer {
   private void configureBindings() {
 
     // swerve config
-    swerveSubsystem.setDefaultCommand(swerveSubsystem.driveFieldOriented(driveAngularVelocity));
+    swerveSubsystem.setDefaultCommand(swerveSubsystem.driveCommand(driveAngularVelocity, driverController.rightBumper()));
 
     // Intake Controls
 
@@ -74,8 +74,8 @@ public class RobotContainer {
     
     // Climber Controls
     // D-Pad Up and Down: Climb up and down
-    driverController.rightBumper().whileTrue(climberSubsystem.climb(0.3));
-    driverController.leftBumper().whileTrue(climberSubsystem.climb(-0.3));
+    driverController.povUp().whileTrue(climberSubsystem.climb(0.3));
+    driverController.povDown().whileTrue(climberSubsystem.climb(-0.3));
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
 
     //operatorController.b().whileTrue(shooterSubsystem.sysId());
