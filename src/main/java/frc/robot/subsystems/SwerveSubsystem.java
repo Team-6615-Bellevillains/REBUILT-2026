@@ -57,8 +57,13 @@ public class SwerveSubsystem extends SubsystemBase{
         }
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
 
-        LimelightHelpers.setCameraPose_RobotSpace(limelight3g, Inches.of(13.125).in(Meters), 
-        -Inches.of(3.875).in(Meters), Inches.of(8.625).in(Meters), 0, 15, 0);
+        LimelightHelpers.setCameraPose_RobotSpace(
+            limelight3g, 
+            Inches.of(13.125).in(Meters), 
+            -Inches.of(3.875).in(Meters), 
+            Inches.of(8.625).in(Meters), 
+            0, 15, 0
+        );
         drive.zeroGyro();
         gyro.setYaw(Degrees.of(0));
 
@@ -66,6 +71,7 @@ public class SwerveSubsystem extends SubsystemBase{
         try {
           config = RobotConfig.fromGUISettings();
         } catch (Exception e) {
+          //pathplanner.explode();
           throw new RuntimeException("PathPlanner config file missing: " + e.getMessage());
         }
 
@@ -135,6 +141,7 @@ public class SwerveSubsystem extends SubsystemBase{
     }
 
     //TODO: get actual shooter offset
+    //TODO: alliance switching
     private static final Translation2d shooterOffset = new Translation2d(-0.7, -0.7);
     private static final Translation2d hubPosition = new Translation2d(4.626, 4.037);
     private static final Rotation2d shooterAngle = shooterOffset.getAngle();
