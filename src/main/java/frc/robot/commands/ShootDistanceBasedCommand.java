@@ -9,7 +9,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Utils;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -38,10 +40,10 @@ public class ShootDistanceBasedCommand extends Command {
         indexerOff();
     }
 
-    //TODO: add alliance switching
-    private static final Translation2d hubPosition = new Translation2d(4.626, 4.037);
     @Override
     public void execute() {
+        Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));
+
         Pose2d currentPose = poseSupplier.get();
         double distanceToHub = currentPose.getTranslation().getDistance(hubPosition);
         shooter.setPoint(Rotations.per(Minutes).of(distancesToRPM.get(distanceToHub)));

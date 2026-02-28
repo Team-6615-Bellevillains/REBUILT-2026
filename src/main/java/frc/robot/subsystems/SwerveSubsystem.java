@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
+import frc.robot.Utils;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
@@ -141,13 +142,13 @@ public class SwerveSubsystem extends SubsystemBase{
     }
 
     //TODO: get actual shooter offset
-    //TODO: alliance switching
     private static final Translation2d shooterOffset = new Translation2d(-0.7, -0.7);
-    private static final Translation2d hubPosition = new Translation2d(4.626, 4.037);
     private static final Rotation2d shooterAngle = shooterOffset.getAngle();
     private static final double shooterDistance = shooterOffset.getNorm();
     private static final Rotation2d aimAngle = Rotation2d.k180deg.minus(shooterAngle);
     private Angle calculateAimHeading(){
+        Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));
+
         Pose2d robotPose = getPose();
         double hubDistance = robotPose.getTranslation().getDistance(hubPosition);
         Rotation2d orbitAngle = robotPose.getTranslation().minus(hubPosition).getAngle();
