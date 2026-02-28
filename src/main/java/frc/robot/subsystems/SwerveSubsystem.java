@@ -6,15 +6,22 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,7 +56,34 @@ public class SwerveSubsystem extends SubsystemBase{
         -Inches.of(3.875).in(Meters), Inches.of(8.625).in(Meters), 0, 15, 0);
         drive.zeroGyro();
         gyro.setYaw(Degrees.of(0));
+
+        RobotConfig config;
+        try {
+          config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+          throw new RuntimeException("PathPlanner config file missing");
+        }
+
+        AutoBuilder.configure(this::getPose, this::resetPose, this::getRobotVelocity, (speeds, feedforwards)-> {drive.setChassisSpeeds(speeds);},
+        new PPHolonomicDriveController(new PIDConstants(2.0, 0.0,0.0), new PIDConstants(2.0,0.0,0.0)), config,
+        ()->{            
+            Optional<Alliance> alliance = DriverStation.getAlliance();
+            if (alliance.isPresent())
+            {
+              return alliance.get() == DriverStation.Alliance.Red;
+            }
+            return false;
+        }, this);
+
     } 
+
+    public void resetPose(Pose2d initialPose){
+        drive.resetOdometry(initialPose);
+    }
+
+    public ChassisSpeeds getRobotVelocity(){
+        return drive.getRobotVelocity();
+    }
 
     @Override
     public void periodic() {
