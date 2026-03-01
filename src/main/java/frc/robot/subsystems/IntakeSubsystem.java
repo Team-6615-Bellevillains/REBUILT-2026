@@ -17,59 +17,67 @@ public class IntakeSubsystem extends SubsystemBase{
     private State state = State.IN;
     private SparkFlex angleMotor = new SparkFlex(20, MotorType.kBrushless);
     private SparkFlex wheelMotor = new SparkFlex(22, MotorType.kBrushless);
-    private static final int PULL_IN_CURRENT = 5;
-    private MedianFilter currentFilter = new MedianFilter(15);
-    private double filteredCurrent = 0;
-    private int nonLimitedCurrent = 5;
-    private boolean wheelSpin = false;
+    private static final int PULL_IN_ANGLE_CURRENT = 30;
+    private MedianFilter angleCurrentFIlter = new MedianFilter(15);
+    private double filteredAngleCurrent = 0;
+    private int nonLimitedAngleCurrent = PULL_IN_ANGLE_CURRENT;
+    private boolean shouldRunWheelsInIntakeDirection = false;
 
     public IntakeSubsystem(){
-        SparkFlexConfig config = new SparkFlexConfig();
-        config.idleMode(IdleMode.kBrake);
-        config.smartCurrentLimit(1);
-        angleMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
+        angleMotorConfig.idleMode(IdleMode.kBrake);
+        angleMotorConfig.smartCurrentLimit(1);
+        angleMotor.configure(angleMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+
+        SparkFlexConfig wheelMotorConfig = new SparkFlexConfig();
+        wheelMotorConfig.idleMode(IdleMode.kBrake);
+        wheelMotorConfig.smartCurrentLimit(80);
+        wheelMotor.configure(wheelMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
     public void periodic() {
-        filteredCurrent = currentFilter.calculate(angleMotor.getOutputCurrent());
+        filteredAngleCurrent = angleCurrentFIlter.calculate(angleMotor.getOutputCurrent());
         switch (state) {
             case PULL_IN:
                 pullInPeriodic();
                 checkPullInCurrent();
+                wheelMotor.set(-0.30);
                 break;
 
             case IN:
                 inPeriodic();
+                wheelMotor.set(-0.30);
                 break;
         
             case OUT:
                 outOffPeriodic();
+                wheelMotor.set(shouldRunWheelsInIntakeDirection ? 0.4 : 0.20);
                 break;
         }
-        wheelMotor.set(wheelSpin ? 0.4 : 0.0);
         updateAngleCurrent();
         SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
         SmartDashboard.putString("Intake state", state.toString());
-        SmartDashboard.putNumber("filtered current", filteredCurrent);
+        SmartDashboard.putNumber("filtered current", filteredAngleCurrent);
+        
     }
 
     private void inPeriodic(){
-        angleMotor.set(-0.3);
+        angleMotor.set(0.3);
     }
 
     private void pullInPeriodic(){
-        angleMotor.set(0);
+        angleMotor.set(0.3);
     }
 
     private void checkPullInCurrent(){
-        if (Math.abs(filteredCurrent - PULL_IN_CURRENT) < 10){
+        if (Math.abs(filteredAngleCurrent - PULL_IN_ANGLE_CURRENT) < 10){
             setState(State.IN);
         }
     }
 
     private void outOffPeriodic(){
-        angleMotor.set(0.4);
+        angleMotor.set(-0.4);
     }
     
     public enum State{
@@ -82,19 +90,22 @@ public class IntakeSubsystem extends SubsystemBase{
         this.state = state;
         switch (state){
             case IN:
-                setAngleCurrent(5);
+                setAngleCurrent(7);
+                updateWheelCurrent(15);
                 break;
             case OUT:
-                setAngleCurrent(10);
+                setAngleCurrent(15);
+                updateWheelCurrent(80);
                 break;
             case PULL_IN:
-                setAngleCurrent(PULL_IN_CURRENT);
+                setAngleCurrent(PULL_IN_ANGLE_CURRENT);
+                updateWheelCurrent(15);
         }
     }
 
     public Command setWheelsCommand(boolean on){
         return this.runOnce(()->{
-            wheelSpin = on;
+            shouldRunWheelsInIntakeDirection = on;
         });
     }
 
@@ -121,13 +132,19 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void setAngleCurrent(int amps){
-        nonLimitedCurrent = amps;
+        nonLimitedAngleCurrent = amps;
     }
 
     private void updateAngleCurrent(){
         SparkFlexConfig config = new SparkFlexConfig();
-        config.smartCurrentLimit(nonLimitedCurrent);
+        config.smartCurrentLimit(nonLimitedAngleCurrent);
         angleMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
+    private void updateWheelCurrent(int newLimit){
+        SparkFlexConfig config = new SparkFlexConfig();
+        config.smartCurrentLimit(newLimit);
+        wheelMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
 }

@@ -44,7 +44,12 @@ public class IndexerSubsystem extends SubsystemBase {
             case SLOW:
                 slow();
                 break;
+            
+            case REVERSE:
+                reverse();
+                break;
         }
+        SmartDashboard.putNumber("spindexer rpm", spindexerMotor.getEncoder().getVelocity());
     }
 
     private void shoot(){
@@ -71,16 +76,30 @@ public class IndexerSubsystem extends SubsystemBase {
         this.state = state;
     }
 
+    private void reverse(){
+        spindexerMotor.set(-0.2);
+        roadMotor.set(0);
+    }
+
     public enum State {
         OFF,
         INDEX,
         SHOOT,
-        SLOW
+        SLOW,
+        REVERSE
     }
 
     public Command indexerRunCommand(){
         return this.runEnd(()->{
             this.setState(State.SLOW);
+        }, ()->{
+            this.setState(State.OFF);
+        });
+    }
+
+    public Command indexerReverseCommand(){
+        return this.runEnd(()->{
+            this.setState(State.REVERSE);
         }, ()->{
             this.setState(State.OFF);
         });
