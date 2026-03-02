@@ -25,6 +25,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -120,12 +121,15 @@ public class SwerveSubsystem extends SubsystemBase{
         return run(() -> {
             SmartDashboard.putBoolean("Drive Command Aim Button Status", aim.getAsBoolean());
             ChassisSpeeds velocity = velocitySupplier.get();
+            double aimHeading = calculateAimHeading().in(Radians);
             if (aim.getAsBoolean()) {
-                velocity.omegaRadiansPerSecond = this.drive.swerveController.headingCalculate(
+                velocity.omegaRadiansPerSecond = -this.drive.swerveController.headingCalculate(
                     this.getPose().getRotation().getRadians(), 
-                    calculateAimHeading().in(Radians)
+                    aimHeading
                 );
             }
+            SmartDashboard.putNumber("Heading Setpoint", aimHeading);
+            SmartDashboard.putNumber("Measured Heading", getPose().getRotation().getRadians());
             drive.driveFieldOriented(velocity);
         });
     }
@@ -142,7 +146,7 @@ public class SwerveSubsystem extends SubsystemBase{
     }
 
     //TODO: get actual shooter offset
-    private static final Translation2d shooterOffset = new Translation2d(-0.7, -0.7);
+    private static final Translation2d shooterOffset = new Translation2d(-0.1714, -0.1714);
     private static final Rotation2d shooterAngle = shooterOffset.getAngle();
     private static final double shooterDistance = shooterOffset.getNorm();
     private static final Rotation2d aimAngle = Rotation2d.k180deg.minus(shooterAngle);
