@@ -33,11 +33,11 @@ public class RobotContainer {
   CommandXboxController driverController = new CommandXboxController(0);
   CommandXboxController operatorController = new CommandXboxController(1);
 
+  SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   ClimberSubsystem climberSubsystem = new ClimberSubsystem();
   ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-  SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
-  IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  IntakeSubsystem intakeSubsystem = new IntakeSubsystem(swerveSubsystem::getVelocity, swerveSubsystem::getPose);
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
                                                               () -> driverController.getLeftY() * -1,

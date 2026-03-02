@@ -47,6 +47,7 @@ public class SwerveSubsystem extends SubsystemBase{
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     private SwerveDrive drive;
     String limelight3g = "limelight-threeg";
+    String limelight4 = "limelight-4";
     private Pigeon2 gyro = new Pigeon2(0);
     private Field2d field = new Field2d();
 
@@ -58,14 +59,28 @@ public class SwerveSubsystem extends SubsystemBase{
             throw new RuntimeException("swerve config file missing");
         }
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
-
+        
+        //LL3G setup
         LimelightHelpers.setCameraPose_RobotSpace(
             limelight3g, 
             -Inches.of(13.125).in(Meters), 
             -Inches.of(3.875).in(Meters), 
             Inches.of(8.625).in(Meters), 
-            0, 15, 180
+            0, 
+            15, 
+            180
         );
+        //LL4 setup
+        LimelightHelpers.setCameraPose_RobotSpace(
+            limelight4, 
+            0, 
+            0, 
+            0, 
+            0, 
+            0, 
+            0
+        );
+
         drive.zeroGyro();
         gyro.setYaw(Degrees.of(0));
 
@@ -145,7 +160,10 @@ public class SwerveSubsystem extends SubsystemBase{
         return drive.getPose();
     }
 
-    //TODO: get actual shooter offset
+    public ChassisSpeeds getVelocity(){
+        return drive.getFieldVelocity();
+    }
+
     private static final Translation2d shooterOffset = new Translation2d(-0.1714, -0.1714);
     private static final Rotation2d shooterAngle = shooterOffset.getAngle();
     private static final double shooterDistance = shooterOffset.getNorm();

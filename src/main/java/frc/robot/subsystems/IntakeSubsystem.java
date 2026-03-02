@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
@@ -8,6 +10,8 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,8 +26,10 @@ public class IntakeSubsystem extends SubsystemBase{
     private double filteredAngleCurrent = 0;
     private int nonLimitedAngleCurrent = PULL_IN_ANGLE_CURRENT;
     private boolean shouldRunWheelsInIntakeDirection = false;
+    private final Supplier<ChassisSpeeds> getVelocity;
+    private final Supplier<Pose2d> getPose;
 
-    public IntakeSubsystem(){
+    public IntakeSubsystem(Supplier<ChassisSpeeds> getVelocity, Supplier<Pose2d> getPose){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
         angleMotorConfig.smartCurrentLimit(1);
@@ -33,6 +39,8 @@ public class IntakeSubsystem extends SubsystemBase{
         wheelMotorConfig.idleMode(IdleMode.kBrake);
         wheelMotorConfig.smartCurrentLimit(80);
         wheelMotor.configure(wheelMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        this.getVelocity = getVelocity;
+        this.getPose = getPose;
     }
 
     @Override
@@ -146,5 +154,4 @@ public class IntakeSubsystem extends SubsystemBase{
         config.smartCurrentLimit(newLimit);
         wheelMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
-
 }

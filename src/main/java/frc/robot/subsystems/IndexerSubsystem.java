@@ -1,19 +1,22 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IndexerSubsystem extends SubsystemBase {
     
-    private SparkMax spindexerMotor = new SparkMax(50, MotorType.kBrushless);
-    private SparkMax roadMotor = new SparkMax(52, MotorType.kBrushless);
+    private final SparkMax spindexerMotor = new SparkMax(50, MotorType.kBrushless);
+    private final SparkMax roadMotor = new SparkMax(52, MotorType.kBrushless);
     private State state = State.OFF;
 
 
