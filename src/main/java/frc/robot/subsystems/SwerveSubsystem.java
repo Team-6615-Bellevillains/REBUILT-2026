@@ -3,13 +3,9 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.io.File;
-import java.security.PublicKey;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-
-import org.dyn4j.geometry.Rotation;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -22,10 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -33,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Utils;
 import swervelib.SwerveDrive;
@@ -43,7 +37,6 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase{
     
-    double maximumSpeed = Units.feetToMeters(15);
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     private SwerveDrive drive;
     String limelight3g = "limelight-threeg";
@@ -53,7 +46,7 @@ public class SwerveSubsystem extends SubsystemBase{
 
     public SwerveSubsystem(){
         try {
-            drive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed);
+            drive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(Constants.MAX_SPEED.in(MetersPerSecond));
         } catch (Exception e) {
             //robot.explode();
             throw new RuntimeException("swerve config file missing");
@@ -160,8 +153,12 @@ public class SwerveSubsystem extends SubsystemBase{
         return drive.getPose();
     }
 
-    public ChassisSpeeds getVelocity(){
+    public ChassisSpeeds getFieldRelativeVelocity(){
         return drive.getFieldVelocity();
+    }
+
+    public ChassisSpeeds getRobotRelativeVelocity(){
+        return drive.getRobotVelocity();
     }
 
     private static final Translation2d shooterOffset = new Translation2d(-0.1714, -0.1714);

@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -37,7 +36,7 @@ public class RobotContainer {
   ClimberSubsystem climberSubsystem = new ClimberSubsystem();
   ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
-  IntakeSubsystem intakeSubsystem = new IntakeSubsystem(swerveSubsystem::getVelocity, swerveSubsystem::getPose);
+  IntakeSubsystem intakeSubsystem = new IntakeSubsystem(swerveSubsystem::getRobotRelativeVelocity);
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
                                                               () -> driverController.getLeftY() * -1,

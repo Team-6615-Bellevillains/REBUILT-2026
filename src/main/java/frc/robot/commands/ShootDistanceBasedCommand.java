@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,7 +22,6 @@ public class ShootDistanceBasedCommand extends Command {
     private final ShooterSubsystem shooter;
     private final IndexerSubsystem indexer;
     private final InterpolatingDistanceAngularVelocityTreeMap distanceToFlywheelVelocityInterpolator;
-    private AngularVelocity velocity;
 
     public ShootDistanceBasedCommand(Supplier<Pose2d> poseSupplier, ShooterSubsystem shooter, IndexerSubsystem indexer){
         this.addRequirements(shooter, indexer);

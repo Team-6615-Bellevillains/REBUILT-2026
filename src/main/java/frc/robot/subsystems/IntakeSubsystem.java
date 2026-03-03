@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import java.util.function.Supplier;
 
 import com.revrobotics.PersistMode;
@@ -9,12 +11,13 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.MedianFilter;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase{
     
@@ -26,10 +29,9 @@ public class IntakeSubsystem extends SubsystemBase{
     private double filteredAngleCurrent = 0;
     private int nonLimitedAngleCurrent = PULL_IN_ANGLE_CURRENT;
     private boolean shouldRunWheelsInIntakeDirection = false;
-    private final Supplier<ChassisSpeeds> getVelocity;
-    private final Supplier<Pose2d> getPose;
+    private final Supplier<ChassisSpeeds> getRobotRelativeVelocity;
 
-    public IntakeSubsystem(Supplier<ChassisSpeeds> getVelocity, Supplier<Pose2d> getPose){
+    public IntakeSubsystem(Supplier<ChassisSpeeds> getVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
         angleMotorConfig.smartCurrentLimit(1);
@@ -39,8 +41,7 @@ public class IntakeSubsystem extends SubsystemBase{
         wheelMotorConfig.idleMode(IdleMode.kBrake);
         wheelMotorConfig.smartCurrentLimit(80);
         wheelMotor.configure(wheelMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-        this.getVelocity = getVelocity;
-        this.getPose = getPose;
+        this.getRobotRelativeVelocity = getVelocity;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class IntakeSubsystem extends SubsystemBase{
         
             case OUT:
                 outOffPeriodic();
-                wheelMotor.set(shouldRunWheelsInIntakeDirection ? 0.4 : 0.20);
+                wheelMotor.set(shouldRunWheelsInIntakeDirection ? getWheelDutyCycle() : 0.20);
                 break;
         }
         updateAngleCurrent();
@@ -153,5 +154,10 @@ public class IntakeSubsystem extends SubsystemBase{
         SparkFlexConfig config = new SparkFlexConfig();
         config.smartCurrentLimit(newLimit);
         wheelMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
+    private double getWheelDutyCycle(){
+        ChassisSpeeds robotRelativeVelocity = getRobotRelativeVelocity.get();
+        return MathUtil.clamp(robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond), 0.4, 0.8);
     }
 }
