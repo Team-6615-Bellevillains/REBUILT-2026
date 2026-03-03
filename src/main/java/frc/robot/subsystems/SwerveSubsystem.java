@@ -53,9 +53,9 @@ public class SwerveSubsystem extends SubsystemBase{
         }
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
         
-        //LL3G setup
+        //LL4 setup
         LimelightHelpers.setCameraPose_RobotSpace(
-            limelight3g, 
+            limelight4, 
             -Inches.of(13.125).in(Meters), 
             -Inches.of(3.875).in(Meters), 
             Inches.of(8.625).in(Meters), 
@@ -63,9 +63,9 @@ public class SwerveSubsystem extends SubsystemBase{
             15, 
             180
         );
-        //LL4 setup
+        //LL3G setup
         LimelightHelpers.setCameraPose_RobotSpace(
-            limelight4, 
+            limelight3g, 
             0, 
             0, 
             0, 
