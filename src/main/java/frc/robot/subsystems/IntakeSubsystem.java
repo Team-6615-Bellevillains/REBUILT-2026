@@ -30,8 +30,10 @@ public class IntakeSubsystem extends SubsystemBase{
     private int nonLimitedAngleCurrent = PULL_IN_ANGLE_CURRENT;
     private boolean shouldRunWheelsInIntakeDirection = false;
     private final Supplier<ChassisSpeeds> getRobotRelativeVelocity;
+    private final double IDLE_WHEEL_DUTY_CYCLE = 0.2;
+    private final double IN_WHEEL_DUTY_CYCLE = -0.3;
 
-    public IntakeSubsystem(Supplier<ChassisSpeeds> getVelocity){
+    public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
         angleMotorConfig.smartCurrentLimit(1);
@@ -41,7 +43,7 @@ public class IntakeSubsystem extends SubsystemBase{
         wheelMotorConfig.idleMode(IdleMode.kBrake);
         wheelMotorConfig.smartCurrentLimit(80);
         wheelMotor.configure(wheelMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-        this.getRobotRelativeVelocity = getVelocity;
+        this.getRobotRelativeVelocity = getRobotRelativeVelocity;
     }
 
     @Override
@@ -51,17 +53,17 @@ public class IntakeSubsystem extends SubsystemBase{
             case PULL_IN:
                 pullInPeriodic();
                 checkPullInCurrent();
-                wheelMotor.set(-0.30);
+                wheelMotor.set(IN_WHEEL_DUTY_CYCLE);
                 break;
 
             case IN:
                 inPeriodic();
-                wheelMotor.set(-0.30);
+                wheelMotor.set(IN_WHEEL_DUTY_CYCLE);
                 break;
         
             case OUT:
                 outOffPeriodic();
-                wheelMotor.set(shouldRunWheelsInIntakeDirection ? getWheelDutyCycle() : 0.20);
+                wheelMotor.set(shouldRunWheelsInIntakeDirection ? getActiveWheelDutyCycle() : IDLE_WHEEL_DUTY_CYCLE);
                 break;
         }
         updateAngleCurrent();
@@ -156,7 +158,7 @@ public class IntakeSubsystem extends SubsystemBase{
         wheelMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
-    private double getWheelDutyCycle(){
+    private double getActiveWheelDutyCycle(){
         ChassisSpeeds robotRelativeVelocity = getRobotRelativeVelocity.get();
         return MathUtil.clamp(robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond), 0.4, 0.8);
     }
