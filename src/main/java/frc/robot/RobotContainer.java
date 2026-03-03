@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -87,6 +88,8 @@ public class RobotContainer {
 
     //operatorController.b().whileTrue(shooterSubsystem.sysId());
     //operatorController.b().onTrue(shooterSubsystem.liveRPMCommand());
+
+    NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
   }
 
   public Command getAutonomousCommand() {
