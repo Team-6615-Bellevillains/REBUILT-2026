@@ -142,6 +142,12 @@ public class SwerveSubsystem extends SubsystemBase{
         });
     }
 
+    public Command lockPoseCommand(){
+        return this.run(()->{
+            drive.lockPose();
+        });
+    }
+
     public Command resetGyroCommand(){
         return this.runOnce(()->{
             drive.zeroGyro();

@@ -83,6 +83,7 @@ public class RobotContainer {
     driverController.leftBumper().whileTrue(climberSubsystem.climb(0.3));
     driverController.rightBumper().whileTrue(climberSubsystem.climb(-0.3));
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
+    driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
 
     //operatorController.b().whileTrue(shooterSubsystem.sysId());
     //operatorController.b().onTrue(shooterSubsystem.liveRPMCommand());
