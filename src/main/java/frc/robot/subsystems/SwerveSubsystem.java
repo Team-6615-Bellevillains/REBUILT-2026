@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -124,7 +125,7 @@ public class SwerveSubsystem extends SubsystemBase{
         SmartDashboard.putData("field", field);
         Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));
         double hubDistance = currentPose.getTranslation().getDistance(hubPosition);
-        SmartDashboard.putNumber("distance to hub", hubDistance);
+        SmartDashboard.putNumber("feet to hub", Units.metersToFeet(hubDistance));
     }
 
     public SwerveDrive getSwerveDrive(){

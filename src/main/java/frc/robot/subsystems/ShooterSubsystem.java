@@ -33,7 +33,7 @@ public class ShooterSubsystem extends SubsystemBase{
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
         .withControlMode(ControlMode.CLOSED_LOOP)
         // feedback constants
-        .withClosedLoopController(0.02, 0, 0)
+        .withClosedLoopController(0.015, 0, 0)
         .withSimClosedLoopController(0, 0, 0)
         // feedforward constants
         .withFeedforward(new SimpleMotorFeedforward(0.1546, 0.125, 0.0))
@@ -86,7 +86,7 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public BooleanSupplier nearVelocity(AngularVelocity velocity){
-        return shooter.isNear(velocity, RPM.of(200));
+        return shooter.isNear(velocity, RPM.of(500));
     }
 
     public boolean atSetPoint(){
