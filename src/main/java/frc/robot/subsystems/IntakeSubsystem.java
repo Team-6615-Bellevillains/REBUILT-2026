@@ -30,8 +30,8 @@ public class IntakeSubsystem extends SubsystemBase{
     private int nonLimitedAngleCurrent = PULL_IN_ANGLE_CURRENT;
     private boolean shouldRunWheelsInIntakeDirection = false;
     private final Supplier<ChassisSpeeds> getRobotRelativeVelocity;
-    private final double IDLE_WHEEL_DUTY_CYCLE = 0.2;
-    private final double IN_WHEEL_DUTY_CYCLE = -0.3;
+    private final double IDLE_WHEEL_DUTY_CYCLE = 0.0;//0.1;
+    private final double IN_WHEEL_DUTY_CYCLE = 0.0;
 
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
@@ -102,7 +102,7 @@ public class IntakeSubsystem extends SubsystemBase{
         switch (state){
             case IN:
                 setAngleCurrent(7);
-                updateWheelCurrent(15);
+                updateWheelCurrent(10);
                 break;
             case OUT:
                 setAngleCurrent(15);
@@ -110,7 +110,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 break;
             case PULL_IN:
                 setAngleCurrent(PULL_IN_ANGLE_CURRENT);
-                updateWheelCurrent(15);
+                updateWheelCurrent(10);
         }
     }
 
