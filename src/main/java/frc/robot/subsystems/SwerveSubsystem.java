@@ -40,7 +40,7 @@ public class SwerveSubsystem extends SubsystemBase{
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     private SwerveDrive drive;
     String limelight3g = "limelight-threeg";
-    String limelight4 = "limelight-4";
+    String limelight4 = "limelight-four";
     private Pigeon2 gyro = new Pigeon2(0);
     private Field2d field = new Field2d();
 
@@ -63,6 +63,7 @@ public class SwerveSubsystem extends SubsystemBase{
             15, 
             180
         );
+
         //LL3G setup
         LimelightHelpers.setCameraPose_RobotSpace(
             limelight3g, 
@@ -96,6 +97,8 @@ public class SwerveSubsystem extends SubsystemBase{
             return false;
         }, this);
 
+        LimelightHelpers.SetIMUMode(limelight4, 0);
+
     } 
 
     public void resetPose(Pose2d initialPose){
@@ -106,18 +109,22 @@ public class SwerveSubsystem extends SubsystemBase{
         return drive.getRobotVelocity();
     }
 
+
     @Override
     public void periodic() {
         Pose2d currentPose = getPose();
         SmartDashboard.putNumber("rotation fed to limelight", gyro.getYaw().getValue().in(Degrees));
         LimelightHelpers.SetRobotOrientation(limelight4, gyro.getYaw().getValue().in(Degrees), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight3g);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight4);
         if(mt2 != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || mt2.tagCount == 0)){
             drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
             drive.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
         }
         field.setRobotPose(currentPose);
         SmartDashboard.putData("field", field);
+        Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));
+        double hubDistance = currentPose.getTranslation().getDistance(hubPosition);
+        SmartDashboard.putNumber("distance to hub", hubDistance);
     }
 
     public SwerveDrive getSwerveDrive(){
