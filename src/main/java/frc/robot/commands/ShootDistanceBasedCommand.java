@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.Rotations;
@@ -30,8 +31,12 @@ public class ShootDistanceBasedCommand extends Command {
         this.indexer = indexer; 
         //TODO: add real values
         distanceToFlywheelVelocityInterpolator = new InterpolatingDistanceAngularVelocityTreeMap(){{
-            this.addDatapoint(Meters.of(0.3), Rotations.per(Minute).of(3000));
-            this.addDatapoint(Meters.of(0.5), Rotations.per(Minute).of(3500));
+            this.addDatapoint(Feet.of(8.2), Rotations.per(Minute).of(2700));
+            this.addDatapoint(Feet.of(9.6), Rotations.per(Minute).of(2800));
+            this.addDatapoint(Feet.of(11), Rotations.per(Minute).of(3000));
+            this.addDatapoint(Feet.of(13), Rotations.per(Minute).of(3500));
+            this.addDatapoint(Feet.of(14.9), Rotations.per(Minute).of(3600));
+            this.addDatapoint(Feet.of(17.7), Rotations.per(Minute).of(4000));
         }};
     }
 
