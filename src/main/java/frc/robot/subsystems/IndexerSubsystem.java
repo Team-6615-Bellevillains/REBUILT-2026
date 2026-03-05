@@ -21,9 +21,9 @@ public class IndexerSubsystem extends SubsystemBase {
     public IndexerSubsystem(){
         SparkMaxConfig config = new SparkMaxConfig();
         config.inverted(true);
-        spindexerMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        spindexerMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         config.inverted(false);
-        roadMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        roadMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
