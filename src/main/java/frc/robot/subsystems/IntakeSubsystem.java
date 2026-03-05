@@ -160,6 +160,6 @@ public class IntakeSubsystem extends SubsystemBase{
 
     private double getActiveWheelDutyCycle(){
         ChassisSpeeds robotRelativeVelocity = getRobotRelativeVelocity.get();
-        return MathUtil.clamp(robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond), 0.4, 0.8);
+        return MathUtil.interpolate(0.4, 0.8, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
     }
 }
