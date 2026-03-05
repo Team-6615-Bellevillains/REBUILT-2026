@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -37,6 +38,7 @@ public class IntakeSubsystem extends SubsystemBase{
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
         angleMotorConfig.smartCurrentLimit(1);
+        angleMotorConfig.closedLoop.pid(0,0,0);
         angleMotor.configure(angleMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkFlexConfig wheelMotorConfig = new SparkFlexConfig();
@@ -65,12 +67,20 @@ public class IntakeSubsystem extends SubsystemBase{
                 outOffPeriodic();
                 wheelMotor.set(shouldRunWheelsInIntakeDirection ? getActiveWheelDutyCycle() : IDLE_WHEEL_DUTY_CYCLE);
                 break;
+            
+            case MID_HOLD:
+                midHold();
+                break;
         }
         updateAngleCurrent();
         SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
         SmartDashboard.putString("Intake state", state.toString());
         SmartDashboard.putNumber("filtered current", filteredAngleCurrent);
         
+    }
+
+    private void midHold(){
+        angleMotor.getClosedLoopController().setSetpoint(0, ControlType.kPosition);
     }
 
     private void inPeriodic(){
@@ -94,7 +104,8 @@ public class IntakeSubsystem extends SubsystemBase{
     public enum State{
         IN,
         PULL_IN,
-        OUT
+        OUT,
+        MID_HOLD
     }
 
     public void setState(State state){
