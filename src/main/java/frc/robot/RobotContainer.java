@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ShootAtRPMCommand;
+import frc.robot.commands.ShootDistanceBasedCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -72,11 +73,9 @@ public class RobotContainer {
 
     // Shooter and Spindexer Controls
 
-    operatorController.y().whileTrue(new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3500)));
-    operatorController.x().whileTrue(new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000)));
-    operatorController.a().whileTrue(new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(2500)));
-    operatorController.y().or(operatorController.x()).or(operatorController.a()).whileFalse(shooterSubsystem.stopCommand());
-    operatorController.leftBumper().whileTrue(indexerSubsystem.indexerRunCommand());
+    operatorController.rightBumper().whileTrue(new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem));
+    operatorController.rightBumper().whileFalse(shooterSubsystem.stopCommand());
+    //operatorController.leftBumper().whileTrue(indexerSubsystem.indexerRunCommand());
     operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
     
     // Climber Controls

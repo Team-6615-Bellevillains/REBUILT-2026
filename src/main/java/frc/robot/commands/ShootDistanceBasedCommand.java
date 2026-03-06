@@ -32,10 +32,10 @@ public class ShootDistanceBasedCommand extends Command {
         //TODO: add real values
         distanceToFlywheelVelocityInterpolator = new InterpolatingDistanceAngularVelocityTreeMap(){{
             this.addDatapoint(Feet.of(8.2), Rotations.per(Minute).of(2700));
-            this.addDatapoint(Feet.of(9.6), Rotations.per(Minute).of(2800));
-            this.addDatapoint(Feet.of(11), Rotations.per(Minute).of(3000));
-            this.addDatapoint(Feet.of(13), Rotations.per(Minute).of(3500));
-            this.addDatapoint(Feet.of(14.9), Rotations.per(Minute).of(3600));
+            // this.addDatapoint(Feet.of(9.6), Rotations.per(Minute).of(2800));
+            // this.addDatapoint(Feet.of(11), Rotations.per(Minute).of(3000));
+            // this.addDatapoint(Feet.of(13), Rotations.per(Minute).of(3500));
+            // this.addDatapoint(Feet.of(14.9), Rotations.per(Minute).of(3600));
             this.addDatapoint(Feet.of(17.7), Rotations.per(Minute).of(4000));
         }};
     }

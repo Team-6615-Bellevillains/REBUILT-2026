@@ -13,6 +13,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -126,6 +127,7 @@ public class SwerveSubsystem extends SubsystemBase{
         Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));
         double hubDistance = currentPose.getTranslation().getDistance(hubPosition);
         SmartDashboard.putNumber("feet to hub", Units.metersToFeet(hubDistance));
+        SmartDashboard.putNumber("measured speed, in meters/s", Math.hypot(drive.getFieldVelocity().vxMetersPerSecond, drive.getFieldVelocity().vyMetersPerSecond));
     }
 
     public SwerveDrive getSwerveDrive(){
