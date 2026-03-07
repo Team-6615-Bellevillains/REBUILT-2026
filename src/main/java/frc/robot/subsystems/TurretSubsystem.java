@@ -11,6 +11,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.BooleanPublisher;
@@ -19,6 +20,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils;
 
@@ -31,23 +33,26 @@ public class TurretSubsystem extends SubsystemBase {
     private static final double MAX_ANGLE =  0;
 
     // Offset this if forward direction is off after homing
-    private static final double HOMING_OFFSET = 0.0; // TODO: Tune after first homing test
+    private static final double HOMING_OFFSET = -270; // TODO: Tune after first homing test
 
     private static final double SOFT_LIMIT_BUFFER       =  5.0;
     private static final double OUTPUT_LIMIT            =  0.5;
-    private static final double ANGLE_TOLERANCE         =  2.0;
+    private static final double ANGLE_TOLERANCE         =  0.0;
 
     // Enable the robot, call setTargetAngle(-45.0), and watch Elastic "Turret/CurrentAngle".
-    private static final double kP = 0.01; // TODO: Tune: start at 0.01
+    private static final double kP = 0.005; // TODO: Tune: start at 0.01
     private static final double kI = 0.0;  // TODO: Tune: leave at 0.0 until P and D are done
-    private static final double kD = 0.0; // TODO: Tune: add small amounts to reduce oscillation
+    private static final double kD = 0.0002; // TODO: Tune: add small amounts to reduce oscillation
 
     // If homing triggers too early (before hitting the stop): increase this value
     // If homing never triggers (misses the stop): decrease this value
     private static final double STALL_CURRENT_THRESHOLD = 20.0; // TODO: Tune with Elastic
     private static final double STALL_DEBOUNCE_TIME     = 0.1;  // seconds — increase if false triggers
 
-    private static final double HOMING_SPEED = 0.12; // TODO: Flip sign if homing goes wrong direction
+    private static final double HOMING_SPEED = 0.045;
+
+    private final MedianFilter currentFilter = new MedianFilter(2*(int)((STALL_DEBOUNCE_TIME*1000)/20));
+
 
     // Hardware
     private final SparkFlex                 motor;
@@ -60,7 +65,7 @@ public class TurretSubsystem extends SubsystemBase {
     // State machine
     private enum TurretState { HOMING_TO_MIN, HOMING_TO_CENTER, HOMED, TRACKING }
     private TurretState state          = TurretState.HOMING_TO_MIN;
-    private double      targetAngle    = 0.0;
+    private double      targetAngle    = 0;
     private boolean     shootAllowed   = false;
 
     // Stall detection debounce
@@ -74,12 +79,15 @@ public class TurretSubsystem extends SubsystemBase {
     private final DoublePublisher  ntCurrentAngle;
     private final DoublePublisher  ntTargetAngle;
     private final DoublePublisher  ntMotorCurrent;
+    private final DoublePublisher  ntFilteredCurret;
     private final DoublePublisher  ntDistanceToHub;
     private final BooleanPublisher ntIsHomed;
     private final BooleanPublisher ntAtTarget;
     private final BooleanPublisher ntCanShoot;
     private final StringPublisher  ntState;
     private final StringPublisher  ntActiveHub;
+
+    private double filteredCurrent;
 
     public TurretSubsystem(Supplier<Pose2d> robotPoseSupplier) {
         this.robotPoseSupplier = robotPoseSupplier;
@@ -118,6 +126,7 @@ public class TurretSubsystem extends SubsystemBase {
         ntCanShoot      = table.getBooleanTopic("CanShoot").publish();
         ntState         = table.getStringTopic("State").publish();
         ntActiveHub     = table.getStringTopic("ActiveHub").publish();
+        ntFilteredCurret= table.getDoubleTopic("FilteredCurret").publish();
     }
 
     @Override
@@ -135,6 +144,7 @@ public class TurretSubsystem extends SubsystemBase {
                 shootAllowed = isTargetReachable(targetAngle);
                 break;
         }
+        filteredCurrent = currentFilter.calculate(motor.getOutputCurrent());
         publishTelemetry();
     }
 
@@ -176,7 +186,8 @@ public class TurretSubsystem extends SubsystemBase {
 
     // Homing phase 2 — closed-loop back to center (0°), then go HOMED
     private void runHomingToCenter() {
-        closedLoop.setSetpoint(0.0, ControlType.kPosition);
+        closedLoop.setSetpoint(-180, ControlType.kPosition);
+        targetAngle=-180;
         if (Math.abs(encoder.getPosition()) < ANGLE_TOLERANCE)
             state = TurretState.HOMED;
     }
@@ -190,16 +201,17 @@ public class TurretSubsystem extends SubsystemBase {
 
     // Returns true once current exceeds threshold for STALL_DEBOUNCE_TIME seconds
     private boolean isStalled() {
-        if (motor.getOutputCurrent() > STALL_CURRENT_THRESHOLD) {
-            if (!stallTimerRunning) {
-                stallTimer.reset();
-                stallTimer.start();
-                stallTimerRunning = true;
-            }
-            return stallTimer.hasElapsed(STALL_DEBOUNCE_TIME);
-        }
-        resetStallTimer();
-        return false;
+        // if (motor.getOutputCurrent() > STALL_CURRENT_THRESHOLD) {
+        //     if (!stallTimerRunning) {
+        //         stallTimer.reset();
+        //         stallTimer.start();
+        //         stallTimerRunning = true;
+        //     }
+        //     return stallTimer.hasElapsed(STALL_DEBOUNCE_TIME);
+        // }
+        // resetStallTimer();
+        // return false;
+        return filteredCurrent > STALL_CURRENT_THRESHOLD;
     }
 
     private void resetStallTimer() {
@@ -240,12 +252,13 @@ public class TurretSubsystem extends SubsystemBase {
         ntCanShoot.set(canShoot());
         ntState.set(state.toString());
         ntActiveHub.set(getActiveHub().equals(Utils.getHubCenter(DriverStation.Alliance.Blue)) ? "BLUE" : "RED");
+        ntFilteredCurret.set(currentFilter.lastValue());
     }
 
     /*
      *  BEFORE ENABLING:
      * 
-     *  1.      Make sure the gear ratio is right
+     *  1.      Make sure the gear ratio is right 
      * 
      *  2.      Make sure Utils.getHubCenter() returns the correct Translation2d
      *          for both Alliance.Blue and Alliance.Red.

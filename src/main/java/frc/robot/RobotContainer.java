@@ -21,6 +21,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
 import swervelib.SwerveInputStream;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -38,6 +39,7 @@ public class RobotContainer {
   ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   IntakeSubsystem intakeSubsystem = new IntakeSubsystem(swerveSubsystem::getRobotRelativeVelocity);
+  TurretSubsystem turretSubsystem = new TurretSubsystem(swerveSubsystem::getPose);
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
                                                               () -> driverController.getLeftY() * -1,
@@ -55,6 +57,7 @@ public class RobotContainer {
     DriverStation.startDataLog(DataLogManager.getLog());
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData(autoChooser);
+    turretSubsystem.rehome();
 
     configureBindings();
   }
@@ -91,6 +94,9 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
 
+
+    operatorController.povLeft().onTrue(Commands.runOnce(() -> turretSubsystem.setTargetAngle(-45.0)));   // should go left
+    operatorController.povDown().onTrue(Commands.runOnce(() -> turretSubsystem.setTargetAngle(-135.0)));     // should return to forward
     // TURRET SETUP
     // TurretSubsystem turretSubsystem = new TurretSubsystem(swerveSubsystem::getPose);
     // Add to constructor: turretSubsystem.rehome();
