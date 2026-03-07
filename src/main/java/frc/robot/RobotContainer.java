@@ -95,8 +95,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
 
 
-    operatorController.povLeft().onTrue(Commands.runOnce(() -> turretSubsystem.setTargetAngle(-45.0)));   // should go left
-    operatorController.povDown().onTrue(Commands.runOnce(() -> turretSubsystem.setTargetAngle(-135.0)));     // should return to forward
+    operatorController.rightBumper().whileTrue(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
+    operatorController.rightBumper().onFalse(Commands.runOnce(() -> turretSubsystem.setTargetAngle(0.0), turretSubsystem));
     // TURRET SETUP
     // TurretSubsystem turretSubsystem = new TurretSubsystem(swerveSubsystem::getPose);
     // Add to constructor: turretSubsystem.rehome();

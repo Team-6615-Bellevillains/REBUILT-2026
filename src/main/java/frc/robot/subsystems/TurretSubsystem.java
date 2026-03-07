@@ -13,16 +13,20 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils;
+
+import static edu.wpi.first.units.Units.Degrees;
 
 import java.util.function.Supplier;
 
@@ -154,13 +158,11 @@ public class TurretSubsystem extends SubsystemBase {
 
         Pose2d robot       = robotPoseSupplier.get();
         Translation2d hub  = getActiveHub();
-        double dx          = hub.getX() - robot.getX();
-        double dy          = hub.getY() - robot.getY();
-        double fieldAngle  = Math.toDegrees(Math.atan2(dy, dx));
-        double turretAngle = MathUtil.inputModulus(
-                                 fieldAngle - robot.getRotation().getDegrees(), // Robot heading
-                                 -180.0, 180.0);
-        setTargetAngle(turretAngle);
+        Translation2d target = hub.minus(robot.getTranslation());
+        Rotation2d fieldAngle  = target.getAngle();
+        Rotation2d robotAngle = fieldAngle.minus(robot.getRotation());
+        double turretAngle = MathUtil.inputModulus(robotAngle.getDegrees(), 0, 360);
+        setTargetAngle(-turretAngle);
     }
 
     // Returns active hub, falls back to last known if FMS drops
@@ -186,9 +188,9 @@ public class TurretSubsystem extends SubsystemBase {
 
     // Homing phase 2 — closed-loop back to center (0°), then go HOMED
     private void runHomingToCenter() {
-        closedLoop.setSetpoint(-180, ControlType.kPosition);
-        targetAngle=-180;
-        if (Math.abs(encoder.getPosition()) < ANGLE_TOLERANCE)
+        closedLoop.setSetpoint(0, ControlType.kPosition);
+        targetAngle=0;
+        if (Math.abs(encoder.getPosition()) < 2)
             state = TurretState.HOMED;
     }
 
