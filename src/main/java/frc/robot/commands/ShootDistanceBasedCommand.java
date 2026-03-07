@@ -1,28 +1,28 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Minute;
-import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.*;
+
 
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Utils;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.utils.InterpolatingDistanceAngularVelocityTreeMap;
+import frc.robot.utils.MeasureInterpolatingTreeMap;
 
 public class ShootDistanceBasedCommand extends Command {
 
     private final Supplier<Pose2d> poseSupplier;
     private final ShooterSubsystem shooter;
     private final IndexerSubsystem indexer;
-    private final InterpolatingDistanceAngularVelocityTreeMap distanceToFlywheelVelocityInterpolator;
+    private final MeasureInterpolatingTreeMap<DistanceUnit, AngularVelocityUnit> distanceToFlywheelVelocityInterpolator;
 
     public ShootDistanceBasedCommand(Supplier<Pose2d> poseSupplier, ShooterSubsystem shooter, IndexerSubsystem indexer){
         this.addRequirements(shooter, indexer);
@@ -30,13 +30,13 @@ public class ShootDistanceBasedCommand extends Command {
         this.shooter = shooter;
         this.indexer = indexer; 
         //TODO: add real values
-        distanceToFlywheelVelocityInterpolator = new InterpolatingDistanceAngularVelocityTreeMap(){{
-            this.addDatapoint(Feet.of(8.2), Rotations.per(Minute).of(2700));
+        distanceToFlywheelVelocityInterpolator = new MeasureInterpolatingTreeMap<DistanceUnit, AngularVelocityUnit>(){{
+            this.addPoint(Feet.of(8.2), Rotations.per(Minute).of(2700));
             // this.addDatapoint(Feet.of(9.6), Rotations.per(Minute).of(2800));
             // this.addDatapoint(Feet.of(11), Rotations.per(Minute).of(3000));
             // this.addDatapoint(Feet.of(13), Rotations.per(Minute).of(3500));
             // this.addDatapoint(Feet.of(14.9), Rotations.per(Minute).of(3600));
-            this.addDatapoint(Feet.of(17.7), Rotations.per(Minute).of(4000));
+            this.addPoint(Feet.of(17.7), Rotations.per(Minute).of(4000));
         }};
     }
 
@@ -51,7 +51,7 @@ public class ShootDistanceBasedCommand extends Command {
 
         Pose2d currentPose = poseSupplier.get();
         Distance distanceToHub = Meters.of(currentPose.getTranslation().getDistance(hubPosition));
-        shooter.setPoint(distanceToFlywheelVelocityInterpolator.getInterpolatedValue(distanceToHub));
+        shooter.setPoint(RPM.of(distanceToFlywheelVelocityInterpolator.getValue(distanceToHub).in(RPM)));
         if (!shooter.atSetPoint()){
             indexerOff();
             return;
