@@ -90,6 +90,32 @@ public class RobotContainer {
     //operatorController.b().onTrue(shooterSubsystem.liveRPMCommand());
 
     NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
+
+    // TURRET SETUP
+    // TurretSubsystem turretSubsystem = new TurretSubsystem(swerveSubsystem::getPose);
+    // Add to constructor: turretSubsystem.rehome();
+
+    // TURRET TESTING BINDINGS
+
+    // HOMING TEST: Manually trigger a rehome
+    // driverController.back().onTrue(Commands.runOnce(() -> turretSubsystem.rehome()));
+
+    // DIRECTION TEST: Command specific angles to check positive/negative directions
+    // operatorController.povLeft().onTrue(Commands.runOnce(() -> turretSubsystem.setTargetAngle(-45.0)));   // should go left
+    // operatorController.povDown().onTrue(Commands.runOnce(() -> turretSubsystem.setTargetAngle(0.0)));     // should return to forward
+
+    // AIM TEST: Hold button to continuously aim at hub, release to return to forward
+    // operatorController.rightBumper().whileTrue(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
+    // operatorController.rightBumper().onFalse(Commands.runOnce(() -> turretSubsystem.setTargetAngle(0.0), turretSubsystem));
+
+    // SHOOT GATE TEST: Only fires if turret can actually reach the hub
+    // operatorController.rightTrigger().whileTrue(
+    //     Commands.run(() -> {
+    //         if (turretSubsystem.canShoot() && turretSubsystem.atTarget()) {
+    //             // replace with shoot command
+    //         }
+    //     })
+    // );
   }
 
   public Command getAutonomousCommand() {
