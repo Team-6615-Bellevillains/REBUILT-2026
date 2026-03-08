@@ -31,68 +31,50 @@ public class RobotContainer {
   // driver is the one who controls the drivetrain and moves the robot.
   // operator controls mechanisms on the robot.
   // certain mechanisms may be assigned to the driver if needed.
-  CommandXboxController driverController = new CommandXboxController(0);
+  //CommandXboxController driverController = new CommandXboxController(0);
   CommandXboxController operatorController = new CommandXboxController(1);
 
-  SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-  ClimberSubsystem climberSubsystem = new ClimberSubsystem();
+  //SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  //ClimberSubsystem climberSubsystem = new ClimberSubsystem();
   ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
-  IntakeSubsystem intakeSubsystem = new IntakeSubsystem(swerveSubsystem::getRobotRelativeVelocity);
+  //IntakeSubsystem intakeSubsystem = new IntakeSubsystem(swerveSubsystem::getRobotRelativeVelocity);
 
-  SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
-                                                              () -> driverController.getLeftY() * -1,
-                                                              () -> driverController.getLeftX() * -1)
-                                                          .withControllerRotationAxis(driverController::getRightX)
-                                                          .scaleTranslation(0.8)
-                                                          .allianceRelativeControl(true);
+  // SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
+  //                                                             () -> driverController.getLeftY() * -1,
+  //                                                             () -> driverController.getLeftX() * -1)
+  //                                                         .withControllerRotationAxis(driverController::getRightX)
+  //                                                         .scaleTranslation(0.8)
+  //                                                         .allianceRelativeControl(true);
 
-  private final SendableChooser<Command> autoChooser;
+  //private final SendableChooser<Command> autoChooser;
   
 
 
   public RobotContainer() {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData(autoChooser);
+    //autoChooser = AutoBuilder.buildAutoChooser();
+    //SmartDashboard.putData(autoChooser);
 
     configureBindings();
   }
 
   private void configureBindings() {
 
-    // swerve config
-    swerveSubsystem.setDefaultCommand(swerveSubsystem.driveCommand(driveAngularVelocity, driverController.povUp()));
-
-    // Intake Controls
-
-    operatorController.b().onTrue(intakeSubsystem.toggleInOut());
-    operatorController.leftBumper().onTrue(intakeSubsystem.setWheelsCommand(true));
-    operatorController.leftBumper().onFalse(intakeSubsystem.setWheelsCommand(false));
-
-    // Shooter and Spindexer Controls
-
-    operatorController.rightBumper().whileTrue(new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem));
-    operatorController.rightBumper().whileFalse(shooterSubsystem.stopCommand());
-    //operatorController.leftBumper().whileTrue(indexerSubsystem.indexerRunCommand());
-    operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
-    
-    // Climber Controls
-    // D-Pad Up and Down: Climb up and down
-    driverController.leftBumper().whileTrue(climberSubsystem.climb(0.3));
-    driverController.rightBumper().whileTrue(climberSubsystem.climb(-0.3));
-    driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
-    driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
-
-    //operatorController.b().whileTrue(shooterSubsystem.sysId());
-    //operatorController.b().onTrue(shooterSubsystem.liveRPMCommand());
+    operatorController.rightBumper().onTrue(shooterSubsystem.increaseRPMCommand(RPM.of(100)));
+    operatorController.leftBumper().onTrue(shooterSubsystem.decreaseRPMCommand(RPM.of(100)));
+    operatorController.povUp().onTrue(shooterSubsystem.increaseRPMCommand(RPM.of(25)));
+    operatorController.povDown().onTrue(shooterSubsystem.decreaseRPMCommand(RPM.of(25)));
+    shooterSubsystem.setDefaultCommand(shooterSubsystem.stopCommand());
+    operatorController.a().whileTrue(shooterSubsystem.emptyCommand());
+    operatorController.b().whileTrue(indexerSubsystem.indexWhileTrueCommand(shooterSubsystem::atSetPoint));
 
     NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
   }
 
   public Command getAutonomousCommand() {
-    return Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000)));
+    return Commands.print("");//Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000)));
     //return autoChooser.getSelected();
   }
 }

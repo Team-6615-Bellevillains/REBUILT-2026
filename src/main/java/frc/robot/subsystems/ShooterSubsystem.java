@@ -33,7 +33,7 @@ public class ShooterSubsystem extends SubsystemBase{
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
         .withControlMode(ControlMode.CLOSED_LOOP)
         // feedback constants
-        .withClosedLoopController(0.015, 0, 0)
+        .withClosedLoopController(0.02, 0, 0.005)
         .withSimClosedLoopController(0, 0, 0)
         // feedforward constants
         .withFeedforward(new SimpleMotorFeedforward(0.1546, 0.125, 0.0))
@@ -69,6 +69,7 @@ public class ShooterSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         shooter.updateTelemetry();
+        SmartDashboard.putNumber("commanded RPM", setPoint.in(RPM));
     }
 
     @Override
@@ -105,6 +106,24 @@ public class ShooterSubsystem extends SubsystemBase{
     public Command liveRPMCommand(){
         return this.run(()->{
             setPoint(RPM.of(SmartDashboard.getNumber("rpm to run", 0)));
+        });
+    }
+
+    public Command increaseRPMCommand(AngularVelocity change){
+        return this.runOnce(()->{
+            setPoint = setPoint.plus(change); 
+        });
+    }
+
+    public Command decreaseRPMCommand(AngularVelocity change){
+        return this.runOnce(()->{
+            setPoint = setPoint.minus(change); 
+        });
+    }
+
+    public Command emptyCommand(){
+        return this.run(()->{
+            shooter.setMechanismVelocitySetpoint(setPoint);
         });
     }
 

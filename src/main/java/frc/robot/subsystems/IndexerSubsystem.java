@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
@@ -92,7 +94,16 @@ public class IndexerSubsystem extends SubsystemBase {
 
     public Command indexerRunCommand(){
         return this.runEnd(()->{
-            this.setState(State.SLOW);
+            this.setState(State.SHOOT);
+        }, ()->{
+            this.setState(State.OFF);
+        });
+    }
+
+    public Command indexWhileTrueCommand(BooleanSupplier condition){
+        return this.runEnd(()->{
+            if (condition.getAsBoolean()) this.setState(State.SHOOT);
+            else this.setState(State.OFF);
         }, ()->{
             this.setState(State.OFF);
         });
