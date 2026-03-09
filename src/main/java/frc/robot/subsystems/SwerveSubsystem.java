@@ -81,6 +81,11 @@ public class SwerveSubsystem extends SubsystemBase{
         drive.zeroGyro();
         gyro.setYaw(Degrees.of(0));
 
+        LimelightHelpers.SetIMUMode(limelight4, 0);
+
+    } 
+
+    public void initPathPlanner() {
         RobotConfig config;
         try {
           config = RobotConfig.fromGUISettings();
@@ -99,9 +104,6 @@ public class SwerveSubsystem extends SubsystemBase{
             }
             return false;
         }, this);
-
-        LimelightHelpers.SetIMUMode(limelight4, 0);
-
     } 
 
     public void resetPose(Pose2d initialPose){

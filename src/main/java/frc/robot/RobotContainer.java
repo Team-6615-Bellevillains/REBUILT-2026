@@ -26,6 +26,7 @@ import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.State;
 import swervelib.SwerveInputStream;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -59,9 +60,13 @@ public class RobotContainer {
   public RobotContainer() {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData(autoChooser);
     turretSubsystem.rehome();
+
+    registerNamedCommands();
+    swerveSubsystem.initPathPlanner();
+    
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     configureBindings();
   }
@@ -136,8 +141,14 @@ public class RobotContainer {
     // );
   }
 
+  private void registerNamedCommands(){
+    NamedCommands.registerCommand("shootfor7s", Commands.deadline(Commands.waitSeconds(7), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem)));
+    NamedCommands.registerCommand("intake down", intakeSubsystem.setStateCommand(State.OUT));
+    NamedCommands.registerCommand("intake up", intakeSubsystem.setStateCommand(State.PULL_IN));
+    NamedCommands.registerCommand("aim", Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
+  }
+
   public Command getAutonomousCommand() {
-    return Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000)));
-    //return autoChooser.getSelected();
+    return autoChooser.getSelected();
   }
 }
