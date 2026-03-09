@@ -50,8 +50,9 @@ public class ShootDistanceBasedCommand extends Command {
     public void execute() {
         Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));
 
-        Pose2d currentPose = poseSupplier.get();
-        Distance distanceToHub = Meters.of(currentPose.getTranslation().getDistance(hubPosition));
+        Pose2d robotPose = poseSupplier.get();
+        Translation2d turretPosition = Utils.calculateTurretTranslation(robotPose);
+        Distance distanceToHub = Meters.of(turretPosition.getDistance(hubPosition));
         shooter.setPoint(RPM.of(distanceToFlywheelVelocityInterpolator.getValue(distanceToHub).in(RPM)));
         if (!shooter.atSetPoint()){
             indexerOff();

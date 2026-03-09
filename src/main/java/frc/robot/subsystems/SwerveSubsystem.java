@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.*;
 
 import java.io.File;
 import java.util.Optional;
@@ -176,9 +177,8 @@ public class SwerveSubsystem extends SubsystemBase{
         return drive.getRobotVelocity();
     }
 
-    private static final Translation2d shooterOffset = new Translation2d(-0.1714, -0.1714);
-    private static final Rotation2d shooterAngle = shooterOffset.getAngle();
-    private static final double shooterDistance = shooterOffset.getNorm();
+    private static final Rotation2d shooterAngle = TURRET_OFFSET.getAngle();
+    private static final double shooterDistance = TURRET_OFFSET.getNorm();
     private static final Rotation2d aimAngle = Rotation2d.k180deg.minus(shooterAngle);
     private Angle calculateAimHeading(){
         Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));

@@ -156,11 +156,11 @@ public class TurretSubsystem extends SubsystemBase {
     public void aimAtHub() {
         if (!isHomed()) return;
 
-        Pose2d robot       = robotPoseSupplier.get();
+        Translation2d robot = Utils.calculateTurretTranslation(robotPoseSupplier.get());
         Translation2d hub  = getActiveHub();
-        Translation2d target = hub.minus(robot.getTranslation());
+        Translation2d target = hub.minus(robot);
         Rotation2d fieldAngle  = target.getAngle();
-        Rotation2d robotAngle = fieldAngle.minus(robot.getRotation());
+        Rotation2d robotAngle = fieldAngle.minus(robotPoseSupplier.get().getRotation());
         double turretAngle = MathUtil.inputModulus(robotAngle.getDegrees(), 0, 360);
         setTargetAngle(-turretAngle);
     }
