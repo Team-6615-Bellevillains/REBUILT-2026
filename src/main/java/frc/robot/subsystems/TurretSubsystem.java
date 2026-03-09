@@ -188,9 +188,9 @@ public class TurretSubsystem extends SubsystemBase {
 
     // Homing phase 2 — closed-loop back to center (0°), then go HOMED
     private void runHomingToCenter() {
-        closedLoop.setSetpoint(0, ControlType.kPosition);
-        targetAngle=0;
-        if (Math.abs(encoder.getPosition()) < 2)
+        closedLoop.setSetpoint(-180, ControlType.kPosition);
+        targetAngle=-180;
+        if (Math.abs(-180-encoder.getPosition()) < 2)
             state = TurretState.HOMED;
     }
 
