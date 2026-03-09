@@ -76,8 +76,8 @@ public class RobotContainer {
 
     // Shooter and Spindexer Controls
 
-    operatorController.rightBumper().whileTrue(new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem));
-    operatorController.rightBumper().whileFalse(shooterSubsystem.stopCommand());
+    operatorController.rightTrigger().whileTrue(new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem));
+    operatorController.rightTrigger().whileFalse(shooterSubsystem.stopCommand());
     //operatorController.leftBumper().whileTrue(indexerSubsystem.indexerRunCommand());
     operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
     
