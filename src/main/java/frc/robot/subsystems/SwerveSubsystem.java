@@ -115,8 +115,8 @@ public class SwerveSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         Pose2d currentPose = getPose();
-        SmartDashboard.putNumber("rotation fed to limelight", gyro.getYaw().getValue().in(Degrees));
-        LimelightHelpers.SetRobotOrientation(limelight4, gyro.getYaw().getValue().in(Degrees), 0, 0, 0, 0, 0);
+        SmartDashboard.putNumber("rotation fed to limelight", getPose().getRotation().getDegrees());
+        LimelightHelpers.SetRobotOrientation(limelight4, getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight4);
         if(mt2 != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || mt2.tagCount == 0)){
             drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
