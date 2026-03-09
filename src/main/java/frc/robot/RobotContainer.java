@@ -9,6 +9,9 @@ import static edu.wpi.first.units.Units.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -87,6 +90,16 @@ public class RobotContainer {
     driverController.rightBumper().whileTrue(climberSubsystem.climb(-0.3));
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
     driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
+
+    SmartDashboard.putNumber("Starting Angle (Degrees)", 0);
+    driverController.y().onTrue(Commands.runOnce(() -> {
+      double newAngleDegrees = SmartDashboard.getNumber("Starting Angle (Degrees)", 0);
+      Translation2d currentTranslation = swerveSubsystem.getPose().getTranslation();
+      swerveSubsystem.resetPose(new Pose2d(
+        currentTranslation,
+        Rotation2d.fromDegrees(newAngleDegrees)
+      ));
+    }));
 
     //operatorController.b().whileTrue(shooterSubsystem.sysId());
     //operatorController.b().onTrue(shooterSubsystem.liveRPMCommand());
