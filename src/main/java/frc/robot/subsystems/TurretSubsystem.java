@@ -41,7 +41,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     private static final double SOFT_LIMIT_BUFFER       =  5.0;
     private static final double OUTPUT_LIMIT            =  0.5;
-    private static final double ANGLE_TOLERANCE         =  4.0;
+    private static final double ANGLE_TOLERANCE         =  0.1;
 
     // Enable the robot, call setTargetAngle(-45.0), and watch Elastic "Turret/CurrentAngle".
     private static final double kP = 0.005;
@@ -108,7 +108,9 @@ public class TurretSubsystem extends SubsystemBase {
             .velocityConversionFactor((360.0 / GEAR_RATIO) / 60.0);
         config.closedLoop
             .p(kP).i(kI).d(kD)
-            .outputRange(-OUTPUT_LIMIT, OUTPUT_LIMIT);
+            .outputRange(-OUTPUT_LIMIT, OUTPUT_LIMIT)
+            .feedForward
+                .kS(0.26);
         config.softLimit
             .forwardSoftLimit((float)(MAX_ANGLE - SOFT_LIMIT_BUFFER))
             .reverseSoftLimit((float)(MIN_ANGLE + SOFT_LIMIT_BUFFER))
@@ -140,16 +142,25 @@ public class TurretSubsystem extends SubsystemBase {
             case HOMING_TO_CENTER: runHomingToCenter(); break;
             case HOMED:
                 closedLoop.setSetpoint(-180, ControlType.kPosition);
+                ifAtSetpointTurnOff();
                 break;
             case TRACKING:
                 closedLoop.setSetpoint(
                     MathUtil.clamp(targetAngle, MIN_ANGLE, MAX_ANGLE),
                     ControlType.kPosition);
                 shootAllowed = isTargetReachable(targetAngle);
+                ifAtSetpointTurnOff();
                 break;
         }
         filteredCurrent = currentFilter.calculate(motor.getOutputCurrent());
         publishTelemetry();
+        
+    }
+
+    public void ifAtSetpointTurnOff(){
+        if (atTarget()){
+            motor.set(0);
+        }
     }
 
     // Calculates robot-relative angle to hub and commands the turret
