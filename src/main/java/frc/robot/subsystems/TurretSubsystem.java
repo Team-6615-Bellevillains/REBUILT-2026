@@ -41,12 +41,12 @@ public class TurretSubsystem extends SubsystemBase {
 
     private static final double SOFT_LIMIT_BUFFER       =  5.0;
     private static final double OUTPUT_LIMIT            =  0.5;
-    private static final double ANGLE_TOLERANCE         =  0.0;
+    private static final double ANGLE_TOLERANCE         =  4.0;
 
     // Enable the robot, call setTargetAngle(-45.0), and watch Elastic "Turret/CurrentAngle".
-    private static final double kP = 0.005; // TODO: Tune: start at 0.01
-    private static final double kI = 0.0;  // TODO: Tune: leave at 0.0 until P and D are done
-    private static final double kD = 0.0002; // TODO: Tune: add small amounts to reduce oscillation
+    private static final double kP = 0.005;
+    private static final double kI = 0.0;  
+    private static final double kD = 0.0002; 
 
     // If homing triggers too early (before hitting the stop): increase this value
     // If homing never triggers (misses the stop): decrease this value
@@ -139,7 +139,7 @@ public class TurretSubsystem extends SubsystemBase {
             case HOMING_TO_MIN:    runHomingToMin();    break;
             case HOMING_TO_CENTER: runHomingToCenter(); break;
             case HOMED:
-                closedLoop.setSetpoint(0.0, ControlType.kPosition);
+                closedLoop.setSetpoint(-180, ControlType.kPosition);
                 break;
             case TRACKING:
                 closedLoop.setSetpoint(
@@ -203,16 +203,6 @@ public class TurretSubsystem extends SubsystemBase {
 
     // Returns true once current exceeds threshold for STALL_DEBOUNCE_TIME seconds
     private boolean isStalled() {
-        // if (motor.getOutputCurrent() > STALL_CURRENT_THRESHOLD) {
-        //     if (!stallTimerRunning) {
-        //         stallTimer.reset();
-        //         stallTimer.start();
-        //         stallTimerRunning = true;
-        //     }
-        //     return stallTimer.hasElapsed(STALL_DEBOUNCE_TIME);
-        // }
-        // resetStallTimer();
-        // return false;
         return filteredCurrent > STALL_CURRENT_THRESHOLD;
     }
 

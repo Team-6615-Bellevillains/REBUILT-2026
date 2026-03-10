@@ -49,7 +49,7 @@ public class RobotContainer {
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
                                                               () -> driverController.getLeftY() * -1,
                                                               () -> driverController.getLeftX() * -1)
-                                                          .withControllerRotationAxis(driverController::getRightX)
+                                                          .withControllerRotationAxis(()-> -1 * driverController.getRightX())
                                                           .scaleTranslation(0.8)
                                                           .allianceRelativeControl(true);
 
@@ -84,7 +84,7 @@ public class RobotContainer {
 
     // Shooter and Spindexer Controls
 
-    operatorController.rightTrigger().whileTrue(new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem));
+    operatorController.rightTrigger().whileTrue(new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget));
     operatorController.rightTrigger().whileFalse(shooterSubsystem.stopCommand());
     //operatorController.leftBumper().whileTrue(indexerSubsystem.indexerRunCommand());
     operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
@@ -113,13 +113,13 @@ public class RobotContainer {
 
 
     operatorController.rightBumper().whileTrue(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
-    operatorController.rightBumper().onFalse(Commands.runOnce(() -> turretSubsystem.setTargetAngle(0.0), turretSubsystem));
+    operatorController.rightBumper().onFalse(Commands.runOnce(() -> turretSubsystem.setTargetAngle(-180.0), turretSubsystem));
     // TURRET SETUP
     // TurretSubsystem turretSubsystem = new TurretSubsystem(swerveSubsystem::getPose);
     // Add to constructor: turretSubsystem.rehome();
 
     // TURRET TESTING BINDINGS
-
+ 
     // HOMING TEST: Manually trigger a rehome
     // driverController.back().onTrue(Commands.runOnce(() -> turretSubsystem.rehome()));
 
@@ -142,7 +142,7 @@ public class RobotContainer {
   }
 
   private void registerNamedCommands(){
-    NamedCommands.registerCommand("shootfor7s", Commands.deadline(Commands.waitSeconds(7), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem)));
+    NamedCommands.registerCommand("shootfor7s", Commands.deadline(Commands.waitSeconds(7), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
     NamedCommands.registerCommand("intake down", intakeSubsystem.setStateCommand(State.OUT));
     NamedCommands.registerCommand("intake up", intakeSubsystem.setStateCommand(State.PULL_IN));
     NamedCommands.registerCommand("aim", Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
