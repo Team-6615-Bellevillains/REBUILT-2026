@@ -4,8 +4,10 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -25,24 +27,24 @@ public class IntakeSubsystem extends SubsystemBase{
     private State state = State.IN;
     private SparkFlex angleMotor = new SparkFlex(20, MotorType.kBrushless);
     private SparkFlex wheelMotor = new SparkFlex(22, MotorType.kBrushless);
+    private SparkClosedLoopController angleController = angleMotor.getClosedLoopController();
     private static final int PULL_IN_ANGLE_CURRENT = 30;
     private MedianFilter angleCurrentFIlter = new MedianFilter(15);
     private double filteredAngleCurrent = 0;
     private int nonLimitedAngleCurrent = PULL_IN_ANGLE_CURRENT;
     private boolean shouldRunWheelsInIntakeDirection = false;
     private final Supplier<ChassisSpeeds> getRobotRelativeVelocity;
-    private final double IDLE_WHEEL_DUTY_CYCLE = 0.0;//0.1;
     private final double IN_WHEEL_DUTY_CYCLE = 0.0;
 
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
         angleMotorConfig.smartCurrentLimit(1);
-        angleMotorConfig.closedLoop.pid(0,0,0);
+        angleMotorConfig.closedLoop.pid(0.2,0,0);
         angleMotor.configure(angleMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkFlexConfig wheelMotorConfig = new SparkFlexConfig();
-        wheelMotorConfig.idleMode(IdleMode.kBrake);
+        wheelMotorConfig.idleMode(IdleMode.kCoast);
         wheelMotorConfig.smartCurrentLimit(80);
         wheelMotor.configure(wheelMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         this.getRobotRelativeVelocity = getRobotRelativeVelocity;
@@ -65,11 +67,12 @@ public class IntakeSubsystem extends SubsystemBase{
         
             case OUT:
                 outOffPeriodic();
-                wheelMotor.set(shouldRunWheelsInIntakeDirection ? getActiveWheelDutyCycle() : IDLE_WHEEL_DUTY_CYCLE);
+                wheelMotor.set(shouldRunWheelsInIntakeDirection ? getActiveWheelDutyCycle() : 0);
                 break;
             
             case MID_HOLD:
                 midHold();
+                wheelMotor.set(shouldRunWheelsInIntakeDirection ? getActiveWheelDutyCycle() : 0);
                 break;
         }
         updateAngleCurrent();
@@ -81,7 +84,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void midHold(){
-        angleMotor.getClosedLoopController().setSetpoint(0, ControlType.kPosition);
+        setAngleSetpoint(-0.5);
     }
 
     private void inPeriodic(){
@@ -123,6 +126,9 @@ public class IntakeSubsystem extends SubsystemBase{
             case PULL_IN:
                 setAngleCurrent(PULL_IN_ANGLE_CURRENT);
                 updateWheelCurrent(10);
+            case MID_HOLD:
+                setAngleCurrent(PULL_IN_ANGLE_CURRENT);
+                updateWheelCurrent(80);
         }
     }
 
@@ -143,8 +149,12 @@ public class IntakeSubsystem extends SubsystemBase{
                     setState(State.OUT);
                     break;
 
+                case MID_HOLD:
+                    setState(State.OUT);
+                    break;
+
                 case OUT:
-                    setState(State.PULL_IN);
+                    setState(State.MID_HOLD);
                     break;
             }
         });
@@ -175,5 +185,9 @@ public class IntakeSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("velocity in intake direction", robotRelativeVelocity.vxMetersPerSecond);
         SmartDashboard.putNumber("intake lerp t", robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
         return MathUtil.interpolate(0.4, 0.8, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
+    }
+
+    public void setAngleSetpoint(double setpoint){
+        angleController.setSetpoint(setpoint, ControlType.kPosition);
     }
 }

@@ -88,6 +88,7 @@ public class RobotContainer {
     operatorController.rightTrigger().whileFalse(shooterSubsystem.stopCommand());
     //operatorController.leftBumper().whileTrue(indexerSubsystem.indexerRunCommand());
     operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
+    operatorController.povDown().onTrue(intakeSubsystem.setStateCommand(IntakeSubsystem.State.PULL_IN));
     
     // Climber Controls
     // D-Pad Up and Down: Climb up and down
