@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
