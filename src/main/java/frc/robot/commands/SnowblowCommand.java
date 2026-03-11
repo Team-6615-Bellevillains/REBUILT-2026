@@ -18,8 +18,8 @@ public class SnowblowCommand extends Command {
     private static final double FIELD_HALF_X = 4.035;
 
     private static final double Equalizer = 0.676725; // Middle between hub and wall
-    private static final double FIELD_MAX_X  = 8.070 - Equalizer;
-    private static final double FIELD_MIN_X = 0 + Equalizer;
+    private static final double POS_X  = 8.070 - Equalizer;
+    private static final double NEGATIVE_X = 0 + Equalizer;
 
     private static final double SNOWBLOW_RPM = 3000;  // TODO: tune as needed
 
@@ -51,11 +51,13 @@ public class SnowblowCommand extends Command {
         Translation2d hub = Utils.getHubCenter(alliance);
 
         Translation2d snowblowTarget = diff < 0
-            ? new Translation2d(FIELD_MAX_X, hub.getY())  // robot on blue side, aim to blue middles
-            : new Translation2d(FIELD_MIN_X, hub.getY()); // robot on red side, aim to red middles
+            ? new Translation2d(POS_X, hub.getY())  // robot on blue side, aim to blue middles
+            : new Translation2d(NEGATIVE_X, hub.getY()); // robot on red side, aim to red middles
 
+        Pose2d robotPose = poseSupplier.get();
+        Translation2d turretPosition = Utils.calculateTurretTranslation(robotPose);
         turret.aimAt(snowblowTarget);
-        shooter.setPoint(RPM.of(SNOWBLOW_RPM));
+        shooter.setPoint(shooter.getRPMFromDistance(Meters.of(turretPosition.getDistance(snowblowTarget))));
 
         if (shooter.atSetPoint() && turret.atTarget()) {
             indexer.setState(IndexerSubsystem.State.SHOOT);

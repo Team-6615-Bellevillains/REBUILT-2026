@@ -10,10 +10,14 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.MeasureInterpolatingTreeMap;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
@@ -27,6 +31,7 @@ public class ShooterSubsystem extends SubsystemBase{
 
     private SparkMax shooterLeft = new SparkMax(12, MotorType.kBrushless);
     private SparkMax shooterRight = new SparkMax(10, MotorType.kBrushless);
+    private final MeasureInterpolatingTreeMap<DistanceUnit, AngularVelocityUnit> distanceToFlywheelVelocityInterpolator;
 
     private AngularVelocity setPoint = RPM.of(0);
 
@@ -64,6 +69,15 @@ public class ShooterSubsystem extends SubsystemBase{
         shooter = new FlyWheel(shooterConfig);
         setPoint = RPM.of(0);
         SmartDashboard.putNumber("rpm to run", 0);
+        distanceToFlywheelVelocityInterpolator = new MeasureInterpolatingTreeMap<DistanceUnit, AngularVelocityUnit>(){{
+            this.addPoint(Feet.of(6), RPM.of(2625));
+            this.addPoint(Feet.of(8), RPM.of(2725));
+            this.addPoint(Feet.of(10), RPM.of(3000));
+            this.addPoint(Feet.of(12), RPM.of(3225));
+            this.addPoint(Feet.of(14), RPM.of(3450));
+            this.addPoint(Feet.of(16), RPM.of(3675));
+            this.addPoint(Feet.of(18), RPM.of(4250));
+        }};
     }
 
     @Override
@@ -109,4 +123,10 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public Command sysId() {return shooter.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));}
+
+    
+
+    public AngularVelocity getRPMFromDistance(Distance distance){
+        return RPM.of(distanceToFlywheelVelocityInterpolator.getValue(distance).in(RPM));
+    }
 }
