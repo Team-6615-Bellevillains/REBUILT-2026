@@ -29,7 +29,7 @@ public class IntakeSubsystem extends SubsystemBase{
     private SparkFlex wheelMotor = new SparkFlex(22, MotorType.kBrushless);
     private SparkClosedLoopController angleController = angleMotor.getClosedLoopController();
     private static final int PULL_IN_ANGLE_CURRENT = 30;
-    private MedianFilter angleCurrentFIlter = new MedianFilter(15);
+    private MedianFilter angleCurrentFIlter = new MedianFilter(25);
     private double filteredAngleCurrent = 0;
     private int nonLimitedAngleCurrent = PULL_IN_ANGLE_CURRENT;
     private boolean shouldRunWheelsInIntakeDirection = false;
@@ -102,7 +102,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void outOffPeriodic(){
-        angleMotor.set(-0.4);
+        angleMotor.set(-0.6);
     }
     
     public enum State{
@@ -120,7 +120,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 updateWheelCurrent(10);
                 break;
             case OUT:
-                setAngleCurrent(15);
+                setAngleCurrent(25); //change 
                 updateWheelCurrent(80);
                 break;
             case PULL_IN:
