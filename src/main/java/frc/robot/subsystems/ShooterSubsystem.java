@@ -122,8 +122,6 @@ public class ShooterSubsystem extends SubsystemBase{
         });
     }
 
-    public Command sysId() {return shooter.sysId(Volts.of(10), Volts.of(1).per(Second), Seconds.of(5));}
-
     
 
     public AngularVelocity getRPMFromDistance(Distance distance){
