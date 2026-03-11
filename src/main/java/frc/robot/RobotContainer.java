@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.jar.Attributes.Name;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -97,20 +99,20 @@ public class RobotContainer {
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
     driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
 
-    SmartDashboard.putNumber("Starting Angle (Degrees)", 0);
-    driverController.y().onTrue(Commands.runOnce(() -> {
-      double newAngleDegrees = SmartDashboard.getNumber("Starting Angle (Degrees)", 0);
-      Translation2d currentTranslation = swerveSubsystem.getPose().getTranslation();
-      swerveSubsystem.resetPose(new Pose2d(
-        currentTranslation,
-        Rotation2d.fromDegrees(newAngleDegrees)
-      ));
-    }));
+    // SmartDashboard.putNumber("Starting Angle (Degrees)", 0);
+    // driverController.y().onTrue(Commands.runOnce(() -> {
+    //   double newAngleDegrees = SmartDashboard.getNumber("Starting Angle (Degrees)", 0);
+    //   Translation2d currentTranslation = swerveSubsystem.getPose().getTranslation();
+    //   swerveSubsystem.resetPose(new Pose2d(
+    //     currentTranslation,
+    //     Rotation2d.fromDegrees(newAngleDegrees)
+    //   ));
+    // }));
 
     //operatorController.b().whileTrue(shooterSubsystem.sysId());
     //operatorController.b().onTrue(shooterSubsystem.liveRPMCommand());
 
-    NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
+    //NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
 
 
     operatorController.rightBumper().whileTrue(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
@@ -143,10 +145,12 @@ public class RobotContainer {
   }
 
   private void registerNamedCommands(){
-    NamedCommands.registerCommand("shootfor7s", Commands.deadline(Commands.waitSeconds(7), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
+    NamedCommands.registerCommand("shootfor7s", Commands.deadline(Commands.waitSeconds(5), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
     NamedCommands.registerCommand("intake down", intakeSubsystem.setStateCommand(State.OUT));
-    NamedCommands.registerCommand("intake up", intakeSubsystem.setStateCommand(State.PULL_IN));
+    NamedCommands.registerCommand("intake up", intakeSubsystem.setStateCommand(State.MID_HOLD));
     NamedCommands.registerCommand("aim", Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
+    NamedCommands.registerCommand("intake run", intakeSubsystem.setWheelsCommand(true));
+    NamedCommands.registerCommand("intake off", intakeSubsystem.setWheelsCommand(false));
   }
 
   public Command getAutonomousCommand() {
