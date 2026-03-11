@@ -19,14 +19,10 @@ import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils;
-
-import static edu.wpi.first.units.Units.Degrees;
 
 import java.util.function.Supplier;
 
@@ -36,22 +32,18 @@ public class TurretSubsystem extends SubsystemBase {
     private static final double MIN_ANGLE = -270;
     private static final double MAX_ANGLE =  0;
 
-    // Offset this if forward direction is off after homing
-    private static final double HOMING_OFFSET = -270; // TODO: Tune after first homing test
+    private static final double HOMING_OFFSET = -270;
 
     private static final double SOFT_LIMIT_BUFFER       =  5.0;
     private static final double OUTPUT_LIMIT            =  0.5;
     private static final double ANGLE_TOLERANCE         =  0.1;
 
-    // Enable the robot, call setTargetAngle(-45.0), and watch Elastic "Turret/CurrentAngle".
     private static final double kP = 0.005;
     private static final double kI = 0.0;  
     private static final double kD = 0.0002; 
 
-    // If homing triggers too early (before hitting the stop): increase this value
-    // If homing never triggers (misses the stop): decrease this value
-    private static final double STALL_CURRENT_THRESHOLD = 20.0; // TODO: Tune with Elastic
-    private static final double STALL_DEBOUNCE_TIME     = 0.1;  // seconds — increase if false triggers
+    private static final double STALL_CURRENT_THRESHOLD = 20.0;
+    private static final double STALL_DEBOUNCE_TIME     = 0.1;
 
     private static final double HOMING_SPEED = 0.045;
 
@@ -164,16 +156,18 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     // Calculates robot-relative angle to hub and commands the turret
-    public void aimAtHub() {
+    public void aimAt(Translation2d target) {
         if (!isHomed()) return;
-
         Translation2d robot = Utils.calculateTurretTranslation(robotPoseSupplier.get());
-        Translation2d hub  = getActiveHub();
-        Translation2d target = hub.minus(robot);
-        Rotation2d fieldAngle  = target.getAngle();
+        Translation2d diff = target.minus(robot);
+        Rotation2d fieldAngle = diff.getAngle();
         Rotation2d robotAngle = fieldAngle.minus(robotPoseSupplier.get().getRotation());
         double turretAngle = MathUtil.inputModulus(robotAngle.getDegrees(), 0, 360);
         setTargetAngle(-turretAngle);
+    }
+
+    public void aimAtHub() {
+        aimAt(getActiveHub());
     }
 
     // Returns active hub, falls back to last known if FMS drops
@@ -187,7 +181,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     // Homing phase 1 — crawl toward forward hard stop, zero encoder on stall
     private void runHomingToMin() {
-        motor.set(-HOMING_SPEED); // STEP 6: Flip HOMING_SPEED sign if going wrong direction
+        motor.set(-HOMING_SPEED);
         if (isStalled()) {
             motor.stopMotor();
             encoder.setPosition(0.0 + HOMING_OFFSET); // forward stop = 0° + any trim
@@ -257,61 +251,4 @@ public class TurretSubsystem extends SubsystemBase {
         ntActiveHub.set(getActiveHub().equals(Utils.getHubCenter(DriverStation.Alliance.Blue)) ? "BLUE" : "RED");
         ntFilteredCurret.set(currentFilter.lastValue());
     }
-
-    /*
-     *  BEFORE ENABLING:
-     * 
-     *  1.      Make sure the gear ratio is right 
-     * 
-     *  2.      Make sure Utils.getHubCenter() returns the correct Translation2d
-     *          for both Alliance.Blue and Alliance.Red.
-     * 
-     *  3.      Make sure RobotContainer passes in the drive pose supplier and
-     *          calls turret.rehome() on enable.
-     * 
-     *  4.      Open Elastic and add widgets for:
-     *          Turret/State, Turret/CurrentAngle, Turret/MotorCurrent,
-     *          Turret/IsHomed, Turret/AtTarget, Turret/CanShoot
-     *
-     *  HOMING TESTING:
-     * 
-     *  5.      Enable the robot. Watch Turret/State in Elastic.
-     *          It should say HOMING_TO_MIN while moving slowly.
-     *          If the turret moves away from the forward stop, flip the sign
-     *          on HOMING_SPEED
-     *
-     *  6.      Watch Turret/MotorCurrent as it hits the stop.
-     *          Set STALL_CURRENT_THRESHOLD between the free current and the stall spike.
-     *          If homing triggers too early: increase STALL_CURRENT_THRESHOLD.
-     *          If homing never triggers: decrease STALL_CURRENT_THRESHOLD.
-     *          There's even the debounce timer to mess with if needed (STALL_DEBOUNCE_TIME).
-     *
-     *  7.      Once homing completes (State = HOMED), physically look at the turret.
-     *          It should be pointing directly forward on the robot.
-     *          If it is slightly off, that means the hard stop is mounted slightly off.
-     *          Set HOMING_OFFSET to nudge it.
-     *
-     *  DIRECTION TESTING:
-     * 
-     *  8.      After homing succeeds, call setTargetAngle(-45.0) from a button.
-     *          The turret should rotate to the left (counterclockwise from above).
-     *          If it goes right instead, change inverted(false) to inverted(true)
-     *          in the constructor and re-deploy.
-     *
-     *  9.      Test setTargetAngle(-45.0). Turret should go left.
-     *          Test setTargetAngle(0.0). Turret should return to forward.
-     *
-     *  PID TUNING:
-     * 
-     *  10.     Start with kP = 0.01, kI = 0.0, kD = 0.0.
-     *          Increase kP slowly until the turret moves confidently to the target.
-     *          If it oscillates, back kP off and add a small kD (e.g. 0.001).
-     *          Only add kI if the turret consistently stops a few degrees short.
-     *
-     *  AIMING TEST:
-     * 
-     *  11.     Put the robot on the field. Call aimAtHub().
-     *          If it points 180° off, the robot heading convention may be flipped —
-     *          check how rotation is reported (CCW positive is standard).
-     */
 }
