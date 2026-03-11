@@ -20,7 +20,6 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils;
 
@@ -64,9 +63,6 @@ public class TurretSubsystem extends SubsystemBase {
     private double      targetAngle    = 0;
     private boolean     shootAllowed   = false;
 
-    // Stall detection debounce
-    private final Timer stallTimer        = new Timer();
-    private boolean     stallTimerRunning = false;
 
     // Last known hub — fallback if alliance data drops mid-match
     private Translation2d lastKnownHub = Utils.getHubCenter(DriverStation.Alliance.Blue);
@@ -92,7 +88,7 @@ public class TurretSubsystem extends SubsystemBase {
 
         SparkFlexConfig config = new SparkFlexConfig();
         config
-            .inverted(false) // TODO: Change to true if positive angles go the wrong direction
+            .inverted(false)
             .idleMode(IdleMode.kBrake)
             .smartCurrentLimit(40);
         config.encoder
@@ -185,7 +181,6 @@ public class TurretSubsystem extends SubsystemBase {
         if (isStalled()) {
             motor.stopMotor();
             encoder.setPosition(0.0 + HOMING_OFFSET); // forward stop = 0° + any trim
-            resetStallTimer();
             applySoftLimits(true);
             state = TurretState.HOMING_TO_CENTER;
         }
@@ -211,17 +206,10 @@ public class TurretSubsystem extends SubsystemBase {
         return filteredCurrent > STALL_CURRENT_THRESHOLD;
     }
 
-    private void resetStallTimer() {
-        stallTimer.stop();
-        stallTimer.reset();
-        stallTimerRunning = false;
-    }
-
     // Public API
 
     public void rehome() {
         applySoftLimits(false);
-        resetStallTimer();
         shootAllowed = false;
         state = TurretState.HOMING_TO_MIN;
     }

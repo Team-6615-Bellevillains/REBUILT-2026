@@ -6,8 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.jar.Attributes.Name;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 

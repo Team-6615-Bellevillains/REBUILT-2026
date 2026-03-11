@@ -21,8 +21,6 @@ public class SnowblowCommand extends Command {
     private static final double POS_X  = 8.070 - Equalizer;
     private static final double NEGATIVE_X = 0 + Equalizer;
 
-    private static final double SNOWBLOW_RPM = 3000;  // TODO: tune as needed
-
     private final Supplier<Pose2d> poseSupplier;
     private final ShooterSubsystem shooter;
     private final IndexerSubsystem indexer;
