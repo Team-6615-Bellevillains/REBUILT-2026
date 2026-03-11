@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ShootAtRPMCommand;
 import frc.robot.commands.ShootDistanceBasedCommand;
+import frc.robot.commands.SnowblowCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -74,74 +75,42 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-
-    // swerve config
+    // Swerve
     swerveSubsystem.setDefaultCommand(swerveSubsystem.driveCommand(driveAngularVelocity, driverController.povUp()));
 
-    // Intake Controls
+    // Driver Controls
+    driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
+    driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
+    driverController.leftBumper().whileTrue(climberSubsystem.climb(0.3));
+    driverController.rightBumper().whileTrue(climberSubsystem.climb(-0.3));
+    driverController.y().onTrue(Commands.runOnce(() -> {
+        double newAngleDegrees = SmartDashboard.getNumber("Starting Angle (Degrees)", 0);
+        Translation2d currentTranslation = swerveSubsystem.getPose().getTranslation();
+        swerveSubsystem.resetPose(new Pose2d(currentTranslation, Rotation2d.fromDegrees(newAngleDegrees)));
+    }));
+    SmartDashboard.putNumber("Starting Angle (Degrees)", 0);
 
+    // Operator - Intake
     operatorController.b().onTrue(intakeSubsystem.toggleInOut());
+    operatorController.povDown().onTrue(intakeSubsystem.setStateCommand(IntakeSubsystem.State.PULL_IN));
     operatorController.leftBumper().onTrue(intakeSubsystem.setWheelsCommand(true));
     operatorController.leftBumper().onFalse(intakeSubsystem.setWheelsCommand(false));
 
-    // Shooter and Spindexer Controls
-
-    operatorController.rightTrigger().whileTrue(new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget));
-    operatorController.rightTrigger().whileFalse(shooterSubsystem.stopCommand());
-    //operatorController.leftBumper().whileTrue(indexerSubsystem.indexerRunCommand());
-    operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
-    operatorController.povDown().onTrue(intakeSubsystem.setStateCommand(IntakeSubsystem.State.PULL_IN));
+    // Operator - Shooter
+    operatorController.rightTrigger().whileTrue(new SnowblowCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem));
+    operatorController.rightTrigger().onFalse(shooterSubsystem.stopCommand());
     
-    // Climber Controls
-    // D-Pad Up and Down: Climb up and down
-    driverController.leftBumper().whileTrue(climberSubsystem.climb(0.3));
-    driverController.rightBumper().whileTrue(climberSubsystem.climb(-0.3));
-    driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
-    driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
+    operatorController.rightBumper().whileTrue(
+        new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)
+            .alongWith(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem))
+    );
+    operatorController.rightBumper().onFalse(shooterSubsystem.stopCommand());
+    
+    // Operator - Indexer
+    operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
 
-    // SmartDashboard.putNumber("Starting Angle (Degrees)", 0);
-    // driverController.y().onTrue(Commands.runOnce(() -> {
-    //   double newAngleDegrees = SmartDashboard.getNumber("Starting Angle (Degrees)", 0);
-    //   Translation2d currentTranslation = swerveSubsystem.getPose().getTranslation();
-    //   swerveSubsystem.resetPose(new Pose2d(
-    //     currentTranslation,
-    //     Rotation2d.fromDegrees(newAngleDegrees)
-    //   ));
-    // }));
-
-    //operatorController.b().whileTrue(shooterSubsystem.sysId());
-    //operatorController.b().onTrue(shooterSubsystem.liveRPMCommand());
-
-    //NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
-
-
-    operatorController.rightBumper().whileTrue(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
-    operatorController.rightBumper().onFalse(Commands.runOnce(() -> turretSubsystem.setTargetAngle(-180.0), turretSubsystem));
-    // TURRET SETUP
-    // TurretSubsystem turretSubsystem = new TurretSubsystem(swerveSubsystem::getPose);
-    // Add to constructor: turretSubsystem.rehome();
-
-    // TURRET TESTING BINDINGS
- 
-    // HOMING TEST: Manually trigger a rehome
-    // driverController.back().onTrue(Commands.runOnce(() -> turretSubsystem.rehome()));
-
-    // DIRECTION TEST: Command specific angles to check positive/negative directions
-    // operatorController.povLeft().onTrue(Commands.runOnce(() -> turretSubsystem.setTargetAngle(-45.0)));   // should go left
-    // operatorController.povDown().onTrue(Commands.runOnce(() -> turretSubsystem.setTargetAngle(0.0)));     // should return to forward
-
-    // AIM TEST: Hold button to continuously aim at hub, release to return to forward
-    // operatorController.rightBumper().whileTrue(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
-    // operatorController.rightBumper().onFalse(Commands.runOnce(() -> turretSubsystem.setTargetAngle(0.0), turretSubsystem));
-
-    // SHOOT GATE TEST: Only fires if turret can actually reach the hub
-    // operatorController.rightTrigger().whileTrue(
-    //     Commands.run(() -> {
-    //         if (turretSubsystem.canShoot() && turretSubsystem.atTarget()) {
-    //             // replace with shoot command
-    //         }
-    //     })
-    // );
+    // Named Commands
+    NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
   }
 
   private void registerNamedCommands(){
