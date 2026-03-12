@@ -1,0 +1,140 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.47,
+        "y": 6.021084165477889
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.8303755841810405,
+        "y": 5.874113182047207
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.4550499286733236,
+        "y": 4.869543509272469
+      },
+      "prevControl": {
+        "x": 0.4610006231598961,
+        "y": 4.619614340836435
+      },
+      "nextControl": {
+        "x": 0.44468221337840785,
+        "y": 5.304987551658908
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.5628001107418625,
+        "y": 6.965606276747503
+      },
+      "prevControl": {
+        "x": 0.3651609267982362,
+        "y": 6.728470915987989
+      },
+      "nextControl": {
+        "x": 1.1019828815977175,
+        "y": 7.6125392296718974
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.9688730385164046,
+        "y": 6.525691868758916
+      },
+      "prevControl": {
+        "x": 1.7278108272235837,
+        "y": 6.459442262823368
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.9466950959488134,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "at depot",
+      "waypointRelativePos": 0.91,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake down"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "intake run"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "after depot",
+      "waypointRelativePos": 2.6900742741390262,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake up"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "intake off"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 1.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 135.0
+  },
+  "useDefaultConstraints": false
+}

@@ -3,57 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.47,
-        "y": 6.021084165477889
+        "x": 3.3533095577746077,
+        "y": 5.969329529243937
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8303755841810405,
-        "y": 5.874113182047207
+        "x": 2.3311554921540654,
+        "y": 5.917574893009986
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.5628001107418625,
-        "y": 4.935536315692486
+        "x": 0.3903566333808842,
+        "y": 5.969329529243937
       },
       "prevControl": {
-        "x": 0.568750805228435,
-        "y": 4.685607147256452
+        "x": 1.2705659158908598,
+        "y": 5.969329529243937
       },
       "nextControl": {
-        "x": 0.5524323954469468,
-        "y": 5.370980358078925
+        "x": 0.02807417974322368,
+        "y": 5.969329529243937
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.5628001107418625,
-        "y": 5.982268188302426
+        "x": 1.9429957203994292,
+        "y": 5.322396576319543
       },
       "prevControl": {
-        "x": 0.3969166660232184,
-        "y": 5.72192781663348
-      },
-      "nextControl": {
-        "x": 0.6971413356852233,
-        "y": 6.193105650060809
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.5289586305278173,
-        "y": 5.982268188302426
-      },
-      "prevControl": {
-        "x": 1.2878964192349964,
-        "y": 5.916018582366878
+        "x": 1.360756062767475,
+        "y": 5.374151212553495
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,16 +46,16 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.9466950959488134,
-      "rotationDegrees": 90.0
+      "waypointRelativePos": 0.6524520255863503,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "at depot",
-      "waypointRelativePos": 0.91,
+      "name": "before depot",
+      "waypointRelativePos": 0.3349088453747592,
       "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",
@@ -95,7 +79,7 @@
     },
     {
       "name": "after depot",
-      "waypointRelativePos": 2.6900742741390262,
+      "waypointRelativePos": 1.7231600270087384,
       "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",
@@ -105,12 +89,6 @@
               "type": "named",
               "data": {
                 "name": "intake up"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "intake off"
               }
             }
           ]
@@ -128,7 +106,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": null,
