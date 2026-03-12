@@ -54,12 +54,12 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     private void shoot(){
-        spindexerMotor.set(0.3);
-        roadMotor.set(0.3);
+        spindexerMotor.set(0.5);
+        roadMotor.set(0.45);
     }
 
     private void index(){
-        spindexerMotor.set(0.3);
+        spindexerMotor.set(0.5);
         roadMotor.stopMotor();
     }
 

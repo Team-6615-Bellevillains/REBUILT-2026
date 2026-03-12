@@ -33,7 +33,7 @@ public class IntakeSubsystem extends SubsystemBase{
     private int nonLimitedAngleCurrent = PULL_IN_ANGLE_CURRENT;
     private boolean shouldRunWheelsInIntakeDirection = false;
     private final Supplier<ChassisSpeeds> getRobotRelativeVelocity;
-    private final double IN_WHEEL_DUTY_CYCLE = 0.0;
+    private final double IN_WHEEL_DUTY_CYCLE = 0.05;
 
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
@@ -47,6 +47,8 @@ public class IntakeSubsystem extends SubsystemBase{
         wheelMotorConfig.smartCurrentLimit(80);
         wheelMotor.configure(wheelMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         this.getRobotRelativeVelocity = getRobotRelativeVelocity;
+
+        angleMotor.getEncoder().setPosition(0);
     }
 
     @Override
@@ -183,7 +185,7 @@ public class IntakeSubsystem extends SubsystemBase{
         ChassisSpeeds robotRelativeVelocity = getRobotRelativeVelocity.get();
         SmartDashboard.putNumber("velocity in intake direction", robotRelativeVelocity.vxMetersPerSecond);
         SmartDashboard.putNumber("intake lerp t", robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
-        return MathUtil.interpolate(0.4, 0.8, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
+        return MathUtil.interpolate(0.4, 1, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
     }
 
     public void setAngleSetpoint(double setpoint){

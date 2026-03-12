@@ -15,11 +15,11 @@ import frc.robot.subsystems.TurretSubsystem;
 
 public class SnowblowCommand extends Command {
 
-    private static final double FIELD_HALF_X = 4.035;
+    private static final double FIELD_HALF_Y = 4.035;
 
-    private static final double Equalizer = 0.676725; // Middle between hub and wall
-    private static final double POS_X  = 8.070 - Equalizer;
-    private static final double NEGATIVE_X = 0 + Equalizer;
+    private static final double Equalizer = 4.035/2; // Middle between hub and wall
+    private static final double POS_Y  = 8.070 - Equalizer;
+    private static final double NEGATIVE_Y = 0 + Equalizer;
 
     private final Supplier<Pose2d> poseSupplier;
     private final ShooterSubsystem shooter;
@@ -42,15 +42,15 @@ public class SnowblowCommand extends Command {
 
     @Override
     public void execute() {
-        double robotX = poseSupplier.get().getTranslation().getX();
-        double diff = robotX - FIELD_HALF_X;
+        double robotY = poseSupplier.get().getTranslation().getY();
+        double diff = robotY - FIELD_HALF_Y;
 
         DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
         Translation2d hub = Utils.getHubCenter(alliance);
 
         Translation2d snowblowTarget = diff < 0
-            ? new Translation2d(POS_X, hub.getY())  // robot on blue side, aim to blue middles
-            : new Translation2d(NEGATIVE_X, hub.getY()); // robot on red side, aim to red middles
+            ? new Translation2d(hub.getX(), NEGATIVE_Y)  // blue side robot → aim toward blue side
+            : new Translation2d(hub.getX(), POS_Y);    // red side robot  → aim toward red side
 
         Pose2d robotPose = poseSupplier.get();
         Translation2d turretPosition = Utils.calculateTurretTranslation(robotPose);
