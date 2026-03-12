@@ -198,7 +198,7 @@ public class TurretSubsystem extends SubsystemBase {
     private void applySoftLimits(boolean enabled) {
         SparkFlexConfig cfg = new SparkFlexConfig();
         cfg.softLimit.forwardSoftLimitEnabled(enabled).reverseSoftLimitEnabled(enabled);
-        motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     // Returns true once current exceeds threshold for STALL_DEBOUNCE_TIME seconds
