@@ -69,12 +69,12 @@ public class SwerveSubsystem extends SubsystemBase{
         //LL3G setup
         LimelightHelpers.setCameraPose_RobotSpace(
             limelight3g, 
+            -Inches.of(10.3577).in(Meters), 
+            -Inches.of(10.8798).in(Meters), 
+            Inches.of(9.0309).in(Meters), 
             0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0
+            15, 
+            56
         );
 
         drive.zeroGyro();
@@ -119,10 +119,16 @@ public class SwerveSubsystem extends SubsystemBase{
         Pose2d currentPose = getPose();
         SmartDashboard.putNumber("rotation fed to limelight", currentPose.getRotation().getDegrees());
         LimelightHelpers.SetRobotOrientation(limelight4, currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight4);
-        if(mt2 != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || mt2.tagCount == 0)){
+        LimelightHelpers.SetRobotOrientation(limelight3g, currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate limelight4Pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight4);
+        LimelightHelpers.PoseEstimate limelight3gPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight3g);
+        if(limelight4Pose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight4Pose.tagCount == 0)){
             drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
-            drive.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+            drive.addVisionMeasurement(limelight4Pose.pose, limelight4Pose.timestampSeconds);
+        }
+        if(limelight3gPose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight3gPose.tagCount == 0)){
+            drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
+            drive.addVisionMeasurement(limelight4Pose.pose, limelight4Pose.timestampSeconds);
         }
         field.setRobotPose(currentPose);
         SmartDashboard.putData("field", field);
