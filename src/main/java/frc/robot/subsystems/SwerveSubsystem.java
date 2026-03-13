@@ -45,6 +45,8 @@ public class SwerveSubsystem extends SubsystemBase{
     String limelight4 = "limelight-four";
     private Pigeon2 gyro = new Pigeon2(0);
     private Field2d field = new Field2d();
+    private Field2d limelight3gField = new Field2d();
+    private Field2d limelight4Field = new Field2d();
 
     public SwerveSubsystem(){
         try {
@@ -122,14 +124,21 @@ public class SwerveSubsystem extends SubsystemBase{
         LimelightHelpers.SetRobotOrientation(limelight3g, currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate limelight4Pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight4);
         LimelightHelpers.PoseEstimate limelight3gPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight3g);
+
+
+        limelight3gField.setRobotPose(limelight3gPose.pose);
+        limelight4Field.setRobotPose(limelight4Pose.pose);
+        SmartDashboard.putData("Limelight 4 Field", limelight4Field);
+        SmartDashboard.putData("Limelight 3g Field", limelight3gField);
+
         if(limelight4Pose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight4Pose.tagCount == 0)){
             drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
             drive.addVisionMeasurement(limelight4Pose.pose, limelight4Pose.timestampSeconds);
         }
-        if(limelight3gPose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight3gPose.tagCount == 0)){
-            drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
-            drive.addVisionMeasurement(limelight3gPose.pose, limelight3gPose.timestampSeconds);
-        }
+        // if(limelight3gPose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight3gPose.tagCount == 0)){
+        //     drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
+        //     drive.addVisionMeasurement(limelight3gPose.pose, limelight3gPose.timestampSeconds);
+        // }
         field.setRobotPose(currentPose);
         SmartDashboard.putData("field", field);
         Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));
