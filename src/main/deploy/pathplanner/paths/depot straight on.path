@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3311554921540654,
+        "x": 2.331155492154065,
         "y": 5.917574893009986
       },
       "isLocked": false,
@@ -23,22 +23,6 @@
         "x": 1.2705659158908598,
         "y": 5.969329529243937
       },
-      "nextControl": {
-        "x": 0.02807417974322368,
-        "y": 5.969329529243937
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.9429957203994292,
-        "y": 5.322396576319543
-      },
-      "prevControl": {
-        "x": 1.360756062767475,
-        "y": 5.374151212553495
-      },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
@@ -50,12 +34,26 @@
       "rotationDegrees": 180.0
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.5536799459824381,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "before depot",
-      "waypointRelativePos": 0.3349088453747592,
+      "waypointRelativePos": 0.44294395678595294,
       "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",
@@ -71,24 +69,6 @@
               "type": "named",
               "data": {
                 "name": "intake run"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "after depot",
-      "waypointRelativePos": 1.7231600270087384,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "intake up"
               }
             }
           ]
