@@ -4,9 +4,10 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.CANdle;
-import com.ctre.phoenix6.signals.StripTypeValue;
 import com.ctre.phoenix6.signals.RGBWColor;
 import com.ctre.phoenix6.signals.StatusLedWhenActiveValue;
+import com.ctre.phoenix6.signals.StripTypeValue;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -18,23 +19,20 @@ public class LedSubsystem extends SubsystemBase {
   // Constants
   private static final int    CANDLE_ID      = 5;
   private static final int    LED_COUNT      = 58;
-  private static final double BLINK_PERIOD   = 0.25;  // seconds per half-cycle
-  private static final double WARN_THRESHOLD = 7.0;   // seconds before shift to start blinking
+  private static final double BLINK_PERIOD   = 0.25;
+  private static final double WARN_THRESHOLD = 7.0;
 
-  // Alliance colors
-  private static final RGBWColor RED   = new RGBWColor(255, 0, 0, 0);
-  // private static final RGBWColor RED   = new RGBWColor(200, 50, 0, 0);
-  private static final RGBWColor BLUE  = new RGBWColor(255, 0, 0, 0);
-
-  // Active (hub open) color
-  private static final RGBWColor GREEN = new RGBWColor(0, 255, 0, 0);
-
-  // Off
-  private static final RGBWColor OFF   = new RGBWColor(0, 0, 0, 0);
-  // No-DS-connection idle color
-  private static final RGBWColor IDLE  = new RGBWColor(20, 20, 20, 0);
+  private static final RGBWColor RED  = new RGBWColor(255, 0, 0, 0);
+  private static final RGBWColor BLUE = new RGBWColor(255, 0, 0, 0);
+  private static final RGBWColor GREEN = new RGBWColor(0,   255, 0,   0);
+  private static final RGBWColor OFF  = new RGBWColor(0,   0,   0,   0);
+  private static final RGBWColor IDLE = new RGBWColor(20,  20,  20,  0);
 
   private static final double[] SHIFT_ENDS = { 130.0, 105.0, 80.0, 55.0, 30.0 };
+
+  // Transition shift runs from 140s → 130s remaining
+  private static final double TRANSITION_START = 140.0;
+  private static final double TRANSITION_END   = 130.0;
 
   // Hardware
   private final CANdle     m_candle;
@@ -60,14 +58,24 @@ public class LedSubsystem extends SubsystemBase {
     Optional<Alliance> allianceOpt = DriverStation.getAlliance();
 
     if (allianceOpt.isEmpty()) {
-      // DS not connected. dim pulse to confirm LEDs are alive
       pulse(IDLE, 2.0);
       return;
     }
 
     Alliance alliance = allianceOpt.get();
-    boolean  active   = isHubActive(alliance);
-    boolean  warning  = isShiftChangeSoon();
+
+    // Transition shift: rainbow if we won auto, solid alliance color if we lost
+    if (isTransitionShift()) {
+      if (wonAuto(alliance)) {
+        rainbow(2.0);
+      } else {
+        setColor(alliance == Alliance.Red ? RED : BLUE);
+      }
+      return;
+    }
+
+    boolean active  = isHubActive(alliance);
+    boolean warning = isShiftChangeSoon();
 
     if      ( active && !warning) setColor(GREEN);
     else if ( active &&  warning) blink(GREEN);
@@ -75,16 +83,34 @@ public class LedSubsystem extends SubsystemBase {
     else                          blink(alliance == Alliance.Red ? RED : BLUE);
   }
 
-  // Hub activity logic
+  // Game logic
+
+  public boolean isTransitionShift() {
+    if (!DriverStation.isTeleopEnabled()) return false;
+    double matchTime = DriverStation.getMatchTime();
+    if (matchTime < 0) return false;
+    return matchTime > TRANSITION_END && matchTime <= TRANSITION_START;
+  }
+
+  public boolean wonAuto(Alliance alliance) {
+    String gameData = DriverStation.getGameSpecificMessage();
+    if (gameData == null || gameData.isEmpty()) return false;
+
+    switch (gameData.charAt(0)) {
+      case 'R' -> { return alliance == Alliance.Red;  }
+      case 'B' -> { return alliance == Alliance.Blue; }
+      default  -> { return false; }
+    }
+  }
 
   public boolean isHubActive(Alliance alliance) {
     if (DriverStation.isAutonomousEnabled()) return true;
     if (!DriverStation.isTeleopEnabled())    return false;
 
     double matchTime = DriverStation.getMatchTime();
-    if (matchTime < 0) return true; // practice mode — no real match time
+    if (matchTime < 0) return true;
 
-    if (matchTime > 130 || matchTime <= 30) return true; // Transition or End Game
+    if (matchTime > 130 || matchTime <= 30) return true;
 
     String gameData = DriverStation.getGameSpecificMessage();
     if (gameData == null || gameData.isEmpty()) return true;
@@ -137,5 +163,28 @@ public class LedSubsystem extends SubsystemBase {
         (int)(base.Green * brightness),
         (int)(base.Blue  * brightness),
         0)));
+  }
+
+  private void rainbow(double cycleSec) {
+    int hueOffset = (int)((m_timer.get() / cycleSec) * 360) % 360;
+    for (int i = 0; i < LED_COUNT; i++) {
+      int hue = (hueOffset + (int)((double) i / LED_COUNT * 360)) % 360;
+      int[] rgb = hsvToRgb(hue, 1.0, 1.0);
+      m_candle.setLEDs(rgb[0], rgb[1], rgb[2], 0, i, 1);
+    }
+  }
+
+  private int[] hsvToRgb(int h, double s, double v) {
+    double c  = v * s;
+    double x  = c * (1 - Math.abs((h / 60.0) % 2 - 1));
+    double m  = v - c;
+    double r1, g1, b1;
+    if      (h < 60)  { r1 = c; g1 = x; b1 = 0; }
+    else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
+    else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
+    else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
+    else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
+    else              { r1 = c; g1 = 0; b1 = x; }
+    return new int[]{ (int)((r1 + m) * 255), (int)((g1 + m) * 255), (int)((b1 + m) * 255) };
   }
 }

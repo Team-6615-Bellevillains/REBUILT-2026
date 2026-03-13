@@ -54,10 +54,10 @@ public class SnowblowCommand extends Command {
 
         Pose2d robotPose = poseSupplier.get();
         Translation2d turretPosition = Utils.calculateTurretTranslation(robotPose);
-        turret.aimAt(snowblowTarget);
+        turret.aimAtSnowblowing(snowblowTarget);
         shooter.setPoint(shooter.getRPMFromDistance(Meters.of(turretPosition.getDistance(snowblowTarget))));
 
-        if (shooter.atSetPoint() && turret.atTarget()) {
+        if (shooter.atSetPoint() && turret.atSnowblowingTarget()) {
             indexer.setState(IndexerSubsystem.State.SHOOT);
         } else {
             indexer.setState(IndexerSubsystem.State.OFF);

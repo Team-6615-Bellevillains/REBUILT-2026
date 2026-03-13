@@ -36,6 +36,7 @@ public class TurretSubsystem extends SubsystemBase {
     private static final double SOFT_LIMIT_BUFFER       =  5.0;
     private static final double OUTPUT_LIMIT            =  0.5;
     private static final double ANGLE_TOLERANCE         =  0.1;
+    private static final double SNOWBLOWING_TOLERANCE   =  5.0;
 
     private static final double kP = 0.005;
     private static final double kI = 0.0;  
@@ -62,6 +63,7 @@ public class TurretSubsystem extends SubsystemBase {
     private TurretState state          = TurretState.HOMING_TO_MIN;
     private double      targetAngle    = 0;
     private boolean     shootAllowed   = false;
+    private boolean     snowblowingMode = false;
 
 
     // Last known hub — fallback if alliance data drops mid-match
@@ -146,7 +148,7 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public void ifAtSetpointTurnOff(){
-        if (atTarget()){
+        if (snowblowingMode ? atSnowblowingTarget() : atTarget()){
             motor.set(0);
         }
     }
@@ -154,12 +156,18 @@ public class TurretSubsystem extends SubsystemBase {
     // Calculates robot-relative angle to hub and commands the turret
     public void aimAt(Translation2d target) {
         if (!isHomed()) return;
+        snowblowingMode = false;
         Translation2d robot = Utils.calculateTurretTranslation(robotPoseSupplier.get());
         Translation2d diff = target.minus(robot);
         Rotation2d fieldAngle = diff.getAngle();
         Rotation2d robotAngle = fieldAngle.minus(robotPoseSupplier.get().getRotation());
         double turretAngle = MathUtil.inputModulus(robotAngle.getDegrees(), 0, 360);
         setTargetAngle(-turretAngle);
+    }
+
+    public void aimAtSnowblowing(Translation2d target) {
+        aimAt(target);
+        snowblowingMode = true;
     }
 
     public void aimAtHub() {
@@ -211,6 +219,7 @@ public class TurretSubsystem extends SubsystemBase {
     public void rehome() {
         applySoftLimits(false);
         shootAllowed = false;
+        snowblowingMode = false;
         state = TurretState.HOMING_TO_MIN;
     }
 
@@ -226,6 +235,7 @@ public class TurretSubsystem extends SubsystemBase {
     public double  getCurrentAngle()             { return encoder.getPosition(); }
     public boolean isHomed()                     { return state == TurretState.HOMED || state == TurretState.TRACKING; }
     public boolean atTarget()                    { return isHomed() && Math.abs(getCurrentAngle() - targetAngle) < ANGLE_TOLERANCE; }
+    public boolean atSnowblowingTarget()         { return isHomed() && Math.abs(getCurrentAngle() - targetAngle) < SNOWBLOWING_TOLERANCE; }
 
     private void publishTelemetry() {
         ntCurrentAngle.set(getCurrentAngle());
