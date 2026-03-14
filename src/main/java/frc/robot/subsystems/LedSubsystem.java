@@ -7,7 +7,6 @@ import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.RGBWColor;
 import com.ctre.phoenix6.signals.StatusLedWhenActiveValue;
 import com.ctre.phoenix6.signals.StripTypeValue;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -63,16 +62,6 @@ public class LedSubsystem extends SubsystemBase {
     }
 
     Alliance alliance = allianceOpt.get();
-
-    // Transition shift: rainbow if we won auto, solid alliance color if we lost
-    if (isTransitionShift()) {
-      if (wonAuto(alliance)) {
-        rainbow(2.0);
-      } else {
-        setColor(alliance == Alliance.Red ? RED : BLUE);
-      }
-      return;
-    }
 
     boolean active  = isHubActive(alliance);
     boolean warning = isShiftChangeSoon();
@@ -163,28 +152,5 @@ public class LedSubsystem extends SubsystemBase {
         (int)(base.Green * brightness),
         (int)(base.Blue  * brightness),
         0)));
-  }
-
-  private void rainbow(double cycleSec) {
-    int hueOffset = (int)((m_timer.get() / cycleSec) * 360) % 360;
-    for (int i = 0; i < LED_COUNT; i++) {
-      int hue = (hueOffset + (int)((double) i / LED_COUNT * 360)) % 360;
-      int[] rgb = hsvToRgb(hue, 1.0, 1.0);
-      m_candle.setLEDs(rgb[0], rgb[1], rgb[2], 0, i, 1);
-    }
-  }
-
-  private int[] hsvToRgb(int h, double s, double v) {
-    double c  = v * s;
-    double x  = c * (1 - Math.abs((h / 60.0) % 2 - 1));
-    double m  = v - c;
-    double r1, g1, b1;
-    if      (h < 60)  { r1 = c; g1 = x; b1 = 0; }
-    else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
-    else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
-    else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
-    else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
-    else              { r1 = c; g1 = 0; b1 = x; }
-    return new int[]{ (int)((r1 + m) * 255), (int)((g1 + m) * 255), (int)((b1 + m) * 255) };
   }
 }
