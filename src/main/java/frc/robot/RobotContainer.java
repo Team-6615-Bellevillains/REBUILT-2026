@@ -82,8 +82,8 @@ public class RobotContainer {
     // Driver Controls
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
     driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
-    driverController.leftBumper().whileTrue(climberSubsystem.climb(0.3));
-    driverController.rightBumper().whileTrue(climberSubsystem.climb(-0.3));
+    driverController.leftBumper().whileTrue(climberSubsystem.climb(0.6));
+    driverController.rightBumper().whileTrue(climberSubsystem.climb(-0.6));
     driverController.y().onTrue(Commands.runOnce(() -> {
         double newAngleDegrees = SmartDashboard.getNumber("Starting Angle (Degrees)", 0);
         Translation2d currentTranslation = swerveSubsystem.getPose().getTranslation();
