@@ -157,12 +157,12 @@ public class TurretSubsystem extends SubsystemBase {
     public void aimAt(Translation2d target) {
         if (!isHomed()) return;
         snowblowingMode = false;
-        Translation2d robot = Utils.calculateTurretTranslation(robotPoseSupplier.get());
-        Translation2d diff = target.minus(robot);
+        Translation2d turret = Utils.calculateTurretTranslation(robotPoseSupplier.get());
+        Translation2d diff = target.minus(turret);
         Rotation2d fieldAngle = diff.getAngle();
-        Rotation2d robotAngle = fieldAngle.minus(robotPoseSupplier.get().getRotation());
-        double turretAngle = MathUtil.inputModulus(robotAngle.getDegrees(), 0, 360);
-        setTargetAngle(-turretAngle);
+        Rotation2d turretAngle = fieldAngle.minus(robotPoseSupplier.get().getRotation());
+        double turretAngleDouble = MathUtil.inputModulus(turretAngle.getDegrees(), 0, 360);
+        setTargetAngle(-turretAngleDouble+2.5);
     }
 
     public void aimAtSnowblowing(Translation2d target) {
