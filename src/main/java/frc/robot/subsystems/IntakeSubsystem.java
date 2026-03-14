@@ -33,7 +33,7 @@ public class IntakeSubsystem extends SubsystemBase{
     private int nonLimitedAngleCurrent = PULL_IN_ANGLE_CURRENT;
     private boolean shouldRunWheelsInIntakeDirection = false;
     private final Supplier<ChassisSpeeds> getRobotRelativeVelocity;
-    private final double IN_WHEEL_DUTY_CYCLE = 0.05;
+    private final double IN_WHEEL_DUTY_CYCLE = -0.05;
 
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
