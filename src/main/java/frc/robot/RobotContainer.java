@@ -116,6 +116,7 @@ public class RobotContainer {
 
   private void registerNamedCommands(){
     NamedCommands.registerCommand("shootfor7s", Commands.deadline(Commands.waitSeconds(5), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
+    NamedCommands.registerCommand("shoot continuous", new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget));
     NamedCommands.registerCommand("intake down", intakeSubsystem.setStateCommand(State.OUT));
     NamedCommands.registerCommand("intake up", intakeSubsystem.setStateCommand(State.MID_HOLD));
     NamedCommands.registerCommand("aim", Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
