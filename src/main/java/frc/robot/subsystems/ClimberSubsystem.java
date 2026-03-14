@@ -20,7 +20,7 @@ public class ClimberSubsystem extends SubsystemBase {
         SoftLimitConfig softLimitConfig = new SoftLimitConfig();
         //TODO: get actual soft-limit values
         softLimitConfig.forwardSoftLimit(0);
-        softLimitConfig.reverseSoftLimit(335.42);
+        softLimitConfig.reverseSoftLimit(-422.23);
         softLimitConfig.forwardSoftLimitEnabled(true);
         softLimitConfig.reverseSoftLimitEnabled(true);
         config.softLimit.apply(softLimitConfig);
