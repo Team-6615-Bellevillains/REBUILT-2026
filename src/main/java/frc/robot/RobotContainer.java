@@ -78,6 +78,8 @@ public class RobotContainer {
   private void configureBindings() {
     // Swerve
     swerveSubsystem.setDefaultCommand(swerveSubsystem.driveCommand(driveAngularVelocity, driverController.povUp()));
+    // always aim at hub
+    turretSubsystem.setDefaultCommand(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
 
     // Driver Controls
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
