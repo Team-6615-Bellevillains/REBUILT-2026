@@ -52,8 +52,8 @@
         "y": 0.6644793152639101
       },
       "prevControl": {
-        "x": 7.97241084165478,
-        "y": 0.4962767475035662
+        "x": 8.87811697574893,
+        "y": -0.008330955777460125
       },
       "nextControl": null,
       "isLocked": false,
@@ -89,7 +89,7 @@
   "eventMarkers": [
     {
       "name": "in neutral zone",
-      "waypointRelativePos": 0.44564483457122533,
+      "waypointRelativePos": 0.2430790006752299,
       "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",
@@ -108,17 +108,6 @@
               }
             }
           ]
-        }
-      }
-    },
-    {
-      "name": "post intake",
-      "waypointRelativePos": 2.852126941255875,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "intake up"
         }
       }
     }
