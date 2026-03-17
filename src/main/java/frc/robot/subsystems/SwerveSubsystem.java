@@ -16,10 +16,12 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.BaseUnits;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -30,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+import frc.robot.Robot;
 import frc.robot.Utils;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
@@ -38,7 +41,9 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 
 public class SwerveSubsystem extends SubsystemBase{
-    
+    double roboX;
+    double roboY;
+    Translation2d robotPosition;
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     private SwerveDrive drive;
     String limelight3g = "limelight-threeg";
@@ -185,6 +190,18 @@ public class SwerveSubsystem extends SubsystemBase{
         return drive.getPose();
     }
 
+    public double getX(){
+        return this.getX();
+    }
+
+    public double getY(){
+        return this.getY();
+    }
+
+    public boolean contains(Translation2d Translation2d){
+       return this.contains(Translation2d);
+    }
+
     public ChassisSpeeds getFieldRelativeVelocity(){
         return drive.getFieldVelocity();
     }
@@ -192,6 +209,19 @@ public class SwerveSubsystem extends SubsystemBase{
     public ChassisSpeeds getRobotRelativeVelocity(){
         return drive.getRobotVelocity();
     }
+
+Rectangle2d AllienceZone = new Rectangle2d(getPose(), 180, 316.64);
+    public boolean inAllienceZone(){
+        roboX = this.getX();
+        roboY = this.getY();
+        Translation2d robotPosition = new Translation2d( roboX,  roboY);
+        if (this.contains(this.robotPosition)); {
+            return true;
+        }
+
+        
+    
+    } 
 
     private static final Rotation2d shooterAngle = TURRET_OFFSET.getAngle();
     private static final double shooterDistance = TURRET_OFFSET.getNorm();
