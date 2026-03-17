@@ -74,15 +74,12 @@ public class RobotContainer {
 
     configureBindings();
   }
-  private boolean inAllienceZone(){
-    return this.inAllienceZone();
-  }
 
   private void configureBindings() {
     // Swerve
     swerveSubsystem.setDefaultCommand(swerveSubsystem.driveCommand(driveAngularVelocity, driverController.povUp()));
     // always aim at hub
-    turretSubsystem.setDefaultCommand(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem)).onlywhile(this.inAllienceZone());
+    turretSubsystem.setDefaultCommand(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem)).onlyWhile(SwerveSubsystem::inAllianceZone);
 
     // Driver Controls
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());

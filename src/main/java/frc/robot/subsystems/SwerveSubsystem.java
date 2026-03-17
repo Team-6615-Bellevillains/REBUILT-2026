@@ -41,9 +41,6 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 
 public class SwerveSubsystem extends SubsystemBase{
-    double roboX;
-    double roboY;
-    Translation2d robotPosition;
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     private SwerveDrive drive;
     String limelight3g = "limelight-threeg";
@@ -190,14 +187,6 @@ public class SwerveSubsystem extends SubsystemBase{
         return drive.getPose();
     }
 
-    public double getX(){
-        return this.getX();
-    }
-
-    public double getY(){
-        return this.getY();
-    }
-
     public boolean contains(Translation2d Translation2d){
        return this.contains(Translation2d);
     }
@@ -210,17 +199,12 @@ public class SwerveSubsystem extends SubsystemBase{
         return drive.getRobotVelocity();
     }
 
-Rectangle2d AllienceZone = new Rectangle2d(getPose(), 180, 316.64);
-    public boolean inAllienceZone(){
-        roboX = this.getX();
-        roboY = this.getY();
-        Translation2d robotPosition = new Translation2d( roboX,  roboY);
-        if (this.contains(this.robotPosition)); {
+Rectangle2d AllianceZone = new Rectangle2d(getPose(), 180, 316.64);
+    public boolean inAllianceZone(){   
+        if (AllianceZone.contains(getPose().getTranslation())); {
             return true;
         }
 
-        
-    
     } 
 
     private static final Rotation2d shooterAngle = TURRET_OFFSET.getAngle();
