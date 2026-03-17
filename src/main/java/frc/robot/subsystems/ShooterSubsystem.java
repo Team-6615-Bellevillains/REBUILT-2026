@@ -2,10 +2,14 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.io.ObjectInputFilter.Config;
 import java.util.function.BooleanSupplier;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.EncoderConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -35,6 +39,9 @@ public class ShooterSubsystem extends SubsystemBase{
 
     private AngularVelocity setPoint = RPM.of(0);
 
+    private SparkBaseConfig sparkConfig = new SparkFlexConfig().apply(new EncoderConfig().uvwMeasurementPeriod(10));
+    
+    
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
         .withControlMode(ControlMode.CLOSED_LOOP)
         // feedback constants
@@ -51,7 +58,8 @@ public class ShooterSubsystem extends SubsystemBase{
         .withMotorInverted(false)
         .withIdleMode(MotorMode.COAST)
         .withStatorCurrentLimit(Amps.of(40))
-        .withFollowers(Pair.of(shooterRight, true));
+        .withFollowers(Pair.of(shooterRight, true))
+        .withVendorConfig(sparkConfig);
 
     private SmartMotorController shooterController = new SparkWrapper(shooterLeft, DCMotor.getNEO(1), smcConfig);
 
