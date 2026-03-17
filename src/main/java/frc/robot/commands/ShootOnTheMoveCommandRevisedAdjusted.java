@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Utils;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -26,6 +27,7 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
   private final SwerveSubsystem drivetrain;
   private final ShooterSubsystem shooter;
   private final TurretSubsystem turret;
+  private final IndexerSubsystem indexer;
 
   private final LinearFilter turretAngleFilter =
       LinearFilter.movingAverage((int) (0.1 / /*loop secs*/0.01));
@@ -58,27 +60,28 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
     phaseDelay = 0.03; // should be .13?
 
     //TODO: populate with real values
-    launchFlywheelSpeedMap.put(2.12923, 2725.0);
-    launchFlywheelSpeedMap.put(2.504222, 2800.0);
-    launchFlywheelSpeedMap.put(2.889, 2950.0);
-    launchFlywheelSpeedMap.put(3.254686, 3085.0);
-    launchFlywheelSpeedMap.put(3.695324, 3200.0);
-    launchFlywheelSpeedMap.put(3.983757, 3320.0);
-    launchFlywheelSpeedMap.put(4.498437, 3475.0);
-    launchFlywheelSpeedMap.put(4.986071, 3675.0);
+    launchFlywheelSpeedMap.put(2.4384, 2725d);
+    launchFlywheelSpeedMap.put(3.048, 3000d);
+    launchFlywheelSpeedMap.put(3.6576, 3225d);
+    launchFlywheelSpeedMap.put(4.2672, 3450d);
+    launchFlywheelSpeedMap.put(4.8768, 3675d);
+    launchFlywheelSpeedMap.put(5.4864, 4250d);
 
-    timeOfFlightMap.put(5.68, 1.16);
-    timeOfFlightMap.put(4.55, 1.12);
-    timeOfFlightMap.put(3.15, 1.11);
-    timeOfFlightMap.put(1.88, 1.09);
-    timeOfFlightMap.put(1.38, 0.90);
+    timeOfFlightMap.put(2.4384, 0.98);
+    timeOfFlightMap.put(3.048, 1.16);
+    timeOfFlightMap.put(3.6576, 1.265);
+    timeOfFlightMap.put(4.2672, 1.4);
+    timeOfFlightMap.put(4.8768, 1.42);
+    timeOfFlightMap.put(5.4864, 1.47);
+
   }
 
   public ShootOnTheMoveCommandRevisedAdjusted(
-      SwerveSubsystem drivetrain, TurretSubsystem turret, ShooterSubsystem shooter) {
+      SwerveSubsystem drivetrain, TurretSubsystem turret, ShooterSubsystem shooter, IndexerSubsystem indexer) {
     this.drivetrain = drivetrain;
     this.turret = turret;
     this.shooter = shooter;
+    this.indexer = indexer;
   }
 
   @Override
@@ -158,13 +161,15 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
     lastShootSpeed = RPM.of(launchFlywheelSpeedMap.get(lookaheadTurretToTargetDistance));
     // SmartDashboard.putNumber("distance to turret", lookaheadTurretToTargetDistance);
     shooter.setPoint(RPM.of(launchFlywheelSpeedMap.get(lookaheadTurretToTargetDistance)));
-    turret.setTargetAngle(turretAngle.getDegrees());
+    turret.aimAtFromTurretPosition(target, lookaheadPose);
     
 
     SmartDashboard.putNumber("Distance to Target", lookaheadTurretToTargetDistance);
+    indexer.setState(IndexerSubsystem.State.SHOOT);
   }
 
   @Override
   public void end(boolean interupted) {
+    indexer.setState(IndexerSubsystem.State.OFF);
   }
 }

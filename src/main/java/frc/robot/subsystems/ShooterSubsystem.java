@@ -9,7 +9,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -39,7 +39,7 @@ public class ShooterSubsystem extends SubsystemBase{
 
     private AngularVelocity setPoint = RPM.of(0);
 
-    private SparkBaseConfig sparkConfig = new SparkFlexConfig().apply(new EncoderConfig().uvwMeasurementPeriod(10));
+    private SparkBaseConfig sparkConfig = new SparkMaxConfig().apply(new EncoderConfig().uvwMeasurementPeriod(10));
     
     
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)

@@ -165,6 +165,17 @@ public class TurretSubsystem extends SubsystemBase {
         setTargetAngle(-turretAngleDouble+2.5);
     }
 
+    public void aimAtFromTurretPosition(Translation2d target, Pose2d position) {
+        if (!isHomed()) return;
+        snowblowingMode = false;
+        Translation2d turret = position.getTranslation();
+        Translation2d diff = target.minus(turret);
+        Rotation2d fieldAngle = diff.getAngle();
+        Rotation2d turretAngle = fieldAngle.minus(position.getRotation());
+        double turretAngleDouble = MathUtil.inputModulus(turretAngle.getDegrees(), 0, 360);
+        setTargetAngle(-turretAngleDouble);
+    }
+
     public void aimAtSnowblowing(Translation2d target) {
         aimAt(target);
         snowblowingMode = true;
