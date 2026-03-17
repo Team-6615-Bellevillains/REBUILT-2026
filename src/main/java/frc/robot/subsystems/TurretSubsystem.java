@@ -232,13 +232,14 @@ public class TurretSubsystem extends SubsystemBase {
     public double  getDistanceToHub()            { return robotPoseSupplier.get().getTranslation().getDistance(getActiveHub()); }
     public boolean canShoot()                    { return isHomed() && shootAllowed; }
     public boolean isTargetReachable(double deg) { return deg >= MIN_ANGLE && deg <= MAX_ANGLE; }
-    public double  getCurrentAngle()             { return encoder.getPosition(); }
+    /* in degrees */
+    public double  getCurrentAngleDegrees()             { return encoder.getPosition(); }
     public boolean isHomed()                     { return state == TurretState.HOMED || state == TurretState.TRACKING; }
-    public boolean atTarget()                    { return isHomed() && Math.abs(getCurrentAngle() - targetAngle) < ANGLE_TOLERANCE; }
-    public boolean atSnowblowingTarget()         { return isHomed() && Math.abs(getCurrentAngle() - targetAngle) < SNOWBLOWING_TOLERANCE; }
+    public boolean atTarget()                    { return isHomed() && Math.abs(getCurrentAngleDegrees() - targetAngle) < ANGLE_TOLERANCE; }
+    public boolean atSnowblowingTarget()         { return isHomed() && Math.abs(getCurrentAngleDegrees() - targetAngle) < SNOWBLOWING_TOLERANCE; }
 
     private void publishTelemetry() {
-        ntCurrentAngle.set(getCurrentAngle());
+        ntCurrentAngle.set(getCurrentAngleDegrees());
         ntTargetAngle.set(targetAngle);
         ntMotorCurrent.set(motor.getOutputCurrent());
         ntDistanceToHub.set(getDistanceToHub());
