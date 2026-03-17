@@ -43,7 +43,7 @@ public class ShootDistanceBasedCommand extends Command {
         Distance distanceToHub = Meters.of(turretPosition.getDistance(hubPosition));
         shooter.setPoint(shooter.getRPMFromDistance(distanceToHub));
         if (shooter.atSetPoint() && turretAimed.getAsBoolean()) indexerOn();
-        else indexerOff();
+        //else indexerOff();
     }
 
     @Override
