@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ShootAtRPMCommand;
 import frc.robot.commands.ShootDistanceBasedCommand;
+import frc.robot.commands.ShootOnTheMoveCommandRevisedAdjusted;
 import frc.robot.commands.SnowblowCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -84,11 +85,11 @@ public class RobotContainer {
     driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
     driverController.leftBumper().whileTrue(climberSubsystem.climb(1));
     driverController.rightBumper().whileTrue(climberSubsystem.climb(-1));
-    driverController.y().onTrue(Commands.runOnce(() -> {
-        double newAngleDegrees = SmartDashboard.getNumber("Starting Angle (Degrees)", 0);
-        Translation2d currentTranslation = swerveSubsystem.getPose().getTranslation();
-        swerveSubsystem.resetPose(new Pose2d(currentTranslation, Rotation2d.fromDegrees(newAngleDegrees)));
-    }));
+    // driverController.y().onTrue(Commands.runOnce(() -> {
+    //     double newAngleDegrees = SmartDashboard.getNumber("Starting Angle (Degrees)", 0);
+    //     Translation2d currentTranslation = swerveSubsystem.getPose().getTranslation();
+    //     swerveSubsystem.resetPose(new Pose2d(currentTranslation, Rotation2d.fromDegrees(newAngleDegrees)));
+    // }));
     SmartDashboard.putNumber("Starting Angle (Degrees)", 0);
 
     // Operator - Intake
@@ -101,10 +102,11 @@ public class RobotContainer {
     operatorController.rightTrigger().whileTrue(new SnowblowCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem));
     operatorController.rightTrigger().onFalse(shooterSubsystem.stopCommand());
     
-    operatorController.rightBumper().whileTrue(
-        new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)
-            .alongWith(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem))
-    );
+    // operatorController.rightBumper().whileTrue(
+    //     new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)
+    //         .alongWith(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem))
+    // );
+    operatorController.rightBumper().whileTrue(new ShootOnTheMoveCommandRevisedAdjusted(swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem));
     operatorController.rightBumper().onFalse(shooterSubsystem.stopCommand());
     
     // Operator - Indexer
