@@ -21,7 +21,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.BaseUnits;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -32,7 +31,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
-import frc.robot.Robot;
 import frc.robot.Utils;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
@@ -49,6 +47,7 @@ public class SwerveSubsystem extends SubsystemBase{
     private Field2d field = new Field2d();
     private Field2d limelight3gField = new Field2d();
     private Field2d limelight4Field = new Field2d();
+    Rectangle2d AllianceZone = new Rectangle2d(getPose(), AllianceZoneX, AllianceZoneY);
 
     public SwerveSubsystem(){
         try {
@@ -187,10 +186,6 @@ public class SwerveSubsystem extends SubsystemBase{
         return drive.getPose();
     }
 
-    public boolean contains(Translation2d Translation2d){
-       return this.contains(Translation2d);
-    }
-
     public ChassisSpeeds getFieldRelativeVelocity(){
         return drive.getFieldVelocity();
     }
@@ -199,12 +194,9 @@ public class SwerveSubsystem extends SubsystemBase{
         return drive.getRobotVelocity();
     }
 
-Rectangle2d AllianceZone = new Rectangle2d(getPose(), 180, 316.64);
-    public boolean inAllianceZone(){   
-        if (AllianceZone.contains(getPose().getTranslation())); {
-            return true;
-        }
 
+    public boolean inAllianceZone(Translation2d Trans2d_Point){   
+        return (AllianceZone.contains(Trans2d_Point)); 
     } 
 
     private static final Rotation2d shooterAngle = TURRET_OFFSET.getAngle();
