@@ -86,6 +86,7 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
     this.shooter = shooter;
     this.indexer = indexer;
     this.targetSupplier = targetSupplier;
+    this.addRequirements(drivetrain, turret, shooter, indexer);
   }
 
   @Override
@@ -169,11 +170,49 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
     
 
     SmartDashboard.putNumber("Distance to Target", lookaheadTurretToTargetDistance);
-    indexer.setState(IndexerSubsystem.State.SHOOT);
+
+    if (turret.canShoot()) {
+      indexer.setState(IndexerSubsystem.State.SHOOT);
+    } else {
+      indexer.setState(IndexerSubsystem.State.OFF);
+    }
   }
 
   @Override
   public void end(boolean interupted) {
     indexer.setState(IndexerSubsystem.State.OFF);
+  }
+
+  public static Translation2d calculateLookaheadTarget( // For autoaiming
+        SwerveSubsystem drivetrain, Translation2d target) {
+    Pose2d estimatedPose = drivetrain.getPose();
+    ChassisSpeeds robotRelativeVelocity = drivetrain.getRobotVelocity();
+    estimatedPose = estimatedPose.exp(new Twist2d(
+        robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
+        robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
+        robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
+
+    Pose2d turretPosition = new Pose2d(
+        Utils.calculateTurretTranslation(estimatedPose), estimatedPose.getRotation());
+
+    ChassisSpeeds robotVelocity = drivetrain.getFieldRelativeVelocity();
+    double robotAngle = estimatedPose.getRotation().getRadians();
+    double turretVelocityX = robotVelocity.vxMetersPerSecond + robotVelocity.omegaRadiansPerSecond
+        * (Constants.TURRET_OFFSET.getY() * Math.cos(robotAngle) 
+        -  Constants.TURRET_OFFSET.getX() * Math.sin(robotAngle));
+    double turretVelocityY = robotVelocity.vyMetersPerSecond + robotVelocity.omegaRadiansPerSecond
+        * (Constants.TURRET_OFFSET.getX() * Math.cos(robotAngle) 
+        -  Constants.TURRET_OFFSET.getY() * Math.sin(robotAngle));
+
+    Pose2d lookaheadPose = turretPosition;
+    for (int i = 0; i < 20; i++) {
+        double dist = target.getDistance(lookaheadPose.getTranslation());
+        double tof = timeOfFlightMap.get(dist);
+        lookaheadPose = new Pose2d(
+            turretPosition.getTranslation().plus(
+                new Translation2d(turretVelocityX * tof, turretVelocityY * tof)),
+            turretPosition.getRotation());
+    }
+      return lookaheadPose.getTranslation();
   }
 }

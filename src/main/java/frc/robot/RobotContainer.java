@@ -100,15 +100,49 @@ public class RobotContainer {
     operatorController.leftBumper().onFalse(intakeSubsystem.setWheelsCommand(false));
 
     // Operator - Shooter
-    operatorController.rightTrigger().whileTrue(new SnowblowCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem));
+    operatorController.rightTrigger().whileTrue( // SNOW BLOWING AND SHOOTING
+      new ShootOnTheMoveCommandRevisedAdjusted(
+          swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem,
+          () -> {
+              Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+              Pose2d pose = swerveSubsystem.getPose();
+              double x = pose.getTranslation().getX();
+              boolean inOwnZone = (alliance == Alliance.Blue && x < Constants.BLUE_ALLIANCE_ZONE_MAX_X)
+                              || (alliance == Alliance.Red  && x > Constants.RED_ALLIANCE_ZONE_MIN_X);
+              if (inOwnZone) return Utils.getHubCenter(alliance);
+              double robotY = pose.getTranslation().getY();
+              double hubX = Utils.getHubCenter(alliance).getX();
+              return (robotY < Constants.FIELD_HALF_Y)
+                  ? new Translation2d(hubX, Constants.SNOWBLOW_NEG_Y)
+                  : new Translation2d(hubX, Constants.SNOWBLOW_POS_Y);
+          }
+      )
+    );
     operatorController.rightTrigger().onFalse(shooterSubsystem.stopCommand());
-    
-    // operatorController.rightBumper().whileTrue(
-    //     new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)
-    //         .alongWith(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem))
-    // );
-    operatorController.rightBumper().whileTrue(new ShootOnTheMoveCommandRevisedAdjusted(swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem, ()->Utils.getHubCenter(DriverStation.getAlliance().orElse(Alliance.Blue))));
-    operatorController.rightBumper().onFalse(shooterSubsystem.stopCommand());
+
+    turretSubsystem.setDefaultCommand(Commands.run(() -> { // AUTOAIMING
+      Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+      Pose2d pose = swerveSubsystem.getPose();
+      double x = pose.getTranslation().getX();
+
+      boolean inOwnZone = (alliance == Alliance.Blue && x < Constants.BLUE_ALLIANCE_ZONE_MAX_X)
+                       || (alliance == Alliance.Red  && x > Constants.RED_ALLIANCE_ZONE_MIN_X);
+
+      Translation2d target;
+      if (inOwnZone) {
+          target = Utils.getHubCenter(alliance);
+      } else {
+          double robotY = pose.getTranslation().getY();
+          double hubX = Utils.getHubCenter(alliance).getX();
+          target = (robotY < Constants.FIELD_HALF_Y)
+              ? new Translation2d(hubX, Constants.SNOWBLOW_NEG_Y)
+              : new Translation2d(hubX, Constants.SNOWBLOW_POS_Y);
+      }
+
+      Translation2d lookahead = ShootOnTheMoveCommandRevisedAdjusted
+          .calculateLookaheadTarget(swerveSubsystem, target);
+      turretSubsystem.aimAtFromTurretPosition(lookahead, swerveSubsystem.getPose());
+    }, turretSubsystem));
     
     // Operator - Indexer
     operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
