@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Utils;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -26,6 +27,8 @@ public class SnowblowCommand extends Command {
     private final IndexerSubsystem indexer;
     private final TurretSubsystem  turret;
 
+    private final Timer m_timer = new Timer();
+
     public SnowblowCommand(Supplier<Pose2d> poseSupplier, ShooterSubsystem shooter,
                            IndexerSubsystem indexer, TurretSubsystem turret) {
         this.poseSupplier = poseSupplier;
@@ -38,6 +41,8 @@ public class SnowblowCommand extends Command {
     @Override
     public void initialize() {
         indexer.setState(IndexerSubsystem.State.OFF);
+        m_timer.reset();
+        m_timer.start();
     }
 
     @Override
@@ -57,11 +62,12 @@ public class SnowblowCommand extends Command {
         turret.aimAtSnowblowing(snowblowTarget);
         shooter.setPoint(shooter.getRPMFromDistance(Meters.of(turretPosition.getDistance(snowblowTarget))));
 
-        if (shooter.atSetPoint() && turret.atSnowblowingTarget()) {
+        if (turret.atSnowblowingTarget() & m_timer.get() > 0.5) {
             indexer.setState(IndexerSubsystem.State.SHOOT);
-        } else {
-            indexer.setState(IndexerSubsystem.State.OFF);
-        }
+        } 
+        //else {
+        //    indexer.setState(IndexerSubsystem.State.OFF);
+        //}
     }
 
     @Override
