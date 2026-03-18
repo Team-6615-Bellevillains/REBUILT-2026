@@ -13,6 +13,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -56,6 +57,7 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
       new InterpolatingDoubleTreeMap();
   private static final InterpolatingDoubleTreeMap timeOfFlightMap =
       new InterpolatingDoubleTreeMap();
+  private final Timer timer = new Timer();
 
   static {
     minDistance = 1.34;
@@ -94,6 +96,8 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
     super.initialize();
     lastTurretAngle = Rotation2d.fromRotations(turret.getCurrentAngleDegrees()/360);
     lastShootSpeed = shooter.getVelocity();
+    timer.reset();
+    timer.start();
   }
 
   @Override
@@ -171,7 +175,8 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
 
     SmartDashboard.putNumber("Distance to Target", lookaheadTurretToTargetDistance);
 
-    if (turret.canShoot()) {
+    if (turret.canShoot() & timer.get() > 0.5) {
+      
       indexer.setState(IndexerSubsystem.State.SHOOT);
     } else {
       indexer.setState(IndexerSubsystem.State.OFF);
@@ -198,10 +203,10 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
     ChassisSpeeds robotVelocity = drivetrain.getFieldRelativeVelocity();
     double robotAngle = estimatedPose.getRotation().getRadians();
     double turretVelocityX = robotVelocity.vxMetersPerSecond + robotVelocity.omegaRadiansPerSecond
-        * (Constants.TURRET_OFFSET.getY() * Math.cos(robotAngle) 
+        * (Constants.TURRET_OFFSET.getY() * Math.cos(robotAngle)
         -  Constants.TURRET_OFFSET.getX() * Math.sin(robotAngle));
     double turretVelocityY = robotVelocity.vyMetersPerSecond + robotVelocity.omegaRadiansPerSecond
-        * (Constants.TURRET_OFFSET.getX() * Math.cos(robotAngle) 
+        * (Constants.TURRET_OFFSET.getX() * Math.cos(robotAngle)
         -  Constants.TURRET_OFFSET.getY() * Math.sin(robotAngle));
 
     Pose2d lookaheadPose = turretPosition;
@@ -213,6 +218,8 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
                 new Translation2d(turretVelocityX * tof, turretVelocityY * tof)),
             turretPosition.getRotation());
     }
-      return lookaheadPose.getTranslation();
+
+    Translation2d lookaheadOffset = lookaheadPose.getTranslation().minus(turretPosition.getTranslation());
+      return target.minus(lookaheadOffset);
   }
 }
