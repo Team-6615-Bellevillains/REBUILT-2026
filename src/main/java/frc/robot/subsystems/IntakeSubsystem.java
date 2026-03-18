@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -39,7 +40,8 @@ public class IntakeSubsystem extends SubsystemBase{
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
         angleMotorConfig.smartCurrentLimit(1);
-        angleMotorConfig.closedLoop.pid(0.2,0,0);
+        angleMotorConfig.closedLoop.pid(0.2,0,0, ClosedLoopSlot.kSlot0);
+        angleMotorConfig.closedLoop.pid(0.15,0,0, ClosedLoopSlot.kSlot1);
         angleMotor.configure(angleMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkFlexConfig wheelMotorConfig = new SparkFlexConfig();
@@ -75,6 +77,13 @@ public class IntakeSubsystem extends SubsystemBase{
                 midHold();
                 wheelMotor.set(shouldRunWheelsInIntakeDirection ? getActiveWheelDutyCycle() : 0);
                 break;
+
+            case PUSH_OUT:
+                pushOutPeriodic();
+                if (angleMotor.getEncoder().getPosition() < -3.2) {
+                    setState(State.OUT);
+                }
+                break;
         }
         updateAngleCurrent();
         SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
@@ -85,7 +94,6 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void midHold(){
-        setAngleSetpoint(-0.5);
     }
 
     private void inPeriodic(){
@@ -96,6 +104,10 @@ public class IntakeSubsystem extends SubsystemBase{
         angleMotor.set(0.3);
     }
 
+    private void pushOutPeriodic(){
+        angleMotor.set(-0.6);
+    }
+
     private void checkPullInCurrent(){
         if (Math.abs(filteredAngleCurrent - PULL_IN_ANGLE_CURRENT) < 10){
             setState(State.IN);
@@ -103,14 +115,14 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void outOffPeriodic(){
-        angleMotor.set(-0.6);
     }
     
     public enum State{
         IN,
         PULL_IN,
         OUT,
-        MID_HOLD
+        MID_HOLD,
+        PUSH_OUT
     }
 
     public void setState(State state){
@@ -121,15 +133,19 @@ public class IntakeSubsystem extends SubsystemBase{
                 updateWheelCurrent(10);
                 break;
             case OUT:
-                setAngleCurrent(25); //change 
+                setAngleCurrent(60); //change 
                 updateWheelCurrent(80);
+                setAngleSetpoint(-3.4, ClosedLoopSlot.kSlot1);
                 break;
             case PULL_IN:
                 setAngleCurrent(PULL_IN_ANGLE_CURRENT);
                 updateWheelCurrent(10);
             case MID_HOLD:
                 setAngleCurrent(PULL_IN_ANGLE_CURRENT);
+                setAngleSetpoint(-0.5, ClosedLoopSlot.kSlot1);
                 updateWheelCurrent(80);
+            case PUSH_OUT:
+                setAngleCurrent(25);
         }
     }
 
@@ -143,20 +159,23 @@ public class IntakeSubsystem extends SubsystemBase{
         return this.runOnce(()->{
             switch (state) {
                 case IN:
-                    setState(State.OUT);
+                    setState(State.PUSH_OUT);
                     break;
             
                 case PULL_IN:
-                    setState(State.OUT);
+                    setState(State.PUSH_OUT);
                     break;
 
                 case MID_HOLD:
-                    setState(State.OUT);
+                    setState(State.PUSH_OUT);
                     break;
 
                 case OUT:
                     setState(State.MID_HOLD);
                     break;
+
+                case PUSH_OUT:
+                    setState(State.MID_HOLD);
             }
         });
     }
@@ -188,7 +207,7 @@ public class IntakeSubsystem extends SubsystemBase{
         return MathUtil.interpolate(0.4, 1, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
     }
 
-    public void setAngleSetpoint(double setpoint){
-        angleController.setSetpoint(setpoint, ControlType.kPosition);
+    public void setAngleSetpoint(double setpoint, ClosedLoopSlot slot){
+        angleController.setSetpoint(setpoint, ControlType.kPosition, slot);
     }
 }
