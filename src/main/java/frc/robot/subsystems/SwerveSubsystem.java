@@ -71,8 +71,8 @@ public class SwerveSubsystem extends SubsystemBase{
         //LL3G setup
         LimelightHelpers.setCameraPose_RobotSpace(
             limelight3g, 
-            Inches.of(10.3577).in(Meters), 
-            Inches.of(10.8798).in(Meters), 
+            -Inches.of(10.3577).in(Meters), 
+            -Inches.of(10.8798).in(Meters), 
             Inches.of(9.0309).in(Meters), 
             0, 
             15, 
@@ -135,10 +135,10 @@ public class SwerveSubsystem extends SubsystemBase{
             drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
             drive.addVisionMeasurement(limelight4Pose.pose, limelight4Pose.timestampSeconds);
         }
-        // if(limelight3gPose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight3gPose.tagCount == 0)){
-        //     drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
-        //     drive.addVisionMeasurement(limelight3gPose.pose, limelight3gPose.timestampSeconds);
-        // }
+        if(limelight3gPose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight3gPose.tagCount == 0)){
+            drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
+            drive.addVisionMeasurement(limelight3gPose.pose, limelight3gPose.timestampSeconds);
+        }
         field.setRobotPose(currentPose);
         SmartDashboard.putData("field", field);
         Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));

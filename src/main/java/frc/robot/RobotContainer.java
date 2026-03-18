@@ -99,7 +99,7 @@ public class RobotContainer {
     operatorController.leftBumper().onFalse(intakeSubsystem.setWheelsCommand(false));
 
     // Operator - Shooter
-    operatorController.rightTrigger().whileTrue( // SNOW BLOWING AND SHOOTING
+    operatorController.rightBumper().whileTrue( // SNOW BLOWING AND SHOOTING
       new ShootOnTheMoveCommandRevisedAdjusted(
           swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem,
           () -> {
