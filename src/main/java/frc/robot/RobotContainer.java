@@ -117,7 +117,7 @@ public class RobotContainer {
           }
       )
     );
-    operatorController.rightTrigger().onFalse(shooterSubsystem.stopCommand());
+    operatorController.rightBumper().onFalse(shooterSubsystem.stopCommand());
 
     turretSubsystem.setDefaultCommand(Commands.run(() -> { // AUTOAIMING
       Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
