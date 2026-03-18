@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -106,7 +107,7 @@ public class RobotContainer {
     //     new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)
     //         .alongWith(Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem))
     // );
-    operatorController.rightBumper().whileTrue(new ShootOnTheMoveCommandRevisedAdjusted(swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem));
+    operatorController.rightBumper().whileTrue(new ShootOnTheMoveCommandRevisedAdjusted(swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem, ()->Utils.getHubCenter(DriverStation.getAlliance().orElse(Alliance.Blue))));
     operatorController.rightBumper().onFalse(shooterSubsystem.stopCommand());
     
     // Operator - Indexer

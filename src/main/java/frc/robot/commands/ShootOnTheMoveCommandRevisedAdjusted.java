@@ -2,6 +2,8 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,6 +30,7 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
   private final ShooterSubsystem shooter;
   private final TurretSubsystem turret;
   private final IndexerSubsystem indexer;
+  private final Supplier<Translation2d> targetSupplier;
 
   private final LinearFilter turretAngleFilter =
       LinearFilter.movingAverage((int) (0.1 / /*loop secs*/0.01));
@@ -77,11 +80,12 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
   }
 
   public ShootOnTheMoveCommandRevisedAdjusted(
-      SwerveSubsystem drivetrain, TurretSubsystem turret, ShooterSubsystem shooter, IndexerSubsystem indexer) {
+      SwerveSubsystem drivetrain, TurretSubsystem turret, ShooterSubsystem shooter, IndexerSubsystem indexer, Supplier<Translation2d> targetSupplier) {
     this.drivetrain = drivetrain;
     this.turret = turret;
     this.shooter = shooter;
     this.indexer = indexer;
+    this.targetSupplier = targetSupplier;
   }
 
   @Override
@@ -114,7 +118,7 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
 
     // Designate desired target
 
-    Translation2d target = Utils.getHubCenter(DriverStation.getAlliance().orElse(Alliance.Blue));
+    Translation2d target = targetSupplier.get();
 
     double turretToTargetDistance = target.getDistance(turretPosition.getTranslation());
 
