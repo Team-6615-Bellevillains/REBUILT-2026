@@ -88,7 +88,7 @@ public class ShootOnTheMoveCommandRevisedAdjusted extends Command {
     this.shooter = shooter;
     this.indexer = indexer;
     this.targetSupplier = targetSupplier;
-    this.addRequirements(drivetrain, turret, shooter, indexer);
+    this.addRequirements(turret, shooter, indexer);
   }
 
   @Override
