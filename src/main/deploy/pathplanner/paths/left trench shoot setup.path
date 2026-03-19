@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 6.476796357615894,
-        "y": 7.2729304635761585
+        "y": 7.404520684736091
       },
       "prevControl": {
-        "x": 5.003509388209168,
-        "y": 7.411903570260966
+        "x": 5.024469879518072,
+        "y": 7.411662650602409
       },
       "nextControl": {
-        "x": 7.688635501552694,
-        "y": 7.158619365920165
+        "x": 7.694000247236204,
+        "y": 7.398534958549094
       },
       "isLocked": false,
       "linkedName": null
@@ -41,7 +41,7 @@
       },
       "nextControl": {
         "x": 7.66188302425107,
-        "y": 6.481710413694724
+        "y": 6.481710413694723
       },
       "isLocked": false,
       "linkedName": null
@@ -65,47 +65,31 @@
     {
       "anchor": {
         "x": 6.476796357615894,
-        "y": 7.2729304635761585
+        "y": 7.404520684736091
       },
       "prevControl": {
-        "x": 7.283178865695346,
-        "y": 7.19936647877731
+        "x": 7.286315296148203,
+        "y": 7.385987003139684
       },
       "nextControl": {
-        "x": 5.307047075606277,
-        "y": 7.379643366619116
+        "x": 5.210240963855422,
+        "y": 7.433518072289157
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.2756776034236803,
-        "y": 7.2729304635761585
+        "x": 3.3962409638554214,
+        "y": 7.404520684736091
       },
       "prevControl": {
-        "x": 4.789500713266761,
-        "y": 7.6125392296718974
-      },
-      "nextControl": {
-        "x": 2.5257177168946034,
-        "y": 7.104685607205957
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.2216265060240963,
-        "y": 4.87643373493976
-      },
-      "prevControl": {
-        "x": 1.2544096385542165,
-        "y": 5.37910843373494
+        "x": 4.33602409638554,
+        "y": 7.422590361445783
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "left trench end"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -122,11 +106,11 @@
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 4.426439232409366,
+      "waypointRelativePos": 4.2,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 4.784648187633257,
+      "waypointRelativePos": 4.6348547717842346,
       "rotationDegrees": 0.0
     }
   ],
@@ -182,7 +166,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 45.0
   },
   "reversed": false,
   "folder": null,

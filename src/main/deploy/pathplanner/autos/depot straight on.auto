@@ -5,7 +5,7 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "race",
           "data": {
             "commands": [
               {
@@ -15,28 +15,28 @@
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "shootfor3s"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "depot straight on intake"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "shoot continuous"
-                      }
-                    }
-                  ]
+                  "name": "shootfor3s"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "depot straight on intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shoot continuous"
                 }
               }
             ]

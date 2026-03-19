@@ -5,17 +5,11 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "aim"
-                }
-              },
-              {
-                "type": "sequential",
+                "type": "race",
                 "data": {
                   "commands": [
                     {
@@ -25,11 +19,24 @@
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "named",
                       "data": {
-                        "pathName": "left trench"
+                        "name": "aim"
                       }
-                    },
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "left trench"
+                }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
                     {
                       "type": "named",
                       "data": {
@@ -37,15 +44,22 @@
                       }
                     },
                     {
-                      "type": "wait",
+                      "type": "sequential",
                       "data": {
-                        "waitTime": 3.0
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Neutral Depot"
+                        "commands": [
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 3.0
+                            }
+                          },
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Neutral Depot"
+                            }
+                          }
+                        ]
                       }
                     }
                   ]
