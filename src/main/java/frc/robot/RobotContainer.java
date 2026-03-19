@@ -123,14 +123,26 @@ public class RobotContainer {
   }
 
   private void registerNamedCommands(){
+    // Turret Commands
+    //  - Aim
+    NamedCommands.registerCommand("aim", Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
+
+    //  - Shoot with Fixed Turret Angle
     NamedCommands.registerCommand("shootfor3s", Commands.deadline(Commands.waitSeconds(3), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
     NamedCommands.registerCommand("shootfor5s", Commands.deadline(Commands.waitSeconds(5), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
     NamedCommands.registerCommand("shootfor7s", Commands.deadline(Commands.waitSeconds(5), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
+    
+    //  - Shoot on the Move (includes aiming)
     NamedCommands.registerCommand("shoot continuous", new ShootOnTheMoveCommandRevisedAdjusted(
           swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem,
           () -> Utils.calculateShotTarget(swerveSubsystem.getPose())
       ));
-    NamedCommands.registerCommand("stop shooting", shooterSubsystem.stopCommand());
+
+    // Intake Commands
+    NamedCommands.registerCommand("intake down", intakeSubsystem.setStateCommand(State.OUT));
+    NamedCommands.registerCommand("intake up", intakeSubsystem.setStateCommand(State.MID_HOLD));
+    NamedCommands.registerCommand("intake run", intakeSubsystem.setWheelsCommand(true));
+    NamedCommands.registerCommand("intake off", intakeSubsystem.setWheelsCommand(false));
   }
 
   public Command getAutonomousCommand() {
