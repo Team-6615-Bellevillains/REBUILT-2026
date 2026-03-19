@@ -154,12 +154,23 @@ public class RobotContainer {
     NamedCommands.registerCommand("shootfor3s", Commands.deadline(Commands.waitSeconds(3), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
     NamedCommands.registerCommand("shootfor5s", Commands.deadline(Commands.waitSeconds(5), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
     NamedCommands.registerCommand("shootfor7s", Commands.deadline(Commands.waitSeconds(5), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
-    NamedCommands.registerCommand("shoot continuous", new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget));
-    NamedCommands.registerCommand("intake down", intakeSubsystem.setStateCommand(State.OUT));
-    NamedCommands.registerCommand("intake up", intakeSubsystem.setStateCommand(State.MID_HOLD));
-    NamedCommands.registerCommand("aim", Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
-    NamedCommands.registerCommand("intake run", intakeSubsystem.setWheelsCommand(true));
-    NamedCommands.registerCommand("intake off", intakeSubsystem.setWheelsCommand(false));
+    NamedCommands.registerCommand("shoot continuous", new ShootOnTheMoveCommandRevisedAdjusted(
+          swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem,
+          () -> {
+              Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+              Pose2d pose = swerveSubsystem.getPose();
+              double x = pose.getTranslation().getX();
+              boolean inOwnZone = (alliance == Alliance.Blue && x < Constants.BLUE_ALLIANCE_ZONE_MAX_X)
+                              || (alliance == Alliance.Red  && x > Constants.RED_ALLIANCE_ZONE_MIN_X);
+              if (inOwnZone) return Utils.getHubCenter(alliance);
+              double robotY = pose.getTranslation().getY();
+              double hubX = Utils.getHubCenter(alliance).getX();
+              return (robotY < Constants.FIELD_HALF_Y)
+                  ? new Translation2d(hubX, Constants.SNOWBLOW_NEG_Y)
+                  : new Translation2d(hubX, Constants.SNOWBLOW_POS_Y);
+          }
+      ));
+    NamedCommands.registerCommand("stop shooting", shooterSubsystem.stopCommand());
   }
 
   public Command getAutonomousCommand() {
