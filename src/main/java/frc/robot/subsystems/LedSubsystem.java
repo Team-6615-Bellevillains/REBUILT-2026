@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANdleConfiguration;
-import com.ctre.phoenix6.controls.RainbowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.RGBWColor;
@@ -25,7 +24,8 @@ public class LedSubsystem extends SubsystemBase {
   private static final RGBWColor RED   = new RGBWColor(255, 0,   0, 0);
   private static final RGBWColor GREEN = new RGBWColor(0,   255, 0, 0);
   private static final RGBWColor OFF   = new RGBWColor(0,   0,   0, 0);
-  private static final RGBWColor IDLE  = new RGBWColor(20,  20,  20, 0);
+  private static final RGBWColor IDLE  = new RGBWColor(35,  5,  0, 0);
+  private static final double RAINBOW_PERIOD = 0.5;
 
   private static final double[] SHIFT_ENDS = { 130.0, 105.0, 80.0, 55.0, 30.0 };
 
@@ -33,14 +33,9 @@ public class LedSubsystem extends SubsystemBase {
   private static final double TRANSITION_END   = 130.0;
 
   // Hardware
-  private final CANdle           m_candle;
-  private final SolidColor       m_solidControl   = new SolidColor(0, LED_COUNT);
-  private final RainbowAnimation m_rainbowControl = new RainbowAnimation()
-      .withBrightness(1.0)
-      .withSpeed(0.5)
-      .withLedCount(LED_COUNT)
-      .withReversed(false);
-  private final Timer m_timer = new Timer();
+  private final CANdle     m_candle;
+  private final SolidColor m_solidControl = new SolidColor(0, LED_COUNT);
+  private final Timer      m_timer        = new Timer();
 
   private Boolean m_wonAuto = null;
 
@@ -56,8 +51,6 @@ public class LedSubsystem extends SubsystemBase {
     m_timer.start();
   }
 
-  // Periodic
-
   @Override
   public void periodic() {
     if (DriverStation.isDisabled()) {
@@ -70,12 +63,8 @@ public class LedSubsystem extends SubsystemBase {
       m_wonAuto = wonAuto();
     }
 
-    if (isTransitionShift()) {
-      if (Boolean.TRUE.equals(m_wonAuto)) {
-        rainbow();
-      } else {
-        setColor(GREEN);
-      }
+    if (isTransitionShift() && Boolean.TRUE.equals(m_wonAuto)) {
+      rainbow();
       return;
     }
 
@@ -188,6 +177,28 @@ public class LedSubsystem extends SubsystemBase {
   }
 
   private void rainbow() {
-    m_candle.setControl(m_rainbowControl);
+    double hue = (m_timer.get() % RAINBOW_PERIOD) / RAINBOW_PERIOD * 360.0;
+    int[] rgb = hsvToRgb(hue, 1.0, 1.0);
+    m_candle.setControl(m_solidControl.withColor(new RGBWColor(rgb[0], rgb[1], rgb[2], 0)));
+  }
+
+  private int[] hsvToRgb(double hue, double sat, double val) {
+    double c = val * sat;
+    double x = c * (1.0 - Math.abs((hue / 60.0) % 2.0 - 1.0));
+    double m = val - c;
+
+    double r, g, b;
+    if      (hue < 60)  { r = c; g = x; b = 0; }
+    else if (hue < 120) { r = x; g = c; b = 0; }
+    else if (hue < 180) { r = 0; g = c; b = x; }
+    else if (hue < 240) { r = 0; g = x; b = c; }
+    else if (hue < 300) { r = x; g = 0; b = c; }
+    else                { r = c; g = 0; b = x; }
+
+    return new int[]{
+        (int)((r + m) * 255),
+        (int)((g + m) * 255),
+        (int)((b + m) * 255)
+    };
   }
 }
