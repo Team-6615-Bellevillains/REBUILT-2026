@@ -34,7 +34,7 @@ public class IntakeSubsystem extends SubsystemBase{
     private int nonLimitedAngleCurrent = PULL_IN_ANGLE_CURRENT;
     private boolean shouldRunWheelsInIntakeDirection = false;
     private final Supplier<ChassisSpeeds> getRobotRelativeVelocity;
-    private final double IN_WHEEL_DUTY_CYCLE = -0.05;
+    private final double IN_WHEEL_DUTY_CYCLE = -0.20;
 
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
@@ -97,7 +97,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void inPeriodic(){
-        angleMotor.set(0.3);
+        angleMotor.set(0.35);
     }
 
     private void pullInPeriodic(){
@@ -129,14 +129,14 @@ public class IntakeSubsystem extends SubsystemBase{
         this.state = state;
         switch (state){
             case IN:
-                setAngleCurrent(7);
-                updateWheelCurrent(10);
+                setAngleCurrent(16);
+                updateWheelCurrent(12);
                 break;
             case OUT:
-                setAngleCurrent(60); //change 
+                setAngleCurrent(65); //change 
                 updateWheelCurrent(80);
-                setAngleSetpoint(-3.4, ClosedLoopSlot.kSlot1);
-                break;
+                setAngleSetpoint(-3.6, ClosedLoopSlot.kSlot1);
+                break; 
             case PULL_IN:
                 setAngleCurrent(PULL_IN_ANGLE_CURRENT);
                 updateWheelCurrent(10);
@@ -204,7 +204,7 @@ public class IntakeSubsystem extends SubsystemBase{
         ChassisSpeeds robotRelativeVelocity = getRobotRelativeVelocity.get();
         SmartDashboard.putNumber("velocity in intake direction", robotRelativeVelocity.vxMetersPerSecond);
         SmartDashboard.putNumber("intake lerp t", robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
-        return MathUtil.interpolate(0.4, 1, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
+        return MathUtil.interpolate(0.45, 1, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond)); // Standard: 0.4
     }
 
     public void setAngleSetpoint(double setpoint, ClosedLoopSlot slot){
