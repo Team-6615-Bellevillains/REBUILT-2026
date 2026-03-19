@@ -5,6 +5,7 @@ import static frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Utils {
     public static Translation2d getHubCenter(DriverStation.Alliance alliance) {
@@ -21,5 +22,18 @@ public class Utils {
 
     public static Translation2d calculateTurretTranslation(Pose2d pose){
         return pose.getTranslation().plus(TURRET_OFFSET.rotateBy(pose.getRotation()));
+    }
+
+    public static Translation2d calculateShotTarget(Pose2d pose) {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        double x = pose.getTranslation().getX();
+        boolean inOwnZone = (alliance == Alliance.Blue && x < Constants.BLUE_ALLIANCE_ZONE_MAX_X)
+                        || (alliance == Alliance.Red  && x > Constants.RED_ALLIANCE_ZONE_MIN_X);
+        if (inOwnZone) return Utils.getHubCenter(alliance);
+        double robotY = pose.getTranslation().getY();
+        double hubX = Utils.getHubCenter(alliance).getX();
+        return (robotY < Constants.FIELD_HALF_Y)
+            ? new Translation2d(hubX, Constants.SNOWBLOW_NEG_Y)
+            : new Translation2d(hubX, Constants.SNOWBLOW_POS_Y);
     }
 }

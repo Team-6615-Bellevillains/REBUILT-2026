@@ -102,44 +102,16 @@ public class RobotContainer {
     operatorController.rightBumper().whileTrue( // SNOW BLOWING AND SHOOTING
       new ShootOnTheMoveCommandRevisedAdjusted(
           swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem,
-          () -> {
-              Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-              Pose2d pose = swerveSubsystem.getPose();
-              double x = pose.getTranslation().getX();
-              boolean inOwnZone = (alliance == Alliance.Blue && x < Constants.BLUE_ALLIANCE_ZONE_MAX_X)
-                              || (alliance == Alliance.Red  && x > Constants.RED_ALLIANCE_ZONE_MIN_X);
-              if (inOwnZone) return Utils.getHubCenter(alliance);
-              double robotY = pose.getTranslation().getY();
-              double hubX = Utils.getHubCenter(alliance).getX();
-              return (robotY < Constants.FIELD_HALF_Y)
-                  ? new Translation2d(hubX, Constants.SNOWBLOW_NEG_Y)
-                  : new Translation2d(hubX, Constants.SNOWBLOW_POS_Y);
-          }
+          () -> Utils.calculateShotTarget(swerveSubsystem.getPose())
       )
     );
     operatorController.rightBumper().onFalse(shooterSubsystem.stopCommand());
 
     turretSubsystem.setDefaultCommand(Commands.run(() -> { // AUTOAIMING
-      Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-      Pose2d pose = swerveSubsystem.getPose();
-      double x = pose.getTranslation().getX();
-
-      boolean inOwnZone = (alliance == Alliance.Blue && x < Constants.BLUE_ALLIANCE_ZONE_MAX_X)
-                       || (alliance == Alliance.Red  && x > Constants.RED_ALLIANCE_ZONE_MIN_X);
-
-      Translation2d target;
-      if (inOwnZone) {
-          target = Utils.getHubCenter(alliance);
-      } else {
-          double robotY = pose.getTranslation().getY();
-          double hubX = Utils.getHubCenter(alliance).getX();
-          target = (robotY < Constants.FIELD_HALF_Y)
-              ? new Translation2d(hubX, Constants.SNOWBLOW_NEG_Y)
-              : new Translation2d(hubX, Constants.SNOWBLOW_POS_Y);
-      }
-
-      Translation2d lookahead = ShootOnTheMoveCommandRevisedAdjusted
-          .calculateLookaheadTarget(swerveSubsystem, target);
+      Translation2d lookahead = ShootOnTheMoveCommandRevisedAdjusted.calculateLookaheadTarget(
+        swerveSubsystem, 
+        Utils.calculateShotTarget(swerveSubsystem.getPose())
+      );
       turretSubsystem.aimAtFromTurretPosition(lookahead, swerveSubsystem.getPose());
     }, turretSubsystem));
     
@@ -156,19 +128,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("shootfor7s", Commands.deadline(Commands.waitSeconds(5), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
     NamedCommands.registerCommand("shoot continuous", new ShootOnTheMoveCommandRevisedAdjusted(
           swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem,
-          () -> {
-              Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-              Pose2d pose = swerveSubsystem.getPose();
-              double x = pose.getTranslation().getX();
-              boolean inOwnZone = (alliance == Alliance.Blue && x < Constants.BLUE_ALLIANCE_ZONE_MAX_X)
-                              || (alliance == Alliance.Red  && x > Constants.RED_ALLIANCE_ZONE_MIN_X);
-              if (inOwnZone) return Utils.getHubCenter(alliance);
-              double robotY = pose.getTranslation().getY();
-              double hubX = Utils.getHubCenter(alliance).getX();
-              return (robotY < Constants.FIELD_HALF_Y)
-                  ? new Translation2d(hubX, Constants.SNOWBLOW_NEG_Y)
-                  : new Translation2d(hubX, Constants.SNOWBLOW_POS_Y);
-          }
+          () -> Utils.calculateShotTarget(swerveSubsystem.getPose())
       ));
     NamedCommands.registerCommand("stop shooting", shooterSubsystem.stopCommand());
   }
