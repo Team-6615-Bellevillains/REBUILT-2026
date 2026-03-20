@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Utils;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.LoggerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -86,13 +87,14 @@ public class ShootOnTheMoveDebugCommand extends Command {
   }
 
   public ShootOnTheMoveDebugCommand(
-      SwerveSubsystem drivetrain, TurretSubsystem turret, ShooterSubsystem shooter, IndexerSubsystem indexer, Supplier<Translation2d> targetSupplier) {
+      SwerveSubsystem drivetrain, TurretSubsystem turret, ShooterSubsystem shooter, IndexerSubsystem indexer, LoggerSubsystem logger, Supplier<Translation2d> targetSupplier) {
     this.drivetrain = drivetrain;
     this.turret = turret;
     this.shooter = shooter;
     this.indexer = indexer;
     this.targetSupplier = targetSupplier;
     //this.addRequirements(turret, shooter, indexer);
+    this.addRequirements(logger);
   }
 
   @Override
