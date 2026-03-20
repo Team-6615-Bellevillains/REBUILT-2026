@@ -25,6 +25,7 @@ import frc.robot.commands.HybridShootCommand;
 import frc.robot.commands.ShootAtRPMCommand;
 import frc.robot.commands.ShootDistanceBasedCommand;
 import frc.robot.commands.ShootOnTheMoveCommandRevisedAdjusted;
+import frc.robot.commands.ShootOnTheMoveDebugCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -123,6 +124,8 @@ public class RobotContainer {
 
     // Named Commands
     NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
+
+    loggerSubsystem.setDefaultCommand(new ShootOnTheMoveDebugCommand(swerveSubsystem, turretSubsystem,shooterSubsystem, indexerSubsystem, loggerSubsystem, () -> Utils.calculateShotTarget(swerveSubsystem.getPose())));
   }
 
   private void registerNamedCommands(){
