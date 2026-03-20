@@ -34,6 +34,7 @@ import frc.robot.subsystems.IntakeSubsystem.State;
 import swervelib.SwerveInputStream;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LedSubsystem;
+import frc.robot.subsystems.LoggerSubsystem;
 
 public class RobotContainer {
 
@@ -51,6 +52,7 @@ public class RobotContainer {
   IntakeSubsystem  intakeSubsystem  = new IntakeSubsystem(swerveSubsystem::getRobotRelativeVelocity);
   TurretSubsystem  turretSubsystem  = new TurretSubsystem(swerveSubsystem::getPose);
   LedSubsystem     ledSubsystem     = new LedSubsystem();
+  LoggerSubsystem  loggerSubsystem  = new LoggerSubsystem(driverController, operatorController);
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
                                                               () -> driverController.getLeftY() * -1,
