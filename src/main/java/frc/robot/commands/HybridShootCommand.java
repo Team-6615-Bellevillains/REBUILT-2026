@@ -26,6 +26,8 @@ public class HybridShootCommand extends Command {
 
     private final ShootOnTheMoveCommandRevisedAdjusted sotmCommand;
 
+    private boolean shouldShoot;
+
     public HybridShootCommand(
             SwerveSubsystem drivetrain,
             TurretSubsystem turret,
@@ -47,10 +49,14 @@ public class HybridShootCommand extends Command {
     @Override
     public void initialize() {
         sotmCommand.initialize();
+        shouldShoot = false;
     }
 
     @Override
     public void execute() {
+        if (!shouldShoot){
+            shouldShoot = shooter.atSetPoint();
+        }
         Pose2d pose = drivetrain.getPose();
         boolean inAllianceZone = Utils.isInAllianceZone(pose);
 
@@ -76,7 +82,7 @@ public class HybridShootCommand extends Command {
 
         SmartDashboard.putNumber("HybridShoot/distanceToHub", distanceToHub.in(Meters));
 
-        if (shooter.atSetPoint() && turret.canShoot() && turret.atTarget()) {
+        if (shouldShoot && turret.canShoot() && turret.atTarget()) {
             indexer.setState(IndexerSubsystem.State.SHOOT);
         } else {
             indexer.setState(IndexerSubsystem.State.OFF);
