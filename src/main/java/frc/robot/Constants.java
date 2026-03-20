@@ -16,6 +16,6 @@ public final class Constants {
 
     // Snowblow targets
     public static final double FIELD_HALF_Y     = 4.035;
-    public static final double SNOWBLOW_POS_Y   = 8.070 - (4.035 / 2.0); // ~6.053
-    public static final double SNOWBLOW_NEG_Y   = 4.035 / 2.0;            // ~2.018
+    public static final double SNOWBLOW_POS_Y   = 8.070 - 1; // 8.070 - (4.035 / 2.0); // ~6.053
+    public static final double SNOWBLOW_NEG_Y   = 1; // 4.035 / 2.0;            // ~2.018
 }

@@ -55,7 +55,7 @@ public class RobotContainer {
                                                               () -> driverController.getLeftY() * -1,
                                                               () -> driverController.getLeftX() * -1)
                                                           .withControllerRotationAxis(()-> -1 * driverController.getRightX())
-                                                          .scaleTranslation(1.0)
+                                                          .scaleTranslation(0.9)
                                                           .allianceRelativeControl(true);
 
   private final SendableChooser<Command> autoChooser;

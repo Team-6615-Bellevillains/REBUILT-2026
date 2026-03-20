@@ -80,6 +80,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
             case PUSH_OUT:
                 pushOutPeriodic();
+                wheelMotor.set(-IN_WHEEL_DUTY_CYCLE);
                 if (angleMotor.getEncoder().getPosition() < -3.2) {
                     setState(State.OUT);
                 }
@@ -130,12 +131,12 @@ public class IntakeSubsystem extends SubsystemBase{
         switch (state){
             case IN:
                 setAngleCurrent(16);
-                updateWheelCurrent(12);
+                updateWheelCurrent(8);
                 break;
             case OUT:
-                setAngleCurrent(65); //change 
+                setAngleCurrent(60); //change 
                 updateWheelCurrent(80);
-                setAngleSetpoint(-3.6, ClosedLoopSlot.kSlot1);
+                setAngleSetpoint(-4, ClosedLoopSlot.kSlot1);
                 break; 
             case PULL_IN:
                 setAngleCurrent(PULL_IN_ANGLE_CURRENT);
@@ -145,7 +146,8 @@ public class IntakeSubsystem extends SubsystemBase{
                 setAngleSetpoint(-0.5, ClosedLoopSlot.kSlot1);
                 updateWheelCurrent(80);
             case PUSH_OUT:
-                setAngleCurrent(25);
+                setAngleCurrent(35);
+                updateWheelCurrent(8);
         }
     }
 
