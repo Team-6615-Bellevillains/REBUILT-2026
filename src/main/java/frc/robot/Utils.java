@@ -41,4 +41,11 @@ public class Utils {
             ? new Translation2d(hubX, Constants.SNOWBLOW_NEG_Y)
             : new Translation2d(hubX, Constants.SNOWBLOW_POS_Y);
     }
+
+    public static boolean isInAllianceZone(Pose2d pose) {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        double x = pose.getTranslation().getX();
+        return (alliance == Alliance.Blue && x < BLUE_ALLIANCE_ZONE_MAX_X)
+            || (alliance == Alliance.Red  && x > RED_ALLIANCE_ZONE_MIN_X);
+    }
 }

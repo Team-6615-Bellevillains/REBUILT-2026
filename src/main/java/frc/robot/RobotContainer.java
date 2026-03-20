@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.HybridShootCommand;
 import frc.robot.commands.ShootAtRPMCommand;
 import frc.robot.commands.ShootDistanceBasedCommand;
 import frc.robot.commands.ShootOnTheMoveCommandRevisedAdjusted;
@@ -99,8 +100,8 @@ public class RobotContainer {
     operatorController.leftBumper().onFalse(intakeSubsystem.setWheelsCommand(false));
 
     // Operator - Shooter
-    operatorController.rightBumper().whileTrue( // SNOW BLOWING AND SHOOTING
-      new ShootOnTheMoveCommandRevisedAdjusted(
+    operatorController.rightBumper().whileTrue(
+      new HybridShootCommand(
           swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem,
           () -> Utils.calculateShotTarget(swerveSubsystem.getPose())
       )
