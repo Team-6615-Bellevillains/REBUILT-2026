@@ -170,17 +170,6 @@
           ]
         }
       }
-    },
-    {
-      "name": "Shooting to Depot",
-      "waypointRelativePos": 4.829169480081028,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "shoot continuous"
-        }
-      }
     }
   ],
   "globalConstraints": {
