@@ -2,9 +2,10 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-public class LoggerSubsystem {
+public class LoggerSubsystem extends SubsystemBase {
     private final CommandXboxController driveController;
     private final CommandXboxController opController;
     
@@ -13,6 +14,7 @@ public class LoggerSubsystem {
         this.opController = opController;
     }
 
+    @Override
     public void periodic() {
         SmartDashboard.putNumber("driver left x", driveController.getLeftX());
         SmartDashboard.putNumber("driver left y", driveController.getLeftY());
