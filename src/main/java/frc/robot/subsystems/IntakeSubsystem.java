@@ -85,6 +85,8 @@ public class IntakeSubsystem extends SubsystemBase{
                     setState(State.OUT);
                 }
                 break;
+            case ZERO:
+                pushOutPeriodic();
         }
         updateAngleCurrent();
         SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
@@ -124,7 +126,8 @@ public class IntakeSubsystem extends SubsystemBase{
         PULL_IN,
         OUT,
         MID_HOLD,
-        PUSH_OUT
+        PUSH_OUT,
+        ZERO
     }
 
     public void setState(State state){
@@ -142,13 +145,18 @@ public class IntakeSubsystem extends SubsystemBase{
             case PULL_IN:
                 setAngleCurrent(PULL_IN_ANGLE_CURRENT);
                 updateWheelCurrent(10);
+                break;
             case MID_HOLD:
                 setAngleCurrent(PULL_IN_ANGLE_CURRENT);
                 setAngleSetpoint(-0.5, ClosedLoopSlot.kSlot1);
                 updateWheelCurrent(80);
+                break;
             case PUSH_OUT:
                 setAngleCurrent(35);
                 updateWheelCurrent(8);
+                break;
+            case ZERO:
+                setAngleCurrent(35);
         }
     }
 
@@ -212,5 +220,13 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public void setAngleSetpoint(double setpoint, ClosedLoopSlot slot){
         angleController.setSetpoint(setpoint, ControlType.kPosition, slot);
+    }
+
+    public Command zeroIntakeCommand(){
+        return this.runEnd(()->setState(State.ZERO), ()->{
+            setState(State.OUT);
+            //TODO: FIND REAL VALUE
+            angleMotor.getEncoder().setPosition(-3.4);
+        });
     }
 }
