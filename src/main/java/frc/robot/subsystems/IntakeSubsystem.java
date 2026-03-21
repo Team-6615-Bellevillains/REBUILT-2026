@@ -207,7 +207,7 @@ public class IntakeSubsystem extends SubsystemBase{
         ChassisSpeeds robotRelativeVelocity = getRobotRelativeVelocity.get();
         SmartDashboard.putNumber("velocity in intake direction", robotRelativeVelocity.vxMetersPerSecond);
         SmartDashboard.putNumber("intake lerp t", robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
-        return MathUtil.interpolate(0.45, 1, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond)); // Standard: 0.4
+        return MathUtil.interpolate(0.4, 0.8, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond)); // Standard: 0.4
     }
 
     public void setAngleSetpoint(double setpoint, ClosedLoopSlot slot){
