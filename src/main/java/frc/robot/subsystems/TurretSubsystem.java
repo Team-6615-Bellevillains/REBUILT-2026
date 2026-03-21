@@ -20,7 +20,6 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils;
 
@@ -239,10 +238,6 @@ public class TurretSubsystem extends SubsystemBase {
         if (!isHomed()) return;
         targetAngle = degrees;
         state = TurretState.TRACKING;
-    }
-
-    public Command rehomeTurret(){
-        return this.run(this::rehomeTurret);
     }
 
     public double  getDistanceToHub()            { return robotPoseSupplier.get().getTranslation().getDistance(getActiveHub()); }
