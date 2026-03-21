@@ -151,6 +151,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("intake up", intakeSubsystem.setStateCommand(State.MID_HOLD));
     NamedCommands.registerCommand("intake run", intakeSubsystem.setWheelsCommand(true));
     NamedCommands.registerCommand("intake off", intakeSubsystem.setWheelsCommand(false));
+    NamedCommands.registerCommand("intake agitate", intakeSubsystem.agitateCommand());
   }
 
   public Command getAutonomousCommand() {

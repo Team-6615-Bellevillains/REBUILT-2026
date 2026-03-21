@@ -19,9 +19,22 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
+                      "type": "race",
                       "data": {
-                        "name": "shootfor3s"
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "shootfor3s"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "intake agitate"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
@@ -31,9 +44,22 @@
                       }
                     },
                     {
-                      "type": "named",
+                      "type": "race",
                       "data": {
-                        "name": "shootfor5s"
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "shootfor5s"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "intake agitate"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
@@ -43,6 +69,12 @@
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "race",
+                "data": {
+                  "commands": []
                 }
               }
             ]
