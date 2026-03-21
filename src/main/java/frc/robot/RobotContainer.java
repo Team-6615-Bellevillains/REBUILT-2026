@@ -122,6 +122,8 @@ public class RobotContainer {
     // Operator - Indexer
     operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
 
+    operatorController.povLeft().whileTrue(intakeSubsystem.agitateCommand());
+
     // Named Commands
     NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
 
