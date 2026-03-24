@@ -86,6 +86,8 @@ public class IntakeSubsystem extends SubsystemBase{
                     setState(State.OUT);
                 }
                 break;
+            case REVERSE:
+                wheelMotor.set(-0.5);
         }
         updateAngleCurrent();
         SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
@@ -125,7 +127,8 @@ public class IntakeSubsystem extends SubsystemBase{
         PULL_IN,
         OUT,
         MID_HOLD,
-        PUSH_OUT
+        PUSH_OUT,
+        REVERSE
     }
 
     public void setState(State state){
@@ -143,13 +146,20 @@ public class IntakeSubsystem extends SubsystemBase{
             case PULL_IN:
                 setAngleCurrent(PULL_IN_ANGLE_CURRENT);
                 updateWheelCurrent(10);
+                break;
             case MID_HOLD:
                 setAngleCurrent(PULL_IN_ANGLE_CURRENT);
                 setAngleSetpoint(-0.5, ClosedLoopSlot.kSlot1);
                 updateWheelCurrent(80);
+                break;
             case PUSH_OUT:
                 setAngleCurrent(35);
                 updateWheelCurrent(8);
+                break;
+            case REVERSE:
+                setAngleCurrent(PULL_IN_ANGLE_CURRENT);
+                setAngleCurrent(80);
+                break;
         }
     }
 
@@ -208,7 +218,7 @@ public class IntakeSubsystem extends SubsystemBase{
         ChassisSpeeds robotRelativeVelocity = getRobotRelativeVelocity.get();
         SmartDashboard.putNumber("velocity in intake direction", robotRelativeVelocity.vxMetersPerSecond);
         SmartDashboard.putNumber("intake lerp t", robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
-        return MathUtil.interpolate(0.45, 0.85, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond)); // Standard: 0.4
+        return MathUtil.interpolate(0.5, 0.9, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond)); // Standard: 0.4
     }
 
     public void setAngleSetpoint(double setpoint, ClosedLoopSlot slot){
@@ -217,5 +227,13 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public Command agitateCommand(){
         return this.toggleInOut().andThen(Commands.waitSeconds(0.5)).repeatedly();
+    }
+
+    public Command reverseCommand(){
+        return this.startEnd(()->{
+            this.setState(State.REVERSE);
+        }, ()->{
+            this.setState(State.PUSH_OUT);
+        });        
     }
 }

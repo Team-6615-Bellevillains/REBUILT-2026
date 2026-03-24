@@ -123,6 +123,7 @@ public class RobotContainer {
     operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
 
     operatorController.povLeft().whileTrue(intakeSubsystem.agitateCommand());
+    operatorController.povRight().whileTrue(intakeSubsystem.reverseCommand());
 
     // Named Commands
     NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
