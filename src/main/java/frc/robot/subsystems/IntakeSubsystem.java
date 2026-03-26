@@ -37,6 +37,13 @@ public class IntakeSubsystem extends SubsystemBase{
     private final Supplier<ChassisSpeeds> getRobotRelativeVelocity;
     private final double IN_WHEEL_DUTY_CYCLE = -0.20;
 
+    // Jam detection
+    private static final double JAM_RPM_THRESHOLD = 100;
+    private static final double JAM_TIME_THRESHOLD = 0.3;
+    private static final double REVERSE_DURATION = 0.4;
+    private double jamTimer = 0;
+    private State preJamState = State.IN;
+
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
@@ -57,6 +64,7 @@ public class IntakeSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         filteredAngleCurrent = angleCurrentFIlter.calculate(angleMotor.getOutputCurrent());
+        checkForJam();
         switch (state) {
             case PULL_IN:
                 pullInPeriodic();
@@ -95,6 +103,32 @@ public class IntakeSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("filtered current", filteredAngleCurrent);
         SmartDashboard.putNumber("intake rpm", wheelMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("wheel varying duty cycle", getActiveWheelDutyCycle());
+        SmartDashboard.putNumber("jam timer", jamTimer);
+    }
+
+    private void checkForJam() {
+        if (state != State.IN && state != State.PULL_IN) {
+            jamTimer = 0;
+            return;
+        }
+
+        if (Math.abs(wheelMotor.getEncoder().getVelocity()) < JAM_RPM_THRESHOLD) {
+            jamTimer += 0.02;
+        } else {
+            jamTimer = 0;
+        }
+
+        if (jamTimer >= JAM_TIME_THRESHOLD) {
+            jamTimer = 0;
+            preJamState = state;
+            setState(State.REVERSE);
+
+            Commands.waitSeconds(REVERSE_DURATION)
+                .andThen(Commands.runOnce(() -> {
+                    setState(preJamState);
+                }, this))
+                .schedule();
+        }
     }
 
     private void midHold(){
