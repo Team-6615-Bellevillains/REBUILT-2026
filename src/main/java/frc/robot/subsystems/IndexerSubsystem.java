@@ -20,6 +20,16 @@ public class IndexerSubsystem extends SubsystemBase {
 
     public IndexerSubsystem(){
         SparkMaxConfig config = new SparkMaxConfig();
+
+        config.closedLoop
+        .pid(0, 0, 0)
+        .feedForward
+        .kS(0)
+        .kA(0)
+        .kV(0)
+        .kCos(0)
+        .kCosRatio(0);
+
         config.inverted(true);
         spindexerMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         config.inverted(false);
