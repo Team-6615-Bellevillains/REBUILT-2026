@@ -39,7 +39,15 @@ public class ShooterSubsystem extends SubsystemBase{
 
     private AngularVelocity setPoint = RPM.of(0);
 
-    private SparkBaseConfig sparkConfig = new SparkMaxConfig().apply(new EncoderConfig().uvwMeasurementPeriod(10));
+    private SparkBaseConfig sparkConfig = shooterFilterChanges();
+    private static SparkBaseConfig shooterFilterChanges(){
+        SparkBaseConfig config = new SparkMaxConfig();
+        config.encoder
+        .uvwMeasurementPeriod(8)
+        .quadratureAverageDepth(2)
+        .quadratureMeasurementPeriod(8);
+        return config;
+    }
     
     
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
