@@ -21,9 +21,6 @@ public class IndexerSubsystem extends SubsystemBase {
 
     public IndexerSubsystem(){
         SparkMaxConfig config = new SparkMaxConfig();
-
-        spindexerMotor.getClosedLoopController()
-        .setSetpoint(69,ControlType.kVelocity);
         
         config.closedLoop
         .pid(0, 0, 0)
@@ -68,12 +65,15 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     private void shoot(){
-        spindexerMotor.set(0.5);
-        roadMotor.set(0.45);
+      spindexerMotor.getClosedLoopController()
+      .setSetpoint(0.5,ControlType.kVelocity);
+      roadMotor.getClosedLoopController()
+      .setSetpoint(0.45, ControlType.kVelocity);
     }
 
     private void index(){
-        spindexerMotor.set(0.5);
+        spindexerMotor.getClosedLoopController()
+        .setSetpoint(0.5, ControlType.kVelocity);
         roadMotor.stopMotor();
     }
 
@@ -83,8 +83,10 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     private void slow(){
-        spindexerMotor.set(0.1);
-        roadMotor.set(0);
+        spindexerMotor.getClosedLoopController()
+        .setSetpoint(.1, ControlType.kVelocity);
+        roadMotor.getClosedLoopController()
+        .setSetpoint(0, ControlType.kVelocity);
     }
 
     public void setState(State state){
@@ -92,8 +94,10 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     private void reverse(){
-        spindexerMotor.set(-0.2);
-        roadMotor.set(0);
+        spindexerMotor.getClosedLoopController()
+        .setSetpoint(-0.2, ControlType.kVelocity);
+        roadMotor.getClosedLoopController()
+        .setSetpoint(0, ControlType.kVelocity);
     }
 
     public enum State {
