@@ -111,13 +111,13 @@ public class RobotContainer {
     );
     operatorController.rightBumper().onFalse(shooterSubsystem.stopCommand());
 
-    turretSubsystem.setDefaultCommand(Commands.run(() -> { // AUTOAIMING
-      Translation2d lookahead = ShootOnTheMoveCommandRevisedAdjusted.calculateLookaheadTarget(
-        swerveSubsystem, 
-        Utils.calculateShotTarget(swerveSubsystem.getPose())
-      );
-      turretSubsystem.aimAtFromTurretPosition(lookahead, swerveSubsystem.getPose());
-    }, turretSubsystem));
+    // turretSubsystem.setDefaultCommand(Commands.run(() -> { // AUTOAIMING
+    //   Translation2d lookahead = ShootOnTheMoveCommandRevisedAdjusted.calculateLookaheadTarget(
+    //     swerveSubsystem, 
+    //     Utils.calculateShotTarget(swerveSubsystem.getPose())
+    //   );
+    //   turretSubsystem.aimAtFromTurretPosition(lookahead, swerveSubsystem.getPose());
+    // }, turretSubsystem));
     
     // Operator - Indexer
     operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
@@ -134,7 +134,7 @@ public class RobotContainer {
   private void registerNamedCommands(){
     // Turret Commands
     //  - Aim
-    NamedCommands.registerCommand("aim", Commands.run(() -> turretSubsystem.aimAtHub(), turretSubsystem));
+    NamedCommands.registerCommand("aim", turretSubsystem.staticAim());
 
     //  - Shoot with Fixed Turret Angle
     NamedCommands.registerCommand("shootfor3s", Commands.deadline(Commands.waitSeconds(3), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
