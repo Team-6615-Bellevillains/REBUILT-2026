@@ -4,6 +4,7 @@ package frc.robot.subsystems;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -21,6 +22,9 @@ public class IndexerSubsystem extends SubsystemBase {
     public IndexerSubsystem(){
         SparkMaxConfig config = new SparkMaxConfig();
 
+        spindexerMotor.getClosedLoopController()
+        .setSetpoint(69,ControlType.kVelocity);
+        
         config.closedLoop
         .pid(0, 0, 0)
         .feedForward
