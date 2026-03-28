@@ -104,7 +104,7 @@ public class RobotContainer {
 
     // Operator - Shooter
     operatorController.rightBumper().whileTrue(
-      new HybridShootCommand(
+      new ShootOnTheMoveCommandRevisedAdjusted(
           swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem,
           () -> Utils.calculateShotTarget(swerveSubsystem.getPose())
       )

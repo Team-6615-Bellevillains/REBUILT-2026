@@ -82,7 +82,7 @@ public class HybridShootCommand extends Command {
 
         SmartDashboard.putNumber("HybridShoot/distanceToHub", distanceToHub.in(Meters));
 
-        if (shouldShoot && turret.canShoot() && turret.atTarget()) {
+        if (shouldShoot && turret.canShoot()) {
             indexer.setState(IndexerSubsystem.State.SHOOT);
         } else {
             indexer.setState(IndexerSubsystem.State.OFF);

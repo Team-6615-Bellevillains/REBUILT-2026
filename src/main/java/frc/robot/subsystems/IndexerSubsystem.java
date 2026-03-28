@@ -51,6 +51,7 @@ public class IndexerSubsystem extends SubsystemBase {
                 break;
         }
         SmartDashboard.putNumber("spindexer rpm", spindexerMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("road rpm", roadMotor.getEncoder().getVelocity());
     }
 
     private void shoot(){
