@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import java.io.Console;
 import java.util.function.Supplier;
 
 import javax.lang.model.util.ElementScanner14;
@@ -80,13 +81,11 @@ public class IntakeSubsystem extends SubsystemBase{
                 if(shouldRunWheelsInIntakeDirection)
                 {
                     wheelController.setSetpoint(1145.4, ControlType.kVelocity);
-                   
                 } 
                 else 
                 {
                     wheelMotor.stopMotor();
                 }
-                
                 
                 break;
             
@@ -109,6 +108,7 @@ public class IntakeSubsystem extends SubsystemBase{
                     setState(State.OUT);
                 }
                 break;
+                
             case REVERSE:
                 wheelMotor.set(-0.5);
         }
