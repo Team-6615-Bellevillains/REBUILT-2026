@@ -80,16 +80,6 @@ public class IntakeSubsystem extends SubsystemBase{
                 if(shouldRunWheelsInIntakeDirection)
                 {
                     wheelController.setSetpoint(1145.4, ControlType.kVelocity);
-                    
-                   /*
-                    * 
-                    Positional
-                     wheelController.setSetpoint(1145.4, ControlType.kPosition);
-                    
-                    Voltage
-                     wheelController.setSetpoint(1145.4, ControlType.kVoltage);
-
-                    */
                    
                 } 
                 else 
