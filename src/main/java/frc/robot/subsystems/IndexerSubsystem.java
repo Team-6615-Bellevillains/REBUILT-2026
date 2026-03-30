@@ -20,21 +20,28 @@ public class IndexerSubsystem extends SubsystemBase {
 
 
     public IndexerSubsystem(){
-        SparkMaxConfig config = new SparkMaxConfig();
+        SparkMaxConfig spinConfig = new SparkMaxConfig();
+        SparkMaxConfig roadConfig = new SparkMaxConfig();
         
-        config.closedLoop
+        spinConfig.closedLoop
         .pid(0, 0, 0)
         .feedForward
         .kS(0)
         .kA(0)
-        .kV(0)
-        .kCos(0)
-        .kCosRatio(0);
+        .kV(0);
 
-        config.inverted(true);
-        spindexerMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        config.inverted(false);
-        roadMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+         
+        roadConfig.closedLoop
+        .pid(0, 0, 0)
+        .feedForward
+        .kS(0)
+        .kA(0)
+        .kV(0);
+
+        spinConfig.inverted(true);
+        spindexerMotor.configure(spinConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        roadConfig.inverted(false);
+        roadMotor.configure(roadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
@@ -85,8 +92,7 @@ public class IndexerSubsystem extends SubsystemBase {
     private void slow(){
         spindexerMotor.getClosedLoopController()
         .setSetpoint(.1, ControlType.kVelocity);
-        roadMotor.getClosedLoopController()
-        .setSetpoint(0, ControlType.kVelocity);
+        roadMotor.stopMotor();
     }
 
     public void setState(State state){
@@ -96,8 +102,7 @@ public class IndexerSubsystem extends SubsystemBase {
     private void reverse(){
         spindexerMotor.getClosedLoopController()
         .setSetpoint(-0.2, ControlType.kVelocity);
-        roadMotor.getClosedLoopController()
-        .setSetpoint(0, ControlType.kVelocity);
+        roadMotor.stopMotor();
     }
 
     public enum State {
