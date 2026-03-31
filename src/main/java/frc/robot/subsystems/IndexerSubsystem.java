@@ -26,17 +26,17 @@ public class IndexerSubsystem extends SubsystemBase {
         spinConfig.closedLoop
         .pid(0, 0, 0)
         .feedForward
-        .kS(0)
+        .kS(0.14)
         .kA(0)
-        .kV(0);
+        .kV(0.00202);
 
          
         roadConfig.closedLoop
         .pid(0, 0, 0)
         .feedForward
-        .kS(0)
+        .kS(0.25)
         .kA(0)
-        .kV(0);
+        .kV(0.00213);
 
         spinConfig.inverted(true);
         spindexerMotor.configure(spinConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
