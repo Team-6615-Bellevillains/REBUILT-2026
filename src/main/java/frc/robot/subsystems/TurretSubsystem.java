@@ -29,10 +29,10 @@ import java.util.function.Supplier;
 public class TurretSubsystem extends SubsystemBase {
 
     private static final double GEAR_RATIO = 10.0;
-    private static final double MIN_ANGLE = -270;
-    private static final double MAX_ANGLE =  0;
+    private static final double MIN_ANGLE = -315;
+    private static final double MAX_ANGLE =  43;
 
-    private static final double HOMING_OFFSET = -270;
+    private static final double HOMING_OFFSET = MIN_ANGLE;
 
     private static final double SOFT_LIMIT_BUFFER       =  5.0;
     private static final double OUTPUT_LIMIT            =  0.5;
