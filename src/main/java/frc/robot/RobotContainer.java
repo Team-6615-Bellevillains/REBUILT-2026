@@ -56,11 +56,11 @@ public class RobotContainer {
   LoggerSubsystem  loggerSubsystem  = new LoggerSubsystem(driverController, operatorController);
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
-                                                          () -> driverController.getLeftY() * -1 * (driverController.getLeftTriggerAxis() > 0.5 ? 1.0 : 0.9),
-                                                          () -> driverController.getLeftX() * -1 * (driverController.getLeftTriggerAxis() > 0.5 ? 1.0 : 0.9))
-                                                      .withControllerRotationAxis(() -> -1 * driverController.getRightX())
-                                                      .scaleTranslation(1.0)
-                                                      .allianceRelativeControl(true);
+                                                        () -> (double)(driverController.getLeftY() * -1 * (driverController.getLeftTriggerAxis() > 0.5 ? 1.0 : 0.9) * (operatorController.rightBumper().getAsBoolean() ? 0.5 : 1.0)),
+                                                        () -> (double)(driverController.getLeftX() * -1 * (driverController.getLeftTriggerAxis() > 0.5 ? 1.0 : 0.9) * (operatorController.rightBumper().getAsBoolean() ? 0.5 : 1.0)))
+                                                    .withControllerRotationAxis(() -> (double)(-1 * driverController.getRightX() * (operatorController.rightBumper().getAsBoolean() ? 0.5 : 1.0)))
+                                                    .scaleTranslation(1.0)
+                                                    .allianceRelativeControl(true);
 
   private final SendableChooser<Command> autoChooser;
   
