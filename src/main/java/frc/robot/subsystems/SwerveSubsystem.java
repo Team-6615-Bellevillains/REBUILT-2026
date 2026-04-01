@@ -31,7 +31,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Utils;
+import frc.robot.utils.AccelerationLimiter;
 import swervelib.SwerveDrive;
+import swervelib.SwerveInputStream;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
@@ -47,6 +49,7 @@ public class SwerveSubsystem extends SubsystemBase{
     private Field2d field = new Field2d();
     private Field2d limelight3gField = new Field2d();
     private Field2d limelight4Field = new Field2d();
+    private AccelerationLimiter accelLimiter = new AccelerationLimiter(FeetPerSecondPerSecond.of(1), DegreesPerSecondPerSecond.of(30));
 
     public SwerveSubsystem(){
         try {
@@ -151,19 +154,14 @@ public class SwerveSubsystem extends SubsystemBase{
         return drive;
     }
 
-    public Command driveCommand(Supplier<ChassisSpeeds> velocitySupplier, BooleanSupplier aim){
-        return run(() -> {
-            SmartDashboard.putBoolean("Drive Command Aim Button Status", aim.getAsBoolean());
-            ChassisSpeeds velocity = velocitySupplier.get();
-            double aimHeading = calculateAimHeading().in(Radians);
-            if (aim.getAsBoolean()) {
-                velocity.omegaRadiansPerSecond = -this.drive.swerveController.headingCalculate(
-                    this.getPose().getRotation().getRadians(), 
-                    aimHeading
-                );
-            }
-            SmartDashboard.putNumber("Heading Setpoint", aimHeading);
-            SmartDashboard.putNumber("Measured Heading", getPose().getRotation().getRadians());
+    public Command driveCommand(SwerveInputStream swerveInput, BooleanSupplier turbo, BooleanSupplier accelLimit){
+        return this.run(() -> {
+            SwerveInputStream adjustedSwerve;
+            if (turbo.getAsBoolean()) adjustedSwerve = swerveInput.scaleTranslation(1.0);
+            else adjustedSwerve = swerveInput.scaleTranslation(0.9);
+            ChassisSpeeds velocity = adjustedSwerve.get();
+            if (accelLimit.getAsBoolean()) velocity = accelLimiter.calculate(velocity);
+            else accelLimiter.update(velocity);
             drive.driveFieldOriented(velocity);
         });
     }

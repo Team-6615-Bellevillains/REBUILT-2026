@@ -59,7 +59,6 @@ public class RobotContainer {
                                                               () -> driverController.getLeftY() * -1,
                                                               () -> driverController.getLeftX() * -1)
                                                           .withControllerRotationAxis(()-> -1 * driverController.getRightX())
-                                                          .scaleTranslation(0.9)
                                                           .allianceRelativeControl(true);
 
   private final SendableChooser<Command> autoChooser;
@@ -82,7 +81,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     // Swerve
-    swerveSubsystem.setDefaultCommand(swerveSubsystem.driveCommand(driveAngularVelocity, driverController.povUp()));
+    swerveSubsystem.setDefaultCommand(swerveSubsystem.driveCommand(driveAngularVelocity, driverController.y(), driverController.b()));
 
     // Driver Controls
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
