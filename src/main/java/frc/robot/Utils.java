@@ -33,9 +33,9 @@ public class Utils {
         double robotY = pose.getTranslation().getY();
         double hubX = Utils.getHubCenter(alliance).getX();
         if (alliance == Alliance.Blue) {
-            hubX -= 3; // Offset for snowblowing
+            hubX -= 2.25; // Offset for snowblowing
         } else if (alliance == Alliance.Red) {
-            hubX += 3; // Offset for snowblowing
+            hubX += 2.25; // Offset for snowblowing
         }
         return (robotY < Constants.FIELD_HALF_Y)
             ? new Translation2d(hubX, Constants.SNOWBLOW_NEG_Y)
