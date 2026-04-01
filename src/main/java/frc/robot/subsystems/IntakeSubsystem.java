@@ -37,6 +37,14 @@ public class IntakeSubsystem extends SubsystemBase{
     private final Supplier<ChassisSpeeds> getRobotRelativeVelocity;
     private final double IN_WHEEL_DUTY_CYCLE = -0.20;
 
+    private static final double WHEEL_STALL_RPM_THRESHOLD = 100.0;
+    private static final double STALL_TRIGGER_DURATION = 0.5;
+    private static final double STALL_REVERSE_DURATION = 0.25;
+
+    private double stallTimer = 0;
+    private double stallReverseTimer = 0;
+    private boolean isStallReversing = false;
+
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
@@ -57,16 +65,19 @@ public class IntakeSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         filteredAngleCurrent = angleCurrentFIlter.calculate(angleMotor.getOutputCurrent());
+
+        checkWheelStall();
+
         switch (state) {
             case PULL_IN:
                 pullInPeriodic();
                 checkPullInCurrent();
-                wheelMotor.set(IN_WHEEL_DUTY_CYCLE);
+                wheelMotor.set(isStallReversing ? -0.5 : IN_WHEEL_DUTY_CYCLE);
                 break;
 
             case IN:
                 inPeriodic();
-                wheelMotor.set(IN_WHEEL_DUTY_CYCLE);
+                wheelMotor.set(isStallReversing ? -0.5 : IN_WHEEL_DUTY_CYCLE);
                 break;
         
             case OUT:
@@ -88,6 +99,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 break;
             case REVERSE:
                 wheelMotor.set(-0.5);
+                break;
         }
         updateAngleCurrent();
         SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
@@ -95,6 +107,40 @@ public class IntakeSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("filtered current", filteredAngleCurrent);
         SmartDashboard.putNumber("intake rpm", wheelMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("wheel varying duty cycle", getActiveWheelDutyCycle());
+        SmartDashboard.putNumber("stall timer", stallTimer);
+        SmartDashboard.putBoolean("stall reversing", isStallReversing);
+    }
+
+    private void checkWheelStall() {
+        if (state == State.REVERSE || state == State.OUT || state == State.PUSH_OUT) return;
+        boolean wheelsCommanded = (state == State.IN || state == State.PULL_IN)
+            || (shouldRunWheelsInIntakeDirection && state == State.MID_HOLD);
+        if (!wheelsCommanded) {
+            stallTimer = 0;
+            return;
+        }
+
+        if (isStallReversing) {
+            stallReverseTimer += 0.02;
+            if (stallReverseTimer >= STALL_REVERSE_DURATION) {
+                isStallReversing = false;
+                stallReverseTimer = 0;
+                stallTimer = 0;
+            }
+            return;
+        }
+
+        double rpm = Math.abs(wheelMotor.getEncoder().getVelocity());
+        if (rpm < WHEEL_STALL_RPM_THRESHOLD) {
+            stallTimer += 0.02;
+            if (stallTimer >= STALL_TRIGGER_DURATION) {
+                isStallReversing = true;
+                stallReverseTimer = 0;
+                stallTimer = 0;
+            }
+        } else {
+            stallTimer = 0;
+        }
     }
 
     private void midHold(){
