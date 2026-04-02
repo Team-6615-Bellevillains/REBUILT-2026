@@ -249,7 +249,6 @@ public class TurretSubsystem extends SubsystemBase {
     public double  getDistanceToHub()            { return robotPoseSupplier.get().getTranslation().getDistance(getActiveHub()); }
     public boolean canShoot()                    { return isHomed() && shootAllowed; }
     public boolean isTargetReachable(double deg) { return deg >= MIN_ANGLE && deg <= MAX_ANGLE; }
-    /* in degrees */
     public double  getCurrentAngleDegrees()             { return encoder.getPosition(); }
     public boolean isHomed()                     { return state == TurretState.HOMED || state == TurretState.TRACKING; }
     public boolean atTarget()                    { return isHomed() && Math.abs(getCurrentAngleDegrees() - targetAngle) < ANGLE_TOLERANCE; }

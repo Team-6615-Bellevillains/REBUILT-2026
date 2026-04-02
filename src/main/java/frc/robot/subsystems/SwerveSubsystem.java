@@ -192,16 +192,4 @@ public class SwerveSubsystem extends SubsystemBase{
         return drive.getRobotVelocity();
     }
 
-    private static final Rotation2d shooterAngle = TURRET_OFFSET.getAngle();
-    private static final double shooterDistance = TURRET_OFFSET.getNorm();
-    private static final Rotation2d aimAngle = Rotation2d.k180deg.minus(shooterAngle);
-    private Angle calculateAimHeading(){
-        Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));
-
-        Pose2d robotPose = getPose();
-        double hubDistance = robotPose.getTranslation().getDistance(hubPosition);
-        Rotation2d orbitAngle = robotPose.getTranslation().minus(hubPosition).getAngle();
-        return Radians.of(-Math.asin((shooterDistance * Math.sin(aimAngle.getRadians()))/hubDistance)+orbitAngle.getRadians());
-
-    }
 }
