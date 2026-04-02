@@ -2,8 +2,12 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import java.io.Console;
 import java.util.function.Supplier;
 
+import javax.lang.model.util.ElementScanner14;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -27,15 +31,17 @@ public class IntakeSubsystem extends SubsystemBase{
     
     private State state = State.IN;
     private SparkFlex angleMotor = new SparkFlex(20, MotorType.kBrushless);
+    private SparkFlex speedMotor = new SparkFlex(24, MotorType.kBrushless);
     private SparkFlex wheelMotor = new SparkFlex(22, MotorType.kBrushless);
     private SparkClosedLoopController angleController = angleMotor.getClosedLoopController();
     private static final int PULL_IN_ANGLE_CURRENT = 30;
-    private MedianFilter angleCurrentFIlter = new MedianFilter(25);
+    private MedianFilter angleCurrentFilter = new MedianFilter(25);
     private double filteredAngleCurrent = 0;
     private int nonLimitedAngleCurrent = PULL_IN_ANGLE_CURRENT;
     private boolean shouldRunWheelsInIntakeDirection = false;
     private final Supplier<ChassisSpeeds> getRobotRelativeVelocity;
     private final double IN_WHEEL_DUTY_CYCLE = -0.20;
+    private final SparkClosedLoopController wheelController = wheelMotor.getClosedLoopController();
 
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
@@ -48,15 +54,21 @@ public class IntakeSubsystem extends SubsystemBase{
         SparkFlexConfig wheelMotorConfig = new SparkFlexConfig();
         wheelMotorConfig.idleMode(IdleMode.kCoast);
         wheelMotorConfig.smartCurrentLimit(80);
+        wheelMotorConfig.closedLoop.pid(0, 0, 0);
+        wheelMotorConfig.encoder.velocityConversionFactor(25/36);
         wheelMotor.configure(wheelMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         this.getRobotRelativeVelocity = getRobotRelativeVelocity;
 
+        SparkFlexConfig speedMotorConfig = new SparkFlexConfig();
+        speedMotorConfig.follow(22);
+        speedMotor.configure(speedMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        
         angleMotor.getEncoder().setPosition(0);
     }
 
     @Override
     public void periodic() {
-        filteredAngleCurrent = angleCurrentFIlter.calculate(angleMotor.getOutputCurrent());
+        filteredAngleCurrent = angleCurrentFilter.calculate(angleMotor.getOutputCurrent());
         switch (state) {
             case PULL_IN:
                 pullInPeriodic();
@@ -71,12 +83,27 @@ public class IntakeSubsystem extends SubsystemBase{
         
             case OUT:
                 outOffPeriodic();
-                wheelMotor.set(shouldRunWheelsInIntakeDirection ? getActiveWheelDutyCycle() : 0);
+                if(shouldRunWheelsInIntakeDirection)
+                {
+                    wheelController.setSetpoint(1145.4, ControlType.kVelocity);
+                } 
+                else 
+                {
+                    wheelMotor.stopMotor();
+                }
+                
                 break;
             
             case MID_HOLD:
                 midHold();
-                wheelMotor.set(shouldRunWheelsInIntakeDirection ? getActiveWheelDutyCycle() : 0);
+                if(shouldRunWheelsInIntakeDirection)
+                {
+                    wheelController.setSetpoint(1145.4, ControlType.kVelocity);
+                } 
+                else 
+                {
+                    wheelMotor.stopMotor();
+                }
                 break;
 
             case PUSH_OUT:
@@ -86,6 +113,7 @@ public class IntakeSubsystem extends SubsystemBase{
                     setState(State.OUT);
                 }
                 break;
+                
             case REVERSE:
                 wheelMotor.set(-0.5);
         }
