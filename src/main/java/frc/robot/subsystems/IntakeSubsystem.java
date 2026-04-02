@@ -31,6 +31,7 @@ public class IntakeSubsystem extends SubsystemBase{
     
     private State state = State.IN;
     private SparkFlex angleMotor = new SparkFlex(20, MotorType.kBrushless);
+    private SparkFlex speedMotor = new SparkFlex(67, MotorType.kBrushless);
     private SparkFlex wheelMotor = new SparkFlex(22, MotorType.kBrushless);
     private SparkClosedLoopController angleController = angleMotor.getClosedLoopController();
     private static final int PULL_IN_ANGLE_CURRENT = 30;
@@ -57,6 +58,10 @@ public class IntakeSubsystem extends SubsystemBase{
         wheelMotorConfig.encoder.velocityConversionFactor(25/36);
         wheelMotor.configure(wheelMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         this.getRobotRelativeVelocity = getRobotRelativeVelocity;
+
+        SparkFlexConfig speedMotorConfig = new SparkFlexConfig();
+        speedMotorConfig.follow(22);
+        speedMotor.configure(speedMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         
         angleMotor.getEncoder().setPosition(0);
     }
