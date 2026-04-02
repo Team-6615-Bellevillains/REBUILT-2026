@@ -47,7 +47,6 @@ public class RobotContainer {
   CommandXboxController operatorController = new CommandXboxController(1);
 
   SwerveSubsystem  swerveSubsystem  = new SwerveSubsystem();
-  ClimberSubsystem climberSubsystem = new ClimberSubsystem();
   ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   IntakeSubsystem  intakeSubsystem  = new IntakeSubsystem(swerveSubsystem::getRobotRelativeVelocity);
@@ -86,8 +85,6 @@ public class RobotContainer {
     // Driver Controls
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
     driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
-    driverController.leftBumper().whileTrue(climberSubsystem.climb(1));
-    driverController.rightBumper().whileTrue(climberSubsystem.climb(-1));
     // driverController.y().onTrue(Commands.runOnce(() -> {
     //     double newAngleDegrees = SmartDashboard.getNumber("Starting Angle (Degrees)", 0);
     //     Translation2d currentTranslation = swerveSubsystem.getPose().getTranslation();
