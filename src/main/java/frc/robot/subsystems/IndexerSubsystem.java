@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -16,6 +17,8 @@ public class IndexerSubsystem extends SubsystemBase {
     
     private final SparkMax spindexerMotor = new SparkMax(50, MotorType.kBrushless);
     private final SparkMax roadMotor = new SparkMax(52, MotorType.kBrushless);
+    private final SparkClosedLoopController spinController = spindexerMotor.getClosedLoopController();
+    private final SparkClosedLoopController roadController = roadMotor.getClosedLoopController();
     private State state = State.OFF;
 
 
@@ -72,15 +75,12 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     private void shoot(){
-      spindexerMotor.getClosedLoopController()
-      .setSetpoint(0.5,ControlType.kVelocity);
-      roadMotor.getClosedLoopController()
-      .setSetpoint(0.45, ControlType.kVelocity);
+      spinController.setSetpoint(3000,ControlType.kVelocity);
+      roadController.setSetpoint(3000, ControlType.kVelocity);
     }
 
     private void index(){
-        spindexerMotor.getClosedLoopController()
-        .setSetpoint(0.5, ControlType.kVelocity);
+        spinController.setSetpoint(3000, ControlType.kVelocity);
         roadMotor.stopMotor();
     }
 
@@ -90,8 +90,7 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     private void slow(){
-        spindexerMotor.getClosedLoopController()
-        .setSetpoint(.1, ControlType.kVelocity);
+        spinController.setSetpoint(3000, ControlType.kVelocity);
         roadMotor.stopMotor();
     }
 
@@ -100,8 +99,7 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     private void reverse(){
-        spindexerMotor.getClosedLoopController()
-        .setSetpoint(-0.2, ControlType.kVelocity);
+        spinController.setSetpoint(-3000, ControlType.kVelocity);
         roadMotor.stopMotor();
     }
 
