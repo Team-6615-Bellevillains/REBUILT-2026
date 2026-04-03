@@ -31,7 +31,7 @@ public class IntakeSubsystem extends SubsystemBase{
     
     private State state = State.IN;
     private SparkFlex angleMotor = new SparkFlex(20, MotorType.kBrushless);
-    private SparkFlex speedMotor = new SparkFlex(67, MotorType.kBrushless);
+    private SparkFlex speedMotor = new SparkFlex(24, MotorType.kBrushless);
     private SparkFlex wheelMotor = new SparkFlex(22, MotorType.kBrushless);
     private SparkClosedLoopController angleController = angleMotor.getClosedLoopController();
     private static final int PULL_IN_ANGLE_CURRENT = 30;
