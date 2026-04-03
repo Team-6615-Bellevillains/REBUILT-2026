@@ -54,7 +54,7 @@ public class IntakeSubsystem extends SubsystemBase{
         SparkFlexConfig wheelMotorConfig = new SparkFlexConfig();
         wheelMotorConfig.idleMode(IdleMode.kCoast);
         wheelMotorConfig.smartCurrentLimit(80);
-        wheelMotorConfig.closedLoop.pid(0, 0, 0)
+        wheelMotorConfig.closedLoop.pid(0.0001, 0, 0)
         .feedForward.kS(0.18).kV(0.0026);
         wheelMotorConfig.encoder.velocityConversionFactor((25.0/36.0));
         wheelMotor.configure(wheelMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
