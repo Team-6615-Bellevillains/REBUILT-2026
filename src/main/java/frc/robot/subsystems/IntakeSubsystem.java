@@ -5,9 +5,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import java.io.Console;
 import java.util.function.Supplier;
 
-import javax.lang.model.util.ElementScanner14;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
