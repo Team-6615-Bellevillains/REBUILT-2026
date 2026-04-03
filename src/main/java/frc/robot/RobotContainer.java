@@ -10,23 +10,17 @@ import static edu.wpi.first.units.Units.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.HybridShootCommand;
 import frc.robot.commands.ShootAtRPMCommand;
 import frc.robot.commands.ShootDistanceBasedCommand;
 import frc.robot.commands.ShootOnTheMoveCommandRevisedAdjusted;
 import frc.robot.commands.ShootOnTheMoveDebugCommand;
-import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -47,7 +41,6 @@ public class RobotContainer {
   CommandXboxController operatorController = new CommandXboxController(1);
 
   SwerveSubsystem  swerveSubsystem  = new SwerveSubsystem();
-  ClimberSubsystem climberSubsystem = new ClimberSubsystem();
   ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   IntakeSubsystem  intakeSubsystem  = new IntakeSubsystem(swerveSubsystem::getRobotRelativeVelocity);
@@ -86,13 +79,6 @@ public class RobotContainer {
     // Driver Controls
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
     driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
-    driverController.leftBumper().whileTrue(climberSubsystem.climb(1));
-    driverController.rightBumper().whileTrue(climberSubsystem.climb(-1));
-    // driverController.y().onTrue(Commands.runOnce(() -> {
-    //     double newAngleDegrees = SmartDashboard.getNumber("Starting Angle (Degrees)", 0);
-    //     Translation2d currentTranslation = swerveSubsystem.getPose().getTranslation();
-    //     swerveSubsystem.resetPose(new Pose2d(currentTranslation, Rotation2d.fromDegrees(newAngleDegrees)));
-    // }));
     SmartDashboard.putNumber("Starting Angle (Degrees)", 0);
 
     // Operator - Intake
@@ -109,14 +95,6 @@ public class RobotContainer {
       )
     );
     operatorController.rightBumper().onFalse(shooterSubsystem.stopCommand());
-
-    // turretSubsystem.setDefaultCommand(Commands.run(() -> { // AUTOAIMING
-    //   Translation2d lookahead = ShootOnTheMoveCommandRevisedAdjusted.calculateLookaheadTarget(
-    //     swerveSubsystem, 
-    //     Utils.calculateShotTarget(swerveSubsystem.getPose())
-    //   );
-    //   turretSubsystem.aimAtFromTurretPosition(lookahead, swerveSubsystem.getPose());
-    // }, turretSubsystem));
     
     // Operator - Indexer
     operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
