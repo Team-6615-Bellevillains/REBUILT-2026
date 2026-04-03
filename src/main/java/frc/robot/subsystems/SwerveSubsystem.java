@@ -74,12 +74,12 @@ public class SwerveSubsystem extends SubsystemBase{
         //LL3G setup
         LimelightHelpers.setCameraPose_RobotSpace(
             limelight3g, 
-            -Inches.of(10.3577).in(Meters), 
-            -Inches.of(10.8798).in(Meters), 
-            Inches.of(9.0309).in(Meters), 
+            -Inches.of(2.9).in(Meters), 
+            Inches.of(12.977).in(Meters), 
+            Inches.of(8.65).in(Meters), 
             0, 
-            15, 
-            55
+            20, 
+            270
         );
 
         drive.zeroGyro();
