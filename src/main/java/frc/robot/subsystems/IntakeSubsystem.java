@@ -127,7 +127,6 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void midHold(){
-        updateWheelCurrent(80);
     }
 
     private void inPeriodic(){
