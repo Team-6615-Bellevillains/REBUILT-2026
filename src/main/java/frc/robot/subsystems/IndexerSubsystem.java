@@ -91,7 +91,7 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     private void slow(){
-        spinController.setSetpoint(3000, ControlType.kVelocity);
+        spinController.setSetpoint(500, ControlType.kVelocity);
         roadMotor.stopMotor();
     }
 
