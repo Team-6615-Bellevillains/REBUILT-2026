@@ -17,7 +17,7 @@ public class LedSubsystem extends SubsystemBase {
 
   // Constants
   private static final int    CANDLE_ID      = 5;
-  private static final int    LED_COUNT      = 58;
+  private static final int    LED_COUNT      = 83; // New LEDs
   private static final double BLINK_PERIOD   = 0.25;
   private static final double WARN_THRESHOLD = 7.0;
 

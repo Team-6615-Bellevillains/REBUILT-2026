@@ -19,8 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ShootAtRPMCommand;
 import frc.robot.commands.ShootDistanceBasedCommand;
-import frc.robot.commands.ShootOnTheMoveCommandRevisedAdjusted;
-import frc.robot.commands.ShootOnTheMoveDebugCommand;
+import frc.robot.commands.ShootOnTheMoveCommand;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -89,7 +88,7 @@ public class RobotContainer {
 
     // Operator - Shooter
     operatorController.rightBumper().whileTrue(
-      new ShootOnTheMoveCommandRevisedAdjusted(
+      new ShootOnTheMoveCommand(
           swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem,
           () -> Utils.calculateShotTarget(swerveSubsystem.getPose())
       )
@@ -104,8 +103,6 @@ public class RobotContainer {
 
     // Named Commands
     NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));
-
-    loggerSubsystem.setDefaultCommand(new ShootOnTheMoveDebugCommand(swerveSubsystem, turretSubsystem,shooterSubsystem, indexerSubsystem, loggerSubsystem, () -> Utils.calculateShotTarget(swerveSubsystem.getPose())));
   }
 
   private void registerNamedCommands(){
@@ -119,7 +116,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("shootfor7s", Commands.deadline(Commands.waitSeconds(5), new ShootDistanceBasedCommand(swerveSubsystem::getPose, shooterSubsystem, indexerSubsystem, turretSubsystem::atTarget)));
     
     //  - Shoot on the Move (includes aiming)
-    NamedCommands.registerCommand("shoot continuous", new ShootOnTheMoveCommandRevisedAdjusted(
+    NamedCommands.registerCommand("shoot continuous", new ShootOnTheMoveCommand(
           swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem,
           () -> Utils.calculateShotTarget(swerveSubsystem.getPose())
       ));
