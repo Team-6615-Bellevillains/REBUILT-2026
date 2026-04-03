@@ -55,7 +55,7 @@ public class IntakeSubsystem extends SubsystemBase{
         wheelMotorConfig.idleMode(IdleMode.kCoast);
         wheelMotorConfig.smartCurrentLimit(80);
         wheelMotorConfig.closedLoop.pid(0, 0, 0);
-        wheelMotorConfig.encoder.velocityConversionFactor(25/36);
+        wheelMotorConfig.encoder.velocityConversionFactor((25.0/36.0));
         wheelMotor.configure(wheelMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         this.getRobotRelativeVelocity = getRobotRelativeVelocity;
 
