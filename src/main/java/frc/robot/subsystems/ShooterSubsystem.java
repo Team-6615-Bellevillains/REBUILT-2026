@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.*;
 import java.util.function.BooleanSupplier;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.Pair;
@@ -30,6 +32,16 @@ public class ShooterSubsystem extends SubsystemBase{
 
     private AngularVelocity setPoint = RPM.of(0);
 
+    private SparkBaseConfig sparkConfig = shooterFilterChanges();
+    private static SparkBaseConfig shooterFilterChanges(){
+        SparkBaseConfig config = new SparkMaxConfig();
+        config.encoder
+        .uvwMeasurementPeriod(8)
+        .quadratureAverageDepth(2)
+        .quadratureMeasurementPeriod(8);
+        return config;
+    }
+
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
         .withControlMode(ControlMode.CLOSED_LOOP)
         // feedback constants
@@ -46,7 +58,8 @@ public class ShooterSubsystem extends SubsystemBase{
         .withMotorInverted(false)
         .withIdleMode(MotorMode.COAST)
         .withStatorCurrentLimit(Amps.of(40))
-        .withFollowers(Pair.of(shooterRight, true));
+        .withFollowers(Pair.of(shooterRight, true))
+        .withVendorConfig(sparkConfig);
 
     private SmartMotorController shooterController = new SparkWrapper(shooterLeft, DCMotor.getNEO(1), smcConfig);
 
@@ -91,7 +104,7 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public boolean atSetPoint(){
-        return shooter.getSpeed().isNear(setPoint, RPM.of(200));
+        return shooter.getSpeed().isNear(setPoint, RPM.of(500));
     }
 
     public void stop(){
