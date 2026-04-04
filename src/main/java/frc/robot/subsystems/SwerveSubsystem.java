@@ -156,13 +156,21 @@ public class SwerveSubsystem extends SubsystemBase{
 
     public Command driveCommand(SwerveInputStream swerveInput, BooleanSupplier turbo, BooleanSupplier accelLimit){
         return this.run(() -> {
+
             SwerveInputStream adjustedSwerve;
-            if (turbo.getAsBoolean() && !accelLimit.getAsBoolean()) adjustedSwerve = swerveInput.scaleTranslation(1.0);
-            else if (accelLimit.getAsBoolean()) adjustedSwerve = swerveInput.scaleTranslation(0.5);
-            else adjustedSwerve = swerveInput.scaleTranslation(0.9);
+            if (turbo.getAsBoolean() && !accelLimit.getAsBoolean()) 
+                adjustedSwerve = swerveInput.scaleTranslation(1.5/Constants.MAX_SPEED.in(MetersPerSecond));
+            else if (accelLimit.getAsBoolean()) 
+                adjustedSwerve = swerveInput.scaleTranslation(0.5);
+            else 
+                adjustedSwerve = swerveInput.scaleTranslation(0.9);
+
             ChassisSpeeds velocity = adjustedSwerve.get();
-            if (accelLimit.getAsBoolean()) velocity = accelLimiter.calculate(velocity);
-            else accelLimiter.update(velocity);
+            if (accelLimit.getAsBoolean()) 
+                velocity = accelLimiter.calculate(velocity);
+            else 
+                accelLimiter.update(velocity);
+
             drive.driveFieldOriented(velocity);
         });
     }
