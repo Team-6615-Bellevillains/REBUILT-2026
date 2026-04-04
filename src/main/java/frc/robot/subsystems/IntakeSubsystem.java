@@ -86,7 +86,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 outOffPeriodic();
                 if(shouldRunWheelsInIntakeDirection)
                 {
-                    wheelController.setSetpoint(1145.4, ControlType.kVelocity);
+                    wheelController.setSetpoint(1718.1, ControlType.kVelocity);
                 } 
                 else 
                 {
@@ -99,7 +99,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 midHold();
                 if(shouldRunWheelsInIntakeDirection)
                 {
-                    wheelController.setSetpoint(1145.4, ControlType.kVelocity);
+                    wheelController.setSetpoint(1718.1, ControlType.kVelocity);
                 } 
                 else 
                 {
