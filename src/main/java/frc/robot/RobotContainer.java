@@ -73,7 +73,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     // Swerve
-    swerveSubsystem.setDefaultCommand(swerveSubsystem.driveCommand(driveAngularVelocity, driverController.y(), driverController.b()));
+    swerveSubsystem.setDefaultCommand(swerveSubsystem.driveCommand(driveAngularVelocity, driverController.leftBumper(), driverController.rightBumper()));
 
     // Driver Controls
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
