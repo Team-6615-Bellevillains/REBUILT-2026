@@ -20,6 +20,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils;
@@ -145,6 +146,7 @@ public class TurretSubsystem extends SubsystemBase {
         }
         filteredCurrent = currentFilter.calculate(motor.getOutputCurrent());
         publishTelemetry();
+        SmartDashboard.putNumber("Turret current", motor.getOutputCurrent());
         
     }
 

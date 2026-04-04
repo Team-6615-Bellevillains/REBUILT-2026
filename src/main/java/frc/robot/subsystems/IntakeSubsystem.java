@@ -124,6 +124,8 @@ public class IntakeSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("filtered current", filteredAngleCurrent);
         SmartDashboard.putNumber("intake rpm", wheelMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("wheel varying duty cycle", getActiveWheelDutyCycle());
+        SmartDashboard.putNumber("intake leader current", wheelMotor.getOutputCurrent());
+        SmartDashboard.putNumber("intake follower current", speedMotor.getOutputCurrent());
     }
 
     private void midHold(){
