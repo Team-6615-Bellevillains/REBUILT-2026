@@ -74,12 +74,10 @@ public class IntakeSubsystem extends SubsystemBase{
             case PULL_IN:
                 pullInPeriodic();
                 checkPullInCurrent();
-                wheelMotor.set(IN_WHEEL_DUTY_CYCLE);
                 break;
 
             case IN:
                 inPeriodic();
-                wheelMotor.set(IN_WHEEL_DUTY_CYCLE);
                 break;
         
             case OUT:
