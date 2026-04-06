@@ -117,13 +117,13 @@ public class IntakeSubsystem extends SubsystemBase{
                 wheelMotor.set(-0.5);
         }
         updateAngleCurrent();
-        SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
-        SmartDashboard.putString("Intake state", state.toString());
-        SmartDashboard.putNumber("filtered current", filteredAngleCurrent);
-        SmartDashboard.putNumber("intake rpm", wheelMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("wheel varying duty cycle", getActiveWheelDutyCycle());
-        SmartDashboard.putNumber("intake leader current", wheelMotor.getOutputCurrent());
-        SmartDashboard.putNumber("intake follower current", speedMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Intake/angleMotorCurrent", angleMotor.getOutputCurrent());
+        SmartDashboard.putString("Intake/state", state.toString());
+        SmartDashboard.putNumber("Intake/filteredCurrent", filteredAngleCurrent);
+        SmartDashboard.putNumber("Intake/rpm", wheelMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Intake/wheelDutyCycle", getActiveWheelDutyCycle());
+        SmartDashboard.putNumber("Intake/leaderCurrent", wheelMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Intake/followerCurrent", speedMotor.getOutputCurrent());
     }
 
     private void midHold(){

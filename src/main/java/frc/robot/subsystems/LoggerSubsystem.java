@@ -16,14 +16,14 @@ public class LoggerSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("driver left x", driveController.getLeftX());
-        SmartDashboard.putNumber("driver left y", driveController.getLeftY());
-        SmartDashboard.putNumber("driver right x", driveController.getRightX());
-        SmartDashboard.putNumber("driver right y", driveController.getRightY());
-        SmartDashboard.putNumber("operator left x", opController.getLeftX());
-        SmartDashboard.putNumber("operator left y", opController.getLeftY());
-        SmartDashboard.putNumber("operator right x", opController.getRightX());
-        SmartDashboard.putNumber("operator right y", opController.getRightY());
-        SmartDashboard.putNumber("timestamp", Timer.getFPGATimestamp());
+        SmartDashboard.putNumber("Driver/leftX", driveController.getLeftX());
+        SmartDashboard.putNumber("Driver/leftY", driveController.getLeftY());
+        SmartDashboard.putNumber("Driver/rightX", driveController.getRightX());
+        SmartDashboard.putNumber("Driver/rightY", driveController.getRightY());
+        SmartDashboard.putNumber("Operator/leftX", opController.getLeftX());
+        SmartDashboard.putNumber("Operator/leftY", opController.getLeftY());
+        SmartDashboard.putNumber("Operator/rightX", opController.getRightX());
+        SmartDashboard.putNumber("Operator/rightY", opController.getRightY());
+        SmartDashboard.putNumber("System/timestamp", Timer.getFPGATimestamp());
     }
 }

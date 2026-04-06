@@ -84,7 +84,7 @@ public class ShooterSubsystem extends SubsystemBase{
     public ShooterSubsystem(){
         shooter = new FlyWheel(shooterConfig);
         setPoint = RPM.of(0);
-        SmartDashboard.putNumber("rpm to run", 0);
+        SmartDashboard.putNumber("Shooter/targetRPM", 0);
         distanceToFlywheelVelocityInterpolator = new MeasureInterpolatingTreeMap<DistanceUnit, AngularVelocityUnit>(){{
             this.addPoint(Feet.of(6), RPM.of(2625));
             this.addPoint(Feet.of(8), RPM.of(2725));
@@ -99,8 +99,8 @@ public class ShooterSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         shooter.updateTelemetry();
-        SmartDashboard.putNumber("shooter left current", shooterLeft.getOutputCurrent());
-        SmartDashboard.putNumber("shooter right current", shooterRight.getOutputCurrent());
+        SmartDashboard.putNumber("Shooter/leftCurrent", shooterLeft.getOutputCurrent());
+        SmartDashboard.putNumber("Shooter/rightCurrent", shooterRight.getOutputCurrent());
     }
 
     @Override

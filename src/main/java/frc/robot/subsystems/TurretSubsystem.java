@@ -146,7 +146,7 @@ public class TurretSubsystem extends SubsystemBase {
         }
         filteredCurrent = currentFilter.calculate(motor.getOutputCurrent());
         publishTelemetry();
-        SmartDashboard.putNumber("Turret current", motor.getOutputCurrent());
+        SmartDashboard.putNumber("Turret/current", motor.getOutputCurrent());
         
     }
 

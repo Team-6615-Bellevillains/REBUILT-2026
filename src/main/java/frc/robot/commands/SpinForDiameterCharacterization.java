@@ -39,7 +39,8 @@ import static edu.wpi.first.units.Units.Radians;
 public class SpinForDiameterCharacterization extends Command {
   // -- Characterization Config --
   private static final AngularVelocity DEFAULT_ROTATION_SPEED = RotationsPerSecond.of(0.5);
-  private static final String ROTATION_SPEED_TOPIC_NAME = "SpinForDiameterCharacterization/rotationSpeed(Rotations per Second)";
+ private static final String ROTATION_SPEED_TOPIC_NAME =
+    "SpinForDiameterCharacterization/rotationSpeedRPS";
 
   // Take 3 seconds to spin up to 1 rotation/second
   private static final AngularAcceleration ROTATION_ACCELERATION_LIMIT = RotationsPerSecond.one().div(Seconds.of(3));
@@ -89,7 +90,10 @@ public class SpinForDiameterCharacterization extends Command {
     gyroRotationSinceStart = gyroRotationSinceStart.plus(swerve.getPose().getRotation().minus(lastGyroRotation).getMeasure());
 
     Distance actualDistanceTraveled = Meters.of(Math.abs(actualDistanceTraveledPerRobotRotation.times(gyroRotationSinceStart).baseUnitMagnitude()));
-    SmartDashboard.putNumber("SpinForDiameterCharacterization/actualDistanceTraveled", actualDistanceTraveled.in(Inches));
+    SmartDashboard.putNumber(
+    "SpinForDiameterCharacterization/actualDistanceTraveledInches",
+    actualDistanceTraveled.in(Inches)
+);
 
     lastGyroRotation = swerve.getPose().getRotation();
 
@@ -108,7 +112,10 @@ public class SpinForDiameterCharacterization extends Command {
     }
 
     averageWheelDistance = averageWheelDistance.div(Value.of(4));
-    SmartDashboard.putNumber("SpinForDiameterCharacterization/averageWheelDistance", averageWheelDistance.in(Inches));
+    SmartDashboard.putNumber(
+    "SpinForDiameterCharacterization/averageWheelDistanceInches",
+    averageWheelDistance.in(Inches)
+);
 
     return averageWheelDistance;
   }
@@ -155,6 +162,9 @@ public class SpinForDiameterCharacterization extends Command {
       result = actualWheelDiameter.in(Inches);
     }
 
-    SmartDashboard.putNumber("SpinForDiameterCharacterization/actualWheelDiameter (Inches)", result); 
+    SmartDashboard.putNumber(
+    "SpinForDiameterCharacterization/actualWheelDiameterInches",
+    result
+);
   }
 }

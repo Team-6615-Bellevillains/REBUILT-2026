@@ -66,7 +66,7 @@ public class RobotContainer {
     swerveSubsystem.initPathPlanner();
     
     autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Auto/Chooser", autoChooser);
 
     configureBindings();
   }
@@ -78,7 +78,7 @@ public class RobotContainer {
     // Driver Controls
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
     driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
-    SmartDashboard.putNumber("Starting Angle (Degrees)", 0);
+    SmartDashboard.putNumber("Starting/Angle (Degrees)", 0);
 
     // Operator - Intake
     operatorController.b().onTrue(intakeSubsystem.toggleInOut());

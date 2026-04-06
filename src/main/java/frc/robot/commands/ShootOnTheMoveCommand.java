@@ -120,12 +120,12 @@ public class ShootOnTheMoveCommand extends Command {
     turretAngle = target.minus(lookaheadPose.getTranslation()).getAngle().minus(estimatedPose.getRotation());
     if (lastTurretAngle == null) lastTurretAngle = turretAngle;
 
-    // SmartDashboard.putNumber("distance to turret", lookaheadTurretToTargetDistance);
+    // SmartDashboard.putNumber("Turret/distance", lookaheadTurretToTargetDistance);
     shooter.setPoint(shooter.getRPMFromDistance(Meters.of(lookaheadTurretToTargetDistance)));
     turret.aimAtFromTurretPosition(target, lookaheadPose);
     
 
-    SmartDashboard.putNumber("Distance to Target", lookaheadTurretToTargetDistance);
+    SmartDashboard.putNumber("Targeting/Distance", lookaheadTurretToTargetDistance);
 
     if (turret.canShoot() & timer.get() > 0.5) {
       indexer.setState(IndexerSubsystem.State.SHOOT);

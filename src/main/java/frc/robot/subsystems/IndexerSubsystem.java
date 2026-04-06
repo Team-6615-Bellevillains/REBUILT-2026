@@ -49,7 +49,7 @@ public class IndexerSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putString("indexer state", state.toString());
+        SmartDashboard.putString("Indexer/state", state.toString());
         switch (state) {
             case OFF:
                 off();
@@ -71,10 +71,10 @@ public class IndexerSubsystem extends SubsystemBase {
                 reverse();
                 break;
         }
-        SmartDashboard.putNumber("spindexer rpm", spindexerMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("spindexer current", spindexerMotor.getOutputCurrent());
-        SmartDashboard.putNumber("road rpm", roadMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("road current", roadMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Spindexer/rpm", spindexerMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Spindexer/current", spindexerMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Road/rpm", roadMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Road/current", roadMotor.getOutputCurrent());
     }
 
     private void shoot(){
