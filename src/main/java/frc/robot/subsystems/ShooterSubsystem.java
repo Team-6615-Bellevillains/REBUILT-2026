@@ -99,6 +99,8 @@ public class ShooterSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         shooter.updateTelemetry();
+        SmartDashboard.putNumber("shooter left current", shooterLeft.getOutputCurrent());
+        SmartDashboard.putNumber("shooter right current", shooterRight.getOutputCurrent());
     }
 
     @Override
