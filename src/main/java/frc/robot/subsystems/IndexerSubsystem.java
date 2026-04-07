@@ -24,14 +24,17 @@ public class IndexerSubsystem extends SubsystemBase {
     private final Supplier<Double> getHubDistanceFeet;
 
     // Burst mode tuning
-    private static final double BURST_FEED_DURATION = 0.3;
-    private static final double BURST_WAIT_DURATION = 0.7;
+    private static final double BURST_FEED_DURATION = 0.1;
+    private static final double BURST_WAIT_DURATION = 0.5;
+
     private static final double BURST_DISTANCE_THRESHOLD_FEET = 14.0;
 
     // Stall detection tuning
-    private static final double SPIN_STALL_RPM_THRESHOLD = 5.0;
-    private static final double STALL_TRIGGER_DURATION = 0.25;
-    private static final double STALL_REVERSE_DURATION = 0.25;
+    private static final double SPIN_STALL_RPM_THRESHOLD = 250.0;
+    private static final double STALL_TRIGGER_DURATION = 0.2
+
+    ;
+    private static final double STALL_REVERSE_DURATION = 0.2;
 
     private double stallTimer = 0;
     private double stallReverseTimer = 0;
