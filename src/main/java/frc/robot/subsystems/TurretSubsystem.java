@@ -31,7 +31,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     private static final double GEAR_RATIO = 10.0;
     private static final double MIN_ANGLE = -315;
-    private static final double MAX_ANGLE =  43;
+    private static final double MAX_ANGLE =  41;
 
     private static final double HOMING_OFFSET = MIN_ANGLE;
 
@@ -133,7 +133,7 @@ public class TurretSubsystem extends SubsystemBase {
             case HOMING_TO_MIN:    runHomingToMin();    break;
             case HOMING_TO_CENTER: runHomingToCenter(); break;
             case HOMED:
-                closedLoop.setSetpoint(-180, ControlType.kPosition);
+                // closedLoop.setSetpoint(-180, ControlType.kPosition);
                 ifAtSetpointTurnOff();
                 break;
             case TRACKING:
@@ -240,6 +240,8 @@ public class TurretSubsystem extends SubsystemBase {
 
     public void setTargetAngle(double degrees) {
         if (!isHomed()) return;
+        degrees = MathUtil.inputModulus(degrees, -316, 44);
+        degrees = MathUtil.clamp(degrees, MIN_ANGLE, MAX_ANGLE);
         targetAngle = degrees;
         state = TurretState.TRACKING;
     }
