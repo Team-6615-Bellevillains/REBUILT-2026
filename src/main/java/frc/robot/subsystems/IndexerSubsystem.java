@@ -25,7 +25,7 @@ public class IndexerSubsystem extends SubsystemBase {
 
     // Burst mode tuning
     private static final double BURST_FEED_DURATION = 0.1;
-    private static final double BURST_WAIT_DURATION = 0.5;
+    private static final double BURST_WAIT_DURATION = 0.25;
 
     private static final double BURST_DISTANCE_THRESHOLD_FEET = 14.0;
 
