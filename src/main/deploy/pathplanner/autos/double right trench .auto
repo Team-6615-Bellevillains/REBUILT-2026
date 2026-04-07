@@ -19,25 +19,6 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "race",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "shootfor3s"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "intake agitate"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
                       "type": "path",
                       "data": {
                         "pathName": "right trench"
@@ -67,14 +48,27 @@
                       "data": {
                         "pathName": "further right trench"
                       }
+                    },
+                    {
+                      "type": "race",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "shootfor5s"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "intake agitate"
+                            }
+                          }
+                        ]
+                      }
                     }
                   ]
-                }
-              },
-              {
-                "type": "race",
-                "data": {
-                  "commands": []
                 }
               }
             ]
