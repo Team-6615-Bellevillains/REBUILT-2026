@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,7 +42,14 @@ public class RobotContainer {
 
   SwerveSubsystem  swerveSubsystem  = new SwerveSubsystem();
   ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-  IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
+  IndexerSubsystem indexerSubsystem = new IndexerSubsystem(
+    () -> edu.wpi.first.math.util.Units.metersToFeet(
+        swerveSubsystem.getPose().getTranslation()
+            .getDistance(Utils.getHubCenter(
+                DriverStation.getAlliance().orElse(Alliance.Blue)
+            ))
+    )
+  );
   IntakeSubsystem  intakeSubsystem  = new IntakeSubsystem(swerveSubsystem::getRobotRelativeVelocity);
   TurretSubsystem  turretSubsystem  = new TurretSubsystem(swerveSubsystem::getPose);
   LedSubsystem     ledSubsystem     = new LedSubsystem();
