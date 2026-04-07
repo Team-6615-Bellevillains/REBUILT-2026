@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -21,6 +20,13 @@ public class IndexerSubsystem extends SubsystemBase {
     private final SparkClosedLoopController roadController = roadMotor.getClosedLoopController();
     private State state = State.OFF;
 
+    private static final double SPIN_STALL_RPM_THRESHOLD = 5.0;
+    private static final double STALL_TRIGGER_DURATION = 0.25;
+    private static final double STALL_REVERSE_DURATION = 0.25;
+
+    private double stallTimer = 0;
+    private double stallReverseTimer = 0;
+    private boolean isStallReversing = false;
 
     public IndexerSubsystem(){
         SparkMaxConfig spinConfig = new SparkMaxConfig();
@@ -33,7 +39,6 @@ public class IndexerSubsystem extends SubsystemBase {
         .kA(0)
         .kV(0.00202);
 
-         
         roadConfig.closedLoop
         .pid(0, 0, 0)
         .feedForward
@@ -49,6 +54,8 @@ public class IndexerSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        checkSpindexerStall();
+
         SmartDashboard.putString("indexer state", state.toString());
         switch (state) {
             case OFF:
@@ -56,7 +63,11 @@ public class IndexerSubsystem extends SubsystemBase {
                 break;
         
             case INDEX:
-                index();
+                if (isStallReversing) {
+                    spinController.setSetpoint(-3000, ControlType.kVelocity);
+                } else {
+                    index();
+                }
                 break;
             
             case SHOOT:
@@ -64,7 +75,12 @@ public class IndexerSubsystem extends SubsystemBase {
                 break;
                 
             case SLOW:
-                slow();
+                if (isStallReversing) {
+                    spinController.setSetpoint(-3000, ControlType.kVelocity);
+                } else {
+                    slow();
+                }
+                roadMotor.stopMotor();
                 break;
             
             case REVERSE:
@@ -75,11 +91,42 @@ public class IndexerSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("spindexer current", spindexerMotor.getOutputCurrent());
         SmartDashboard.putNumber("road rpm", roadMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("road current", roadMotor.getOutputCurrent());
+        SmartDashboard.putNumber("spindexer stall timer", stallTimer);
+        SmartDashboard.putBoolean("spindexer stall reversing", isStallReversing);
+    }
+
+    private void checkSpindexerStall() {
+        if (state == State.OFF || state == State.REVERSE) {
+            stallTimer = 0;
+            return;
+        }
+
+        if (isStallReversing) {
+            stallReverseTimer += 0.02;
+            if (stallReverseTimer >= STALL_REVERSE_DURATION) {
+                isStallReversing = false;
+                stallReverseTimer = 0;
+                stallTimer = 0;
+            }
+            return;
+        }
+
+        double rpm = Math.abs(spindexerMotor.getEncoder().getVelocity());
+        if (rpm < SPIN_STALL_RPM_THRESHOLD) {
+            stallTimer += 0.02;
+            if (stallTimer >= STALL_TRIGGER_DURATION) {
+                isStallReversing = true;
+                stallReverseTimer = 0;
+                stallTimer = 0;
+            }
+        } else {
+            stallTimer = 0;
+        }
     }
 
     private void shoot(){
-      spinController.setSetpoint(3000,ControlType.kVelocity);
-      roadController.setSetpoint(3000, ControlType.kVelocity);
+        spinController.setSetpoint(3000,ControlType.kVelocity);
+        roadController.setSetpoint(3000, ControlType.kVelocity);
     }
 
     private void index(){
