@@ -80,8 +80,6 @@ public class SpinForDiameterCharacterization extends Command {
     initialModulePositions = swerve.getSwerveDrive().getModulePositions();
 
     rotationAccelerationLimiter.reset(0);
-
-    SmartDashboard.putNumber(ROTATION_SPEED_TOPIC_NAME, getTargetRotationSpeed().in(RotationsPerSecond));
   }
 
   private Distance calculateActualDistanceTraveled() {
@@ -89,7 +87,6 @@ public class SpinForDiameterCharacterization extends Command {
     gyroRotationSinceStart = gyroRotationSinceStart.plus(swerve.getPose().getRotation().minus(lastGyroRotation).getMeasure());
 
     Distance actualDistanceTraveled = Meters.of(Math.abs(actualDistanceTraveledPerRobotRotation.times(gyroRotationSinceStart).baseUnitMagnitude()));
-    SmartDashboard.putNumber("SpinForDiameterCharacterization/actualDistanceTraveled", actualDistanceTraveled.in(Inches));
 
     lastGyroRotation = swerve.getPose().getRotation();
 
@@ -108,7 +105,6 @@ public class SpinForDiameterCharacterization extends Command {
     }
 
     averageWheelDistance = averageWheelDistance.div(Value.of(4));
-    SmartDashboard.putNumber("SpinForDiameterCharacterization/averageWheelDistance", averageWheelDistance.in(Inches));
 
     return averageWheelDistance;
   }
@@ -154,7 +150,5 @@ public class SpinForDiameterCharacterization extends Command {
     } else {
       result = actualWheelDiameter.in(Inches);
     }
-
-    SmartDashboard.putNumber("SpinForDiameterCharacterization/actualWheelDiameter (Inches)", result); 
   }
 }

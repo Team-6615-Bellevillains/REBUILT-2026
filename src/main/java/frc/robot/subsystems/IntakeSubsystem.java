@@ -123,15 +123,6 @@ public class IntakeSubsystem extends SubsystemBase{
                 break;
         }
         updateAngleCurrent();
-        SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
-        SmartDashboard.putString("Intake state", state.toString());
-        SmartDashboard.putNumber("filtered current", filteredAngleCurrent);
-        SmartDashboard.putNumber("intake rpm", wheelMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("wheel varying duty cycle", getActiveWheelDutyCycle());
-        SmartDashboard.putNumber("intake leader current", wheelMotor.getOutputCurrent());
-        SmartDashboard.putNumber("intake follower current", speedMotor.getOutputCurrent());
-        SmartDashboard.putNumber("stall timer", stallTimer);
-        SmartDashboard.putBoolean("stall reversing", isStallReversing);
     }
 
     private void checkWheelStall() {
@@ -285,8 +276,6 @@ public class IntakeSubsystem extends SubsystemBase{
 
     private double getActiveWheelDutyCycle(){
         ChassisSpeeds robotRelativeVelocity = getRobotRelativeVelocity.get();
-        SmartDashboard.putNumber("velocity in intake direction", robotRelativeVelocity.vxMetersPerSecond);
-        SmartDashboard.putNumber("intake lerp t", robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
         return MathUtil.interpolate(0.5, 0.9, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond)); // Standard: 0.4
     }
 

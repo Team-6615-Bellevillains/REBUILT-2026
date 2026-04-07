@@ -123,9 +123,6 @@ public class ShootOnTheMoveCommand extends Command {
     // SmartDashboard.putNumber("distance to turret", lookaheadTurretToTargetDistance);
     shooter.setPoint(shooter.getRPMFromDistance(Meters.of(lookaheadTurretToTargetDistance)));
     turret.aimAtFromTurretPosition(target, lookaheadPose);
-    
-
-    SmartDashboard.putNumber("Distance to Target", lookaheadTurretToTargetDistance);
 
     if (turret.canShoot() & timer.get() > 0.5) {
       indexer.setState(IndexerSubsystem.State.SHOOT);

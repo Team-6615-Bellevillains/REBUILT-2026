@@ -70,7 +70,6 @@ public class IndexerSubsystem extends SubsystemBase {
     public void periodic() {
         checkSpindexerStall();
 
-        SmartDashboard.putString("indexer state", state.toString());
         switch (state) {
             case OFF:
                 off();
@@ -108,16 +107,6 @@ public class IndexerSubsystem extends SubsystemBase {
                 reverse();
                 break;
         }
-
-        SmartDashboard.putNumber("spindexer rpm", spindexerMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("spindexer current", spindexerMotor.getOutputCurrent());
-        SmartDashboard.putNumber("road rpm", roadMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("road current", roadMotor.getOutputCurrent());
-        SmartDashboard.putNumber("spindexer stall timer", stallTimer);
-        SmartDashboard.putBoolean("spindexer stall reversing", isStallReversing);
-        SmartDashboard.putNumber("burst timer", burstTimer);
-        SmartDashboard.putBoolean("burst feeding", isBurstFeeding);
-        SmartDashboard.putNumber("hub distance feet", getHubDistanceFeet.get());
     }
 
     private void checkSpindexerStall() {
