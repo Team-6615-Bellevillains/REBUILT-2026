@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import java.util.function.Supplier;
+
 public class IndexerSubsystem extends SubsystemBase {
     
     private final SparkMax spindexerMotor = new SparkMax(50, MotorType.kBrushless);
@@ -19,7 +21,14 @@ public class IndexerSubsystem extends SubsystemBase {
     private final SparkClosedLoopController spinController = spindexerMotor.getClosedLoopController();
     private final SparkClosedLoopController roadController = roadMotor.getClosedLoopController();
     private State state = State.OFF;
+    private final Supplier<Double> getHubDistanceFeet;
 
+    // Burst mode tuning
+    private static final double BURST_FEED_DURATION = 0.3;
+    private static final double BURST_WAIT_DURATION = 0.7;
+    private static final double BURST_DISTANCE_THRESHOLD_FEET = 14.0;
+
+    // Stall detection tuning
     private static final double SPIN_STALL_RPM_THRESHOLD = 5.0;
     private static final double STALL_TRIGGER_DURATION = 0.25;
     private static final double STALL_REVERSE_DURATION = 0.25;
@@ -28,7 +37,12 @@ public class IndexerSubsystem extends SubsystemBase {
     private double stallReverseTimer = 0;
     private boolean isStallReversing = false;
 
-    public IndexerSubsystem(){
+    private double burstTimer = 0;
+    private boolean isBurstFeeding = true;
+
+    public IndexerSubsystem(Supplier<Double> getHubDistanceFeet){
+        this.getHubDistanceFeet = getHubDistanceFeet;
+
         SparkMaxConfig spinConfig = new SparkMaxConfig();
         SparkMaxConfig roadConfig = new SparkMaxConfig();
         
@@ -71,7 +85,14 @@ public class IndexerSubsystem extends SubsystemBase {
                 break;
             
             case SHOOT:
-                shoot();
+                if (isStallReversing) {
+                    spinController.setSetpoint(-3000, ControlType.kVelocity);
+                    roadController.setSetpoint(3000, ControlType.kVelocity);
+                } else if (getHubDistanceFeet.get() > BURST_DISTANCE_THRESHOLD_FEET) {
+                    shootBurst();
+                } else {
+                    shoot();
+                }
                 break;
                 
             case SLOW:
@@ -87,16 +108,25 @@ public class IndexerSubsystem extends SubsystemBase {
                 reverse();
                 break;
         }
+
         SmartDashboard.putNumber("spindexer rpm", spindexerMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("spindexer current", spindexerMotor.getOutputCurrent());
         SmartDashboard.putNumber("road rpm", roadMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("road current", roadMotor.getOutputCurrent());
         SmartDashboard.putNumber("spindexer stall timer", stallTimer);
         SmartDashboard.putBoolean("spindexer stall reversing", isStallReversing);
+        SmartDashboard.putNumber("burst timer", burstTimer);
+        SmartDashboard.putBoolean("burst feeding", isBurstFeeding);
+        SmartDashboard.putNumber("hub distance feet", getHubDistanceFeet.get());
     }
 
     private void checkSpindexerStall() {
         if (state == State.OFF || state == State.REVERSE) {
+            stallTimer = 0;
+            return;
+        }
+
+        if (state == State.SHOOT && !isBurstFeeding && getHubDistanceFeet.get() > BURST_DISTANCE_THRESHOLD_FEET) {
             stallTimer = 0;
             return;
         }
@@ -124,8 +154,29 @@ public class IndexerSubsystem extends SubsystemBase {
         }
     }
 
+    private void shootBurst() {
+        burstTimer += 0.02;
+        roadController.setSetpoint(3000, ControlType.kVelocity);
+
+        if (isBurstFeeding) {
+            spinController.setSetpoint(3000, ControlType.kVelocity);
+            if (burstTimer >= BURST_FEED_DURATION) {
+                isBurstFeeding = false;
+                burstTimer = 0;
+            }
+        } else {
+            spindexerMotor.stopMotor();
+            if (burstTimer >= BURST_WAIT_DURATION) {
+                isBurstFeeding = true;
+                burstTimer = 0;
+            }
+        }
+    }
+
     private void shoot(){
-        spinController.setSetpoint(3000,ControlType.kVelocity);
+        burstTimer = 0;
+        isBurstFeeding = true;
+        spinController.setSetpoint(3000, ControlType.kVelocity);
         roadController.setSetpoint(3000, ControlType.kVelocity);
     }
 
