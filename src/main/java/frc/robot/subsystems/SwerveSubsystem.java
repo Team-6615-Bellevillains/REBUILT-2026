@@ -49,7 +49,7 @@ public class SwerveSubsystem extends SubsystemBase{
     private Field2d field = new Field2d();
     private Field2d limelight3gField = new Field2d();
     private Field2d limelight4Field = new Field2d();
-    private AccelerationLimiter accelLimiter = new AccelerationLimiter(FeetPerSecondPerSecond.of(1), DegreesPerSecondPerSecond.of(30));
+    private AccelerationLimiter accelLimiter = new AccelerationLimiter(FeetPerSecondPerSecond.of(15), DegreesPerSecondPerSecond.of(360));
 
     public SwerveSubsystem(){
         try {
