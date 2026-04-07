@@ -2,12 +2,8 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import java.io.Console;
 import java.util.function.Supplier;
 
-import javax.lang.model.util.ElementScanner14;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -43,6 +39,14 @@ public class IntakeSubsystem extends SubsystemBase{
     private final double IN_WHEEL_DUTY_CYCLE = -0.20;
     private final SparkClosedLoopController wheelController = wheelMotor.getClosedLoopController();
 
+    private static final double WHEEL_STALL_RPM_THRESHOLD = 5.0;
+    private static final double STALL_TRIGGER_DURATION = 0.25;
+    private static final double STALL_REVERSE_DURATION = 0.25;
+
+    private double stallTimer = 0;
+    private double stallReverseTimer = 0;
+    private boolean isStallReversing = false;
+
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
@@ -71,6 +75,9 @@ public class IntakeSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         filteredAngleCurrent = angleCurrentFilter.calculate(angleMotor.getOutputCurrent());
+
+        checkWheelStall();
+
         switch (state) {
             case PULL_IN:
                 pullInPeriodic();
@@ -83,25 +90,22 @@ public class IntakeSubsystem extends SubsystemBase{
         
             case OUT:
                 outOffPeriodic();
-                if(shouldRunWheelsInIntakeDirection)
-                {
+                if (isStallReversing) {
+                    wheelMotor.set(-0.5);
+                } else if (shouldRunWheelsInIntakeDirection) {
                     wheelController.setSetpoint(2290.8, ControlType.kVelocity);
-                } 
-                else 
-                {
+                } else {
                     wheelMotor.stopMotor();
                 }
-                
                 break;
             
             case MID_HOLD:
                 midHold();
-                if(shouldRunWheelsInIntakeDirection)
-                {
+                if (isStallReversing) {
+                    wheelMotor.set(-0.5);
+                } else if (shouldRunWheelsInIntakeDirection) {
                     wheelController.setSetpoint(2290.8, ControlType.kVelocity);
-                } 
-                else 
-                {
+                } else {
                     wheelMotor.stopMotor();
                 }
                 break;
@@ -116,6 +120,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 
             case REVERSE:
                 wheelMotor.set(-0.5);
+                break;
         }
         updateAngleCurrent();
         SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
@@ -125,6 +130,41 @@ public class IntakeSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("wheel varying duty cycle", getActiveWheelDutyCycle());
         SmartDashboard.putNumber("intake leader current", wheelMotor.getOutputCurrent());
         SmartDashboard.putNumber("intake follower current", speedMotor.getOutputCurrent());
+        SmartDashboard.putNumber("stall timer", stallTimer);
+        SmartDashboard.putBoolean("stall reversing", isStallReversing);
+    }
+
+    private void checkWheelStall() {
+        if (state == State.REVERSE || state == State.PUSH_OUT) return;
+
+        boolean wheelsCommanded = shouldRunWheelsInIntakeDirection && 
+            (state == State.OUT || state == State.MID_HOLD);
+        if (!wheelsCommanded) {
+            stallTimer = 0;
+            return;
+        }
+
+        if (isStallReversing) {
+            stallReverseTimer += 0.02;
+            if (stallReverseTimer >= STALL_REVERSE_DURATION) {
+                isStallReversing = false;
+                stallReverseTimer = 0;
+                stallTimer = 0;
+            }
+            return;
+        }
+
+        double rpm = Math.abs(wheelMotor.getEncoder().getVelocity());
+        if (rpm < WHEEL_STALL_RPM_THRESHOLD) {
+            stallTimer += 0.02;
+            if (stallTimer >= STALL_TRIGGER_DURATION) {
+                isStallReversing = true;
+                stallReverseTimer = 0;
+                stallTimer = 0;
+            }
+        } else {
+            stallTimer = 0;
+        }
     }
 
     private void midHold(){
@@ -168,7 +208,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 updateWheelCurrent(8);
                 break;
             case OUT:
-                setAngleCurrent(60); //change 
+                setAngleCurrent(60); //change
                 updateWheelCurrent(80);
                 setAngleSetpoint(-4, ClosedLoopSlot.kSlot1);
                 break; 
