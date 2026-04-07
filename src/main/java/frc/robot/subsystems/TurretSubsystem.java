@@ -35,7 +35,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     private static final double HOMING_OFFSET = MIN_ANGLE;
 
-    private static final double SOFT_LIMIT_BUFFER       =  5.0;
+    private static final double SOFT_LIMIT_BUFFER       =  1.0;
     private static final double OUTPUT_LIMIT            =  0.5;
     private static final double ANGLE_TOLERANCE         =  0.1;
     private static final double SNOWBLOWING_TOLERANCE   =  5.0;
