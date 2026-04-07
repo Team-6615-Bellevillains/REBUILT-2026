@@ -86,13 +86,14 @@ public class ShooterSubsystem extends SubsystemBase{
         setPoint = RPM.of(0);
         SmartDashboard.putNumber("rpm to run", 0);
         distanceToFlywheelVelocityInterpolator = new MeasureInterpolatingTreeMap<DistanceUnit, AngularVelocityUnit>(){{
-            this.addPoint(Feet.of(6), RPM.of(2625));
-            this.addPoint(Feet.of(8), RPM.of(2725));
-            this.addPoint(Feet.of(10), RPM.of(3000));
-            this.addPoint(Feet.of(12), RPM.of(3225));
-            this.addPoint(Feet.of(14), RPM.of(3450));
-            this.addPoint(Feet.of(16), RPM.of(3675));
-            this.addPoint(Feet.of(18), RPM.of(4250));
+            this.addPoint(Feet.of(6), RPM.of(2500));
+            this.addPoint(Feet.of(8), RPM.of(2650));
+            this.addPoint(Feet.of(10), RPM.of(2900));
+            this.addPoint(Feet.of(12), RPM.of(3100));
+            this.addPoint(Feet.of(14), RPM.of(3250));
+            this.addPoint(Feet.of(16), RPM.of(3700));
+            this.addPoint(Feet.of(18), RPM.of(4150));
+            this.addPoint(Feet.of(20), RPM.of(4500));
         }};
     }
 
