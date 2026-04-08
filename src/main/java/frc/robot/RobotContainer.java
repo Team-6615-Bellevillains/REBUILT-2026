@@ -1,4 +1,3 @@
-
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -48,7 +47,8 @@ public class RobotContainer {
             .getDistance(Utils.getHubCenter(
                 DriverStation.getAlliance().orElse(Alliance.Blue)
             ))
-    )
+    ),
+    () -> Utils.isInAllianceZone(swerveSubsystem.getPose())
   );
   IntakeSubsystem  intakeSubsystem  = new IntakeSubsystem(swerveSubsystem::getRobotRelativeVelocity);
   TurretSubsystem  turretSubsystem  = new TurretSubsystem(swerveSubsystem::getPose);
