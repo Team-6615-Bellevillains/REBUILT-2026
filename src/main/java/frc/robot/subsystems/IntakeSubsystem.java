@@ -17,6 +17,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -46,6 +47,16 @@ public class IntakeSubsystem extends SubsystemBase{
     private double stallTimer = 0;
     private double stallReverseTimer = 0;
     private boolean isStallReversing = false;
+
+    // Fast agitate tuning
+    private static final double FAST_AGITATE_UP_DUTY    =  0.6;
+    private static final double FAST_AGITATE_DOWN_DUTY  = -0.6;
+    private static final double FAST_AGITATE_DRIVE_TIME =  0.15;
+    private static final double FAST_AGITATE_PAUSE_TIME =  0.05;
+
+    private final Timer fastAgitateTimer = new Timer();
+    private int   fastAgitatePhase = 0; // 0=drive up, 1=pause, 2=drive down, 3=pause
+    private State stateBeforeFastAgitate = State.MID_HOLD;
 
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
@@ -121,6 +132,11 @@ public class IntakeSubsystem extends SubsystemBase{
             case REVERSE:
                 wheelMotor.set(-0.5);
                 break;
+
+            case FAST_AGITATE:
+                fastAgitatePeriodic();
+                wheelMotor.stopMotor();
+                break;
         }
         SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
         SmartDashboard.putString("Intake state", state.toString());
@@ -131,10 +147,44 @@ public class IntakeSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("intake follower current", speedMotor.getOutputCurrent());
         SmartDashboard.putNumber("stall timer", stallTimer);
         SmartDashboard.putBoolean("stall reversing", isStallReversing);
+        SmartDashboard.putNumber("fast agitate phase", fastAgitatePhase);
+    }
+
+    private void fastAgitatePeriodic() {
+        switch (fastAgitatePhase) {
+            case 0: // drive up
+                angleMotor.set(FAST_AGITATE_UP_DUTY);
+                if (fastAgitateTimer.hasElapsed(FAST_AGITATE_DRIVE_TIME)) {
+                    fastAgitatePhase = 1;
+                    fastAgitateTimer.reset();
+                }
+                break;
+            case 1: // pause after up
+                angleMotor.set(0);
+                if (fastAgitateTimer.hasElapsed(FAST_AGITATE_PAUSE_TIME)) {
+                    fastAgitatePhase = 2;
+                    fastAgitateTimer.reset();
+                }
+                break;
+            case 2: // drive down
+                angleMotor.set(FAST_AGITATE_DOWN_DUTY);
+                if (fastAgitateTimer.hasElapsed(FAST_AGITATE_DRIVE_TIME)) {
+                    fastAgitatePhase = 3;
+                    fastAgitateTimer.reset();
+                }
+                break;
+            case 3: // pause after down
+                angleMotor.set(0);
+                if (fastAgitateTimer.hasElapsed(FAST_AGITATE_PAUSE_TIME)) {
+                    fastAgitatePhase = 0;
+                    fastAgitateTimer.reset();
+                }
+                break;
+        }
     }
 
     private void checkWheelStall() {
-        if (state == State.REVERSE || state == State.PUSH_OUT) return;
+        if (state == State.REVERSE || state == State.PUSH_OUT || state == State.FAST_AGITATE) return;
 
         boolean wheelsCommanded = shouldRunWheelsInIntakeDirection && 
             (state == State.OUT || state == State.MID_HOLD);
@@ -196,7 +246,8 @@ public class IntakeSubsystem extends SubsystemBase{
         OUT,
         MID_HOLD,
         PUSH_OUT,
-        REVERSE
+        REVERSE,
+        FAST_AGITATE
     }
 
     public void setState(State state){
@@ -228,6 +279,9 @@ public class IntakeSubsystem extends SubsystemBase{
                 setAngleCurrent(PULL_IN_ANGLE_CURRENT);
                 setAngleCurrent(80);
                 break;
+            case FAST_AGITATE:
+                setAngleCurrent(60);
+                break;
         }
     }
 
@@ -258,6 +312,10 @@ public class IntakeSubsystem extends SubsystemBase{
 
                 case PUSH_OUT:
                     setState(State.MID_HOLD);
+                    break;
+
+                default:
+                    break;
             }
         });
     }
@@ -299,5 +357,18 @@ public class IntakeSubsystem extends SubsystemBase{
         }, ()->{
             this.setState(State.PUSH_OUT);
         });        
+    }
+
+    public Command fastAgitateCommand() {
+        return this.startEnd(
+            () -> {
+                stateBeforeFastAgitate = state;
+                fastAgitatePhase = 0;
+                fastAgitateTimer.reset();
+                fastAgitateTimer.start();
+                setState(State.FAST_AGITATE);
+            },
+            () -> setState(stateBeforeFastAgitate)
+        );
     }
 }

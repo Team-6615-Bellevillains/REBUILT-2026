@@ -1,4 +1,3 @@
-
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -18,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.AlwaysAimCommand;
 import frc.robot.commands.ShootAtRPMCommand;
 import frc.robot.commands.ShootDistanceBasedCommand;
 import frc.robot.commands.ShootOnTheMoveCommand;
@@ -48,7 +48,8 @@ public class RobotContainer {
             .getDistance(Utils.getHubCenter(
                 DriverStation.getAlliance().orElse(Alliance.Blue)
             ))
-    )
+    ),
+    () -> Utils.isInAllianceZone(swerveSubsystem.getPose())
   );
   IntakeSubsystem  intakeSubsystem  = new IntakeSubsystem(swerveSubsystem::getRobotRelativeVelocity);
   TurretSubsystem  turretSubsystem  = new TurretSubsystem(swerveSubsystem::getPose);
@@ -90,6 +91,7 @@ public class RobotContainer {
 
     // Operator - Intake
     operatorController.b().onTrue(intakeSubsystem.toggleInOut());
+    operatorController.a().whileTrue(intakeSubsystem.fastAgitateCommand());
     operatorController.povDown().onTrue(intakeSubsystem.setStateCommand(IntakeSubsystem.State.PULL_IN));
     operatorController.leftBumper().onTrue(intakeSubsystem.setWheelsCommand(true));
     operatorController.leftBumper().onFalse(intakeSubsystem.setWheelsCommand(false));
@@ -102,6 +104,8 @@ public class RobotContainer {
       )
     );
     operatorController.rightBumper().onFalse(shooterSubsystem.stopCommand());
+
+    turretSubsystem.setDefaultCommand(new AlwaysAimCommand(swerveSubsystem, turretSubsystem));
     
     // Operator - Indexer
     operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());

@@ -22,18 +22,16 @@ public class IndexerSubsystem extends SubsystemBase {
     private final SparkClosedLoopController roadController = roadMotor.getClosedLoopController();
     private State state = State.OFF;
     private final Supplier<Double> getHubDistanceFeet;
+    private final Supplier<Boolean> isInAllianceZone;
 
     // Burst mode tuning
     private static final double BURST_FEED_DURATION = 0.1;
     private static final double BURST_WAIT_DURATION = 0.25;
-
     private static final double BURST_DISTANCE_THRESHOLD_FEET = 14.0;
 
     // Stall detection tuning
     private static final double SPIN_STALL_RPM_THRESHOLD = 250.0;
-    private static final double STALL_TRIGGER_DURATION = 0.2
-
-    ;
+    private static final double STALL_TRIGGER_DURATION = 0.2;
     private static final double STALL_REVERSE_DURATION = 0.2;
 
     private double stallTimer = 0;
@@ -43,8 +41,9 @@ public class IndexerSubsystem extends SubsystemBase {
     private double burstTimer = 0;
     private boolean isBurstFeeding = true;
 
-    public IndexerSubsystem(Supplier<Double> getHubDistanceFeet){
+    public IndexerSubsystem(Supplier<Double> getHubDistanceFeet, Supplier<Boolean> isInAllianceZone) {
         this.getHubDistanceFeet = getHubDistanceFeet;
+        this.isInAllianceZone = isInAllianceZone;
 
         SparkMaxConfig spinConfig = new SparkMaxConfig();
         SparkMaxConfig roadConfig = new SparkMaxConfig();
@@ -91,7 +90,7 @@ public class IndexerSubsystem extends SubsystemBase {
                 if (isStallReversing) {
                     spinController.setSetpoint(-3000, ControlType.kVelocity);
                     roadController.setSetpoint(3000, ControlType.kVelocity);
-                } else if (getHubDistanceFeet.get() > BURST_DISTANCE_THRESHOLD_FEET) {
+                } else if (isInAllianceZone.get() && getHubDistanceFeet.get() > BURST_DISTANCE_THRESHOLD_FEET) {
                     shootBurst();
                 } else {
                     shoot();
@@ -129,7 +128,7 @@ public class IndexerSubsystem extends SubsystemBase {
             return;
         }
 
-        if (state == State.SHOOT && !isBurstFeeding && getHubDistanceFeet.get() > BURST_DISTANCE_THRESHOLD_FEET) {
+        if (state == State.SHOOT && !isBurstFeeding && isInAllianceZone.get() && getHubDistanceFeet.get() > BURST_DISTANCE_THRESHOLD_FEET) {
             stallTimer = 0;
             return;
         }
