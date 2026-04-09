@@ -122,7 +122,6 @@ public class IntakeSubsystem extends SubsystemBase{
                 wheelMotor.set(-0.5);
                 break;
         }
-        updateAngleCurrent();
         SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
         SmartDashboard.putString("Intake state", state.toString());
         SmartDashboard.putNumber("filtered current", filteredAngleCurrent);
@@ -268,12 +267,8 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void setAngleCurrent(int amps){
-        nonLimitedAngleCurrent = amps;
-    }
-
-    private void updateAngleCurrent(){
         SparkFlexConfig config = new SparkFlexConfig();
-        config.smartCurrentLimit(nonLimitedAngleCurrent);
+        config.smartCurrentLimit(amps);
         angleMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
