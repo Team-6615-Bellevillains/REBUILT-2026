@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.AlwaysAimCommand;
 import frc.robot.commands.ShootAtRPMCommand;
 import frc.robot.commands.ShootDistanceBasedCommand;
 import frc.robot.commands.ShootOnTheMoveCommand;
@@ -102,6 +103,8 @@ public class RobotContainer {
       )
     );
     operatorController.rightBumper().onFalse(shooterSubsystem.stopCommand());
+
+    turretSubsystem.setDefaultCommand(new AlwaysAimCommand(swerveSubsystem, turretSubsystem));
     
     // Operator - Indexer
     operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
