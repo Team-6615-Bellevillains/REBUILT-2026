@@ -91,6 +91,7 @@ public class RobotContainer {
 
     // Operator - Intake
     operatorController.b().onTrue(intakeSubsystem.toggleInOut());
+    operatorController.a().whileTrue(intakeSubsystem.fastAgitateCommand());
     operatorController.povDown().onTrue(intakeSubsystem.setStateCommand(IntakeSubsystem.State.PULL_IN));
     operatorController.leftBumper().onTrue(intakeSubsystem.setWheelsCommand(true));
     operatorController.leftBumper().onFalse(intakeSubsystem.setWheelsCommand(false));
