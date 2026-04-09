@@ -52,7 +52,7 @@ public class RobotContainer {
     () -> Utils.isInAllianceZone(swerveSubsystem.getPose())
   );
   IntakeSubsystem  intakeSubsystem  = new IntakeSubsystem(swerveSubsystem::getRobotRelativeVelocity);
-  TurretSubsystem  turretSubsystem  = new TurretSubsystem(swerveSubsystem::getPose);
+  TurretSubsystem  turretSubsystem  = new TurretSubsystem(swerveSubsystem::getPose, swerveSubsystem::getFieldRelativeVelocity);
   LedSubsystem     ledSubsystem     = new LedSubsystem();
   LoggerSubsystem  loggerSubsystem  = new LoggerSubsystem(driverController, operatorController);
 
