@@ -15,7 +15,7 @@
                 }
               },
               {
-                "type": "parallel",
+                "type": "race",
                 "data": {
                   "commands": [
                     {
@@ -29,8 +29,20 @@
                       "data": {
                         "name": "intake agitate"
                       }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 12.0
+                      }
                     }
                   ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Right Back to Center"
                 }
               }
             ]

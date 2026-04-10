@@ -161,7 +161,7 @@ public class SwerveSubsystem extends SubsystemBase{
             if (turbo.getAsBoolean() && !accelLimit.getAsBoolean()) 
                 adjustedSwerve = swerveInput.scaleTranslation(1.5/Constants.MAX_SPEED.in(MetersPerSecond));
             else if (accelLimit.getAsBoolean()) 
-                adjustedSwerve = swerveInput.scaleTranslation(0.5);
+                adjustedSwerve = swerveInput.scaleTranslation(1.5/Constants.MAX_SPEED.in(MetersPerSecond));
             else 
                 adjustedSwerve = swerveInput.scaleTranslation(0.9);
 

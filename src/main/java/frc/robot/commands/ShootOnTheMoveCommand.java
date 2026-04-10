@@ -39,7 +39,7 @@ public class ShootOnTheMoveCommand extends Command {
   private final Timer timer = new Timer();
 
   static {
-    phaseDelay = 0.03;
+    phaseDelay = 0;
 
     timeOfFlightMap.put(2.4384, 0.98);
     timeOfFlightMap.put(3.048, 1.16);

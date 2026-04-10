@@ -123,7 +123,13 @@ public class IntakeSubsystem extends SubsystemBase{
 
             case PUSH_OUT:
                 pushOutPeriodic();
-                wheelMotor.set(-IN_WHEEL_DUTY_CYCLE);
+                if (isStallReversing) {
+                    wheelMotor.set(-0.5);
+                } else if (shouldRunWheelsInIntakeDirection) {
+                    wheelController.setSetpoint(2290.8, ControlType.kVelocity);
+                } else {
+                    wheelMotor.stopMotor();
+                }
                 if (angleMotor.getEncoder().getPosition() < -3.2) {
                     setState(State.OUT);
                 }
@@ -273,7 +279,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 break;
             case PUSH_OUT:
                 setAngleCurrent(35);
-                updateWheelCurrent(8);
+                updateWheelCurrent(60);
                 break;
             case REVERSE:
                 setAngleCurrent(PULL_IN_ANGLE_CURRENT);
@@ -348,7 +354,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     public Command agitateCommand(){
-        return this.toggleInOut().andThen(Commands.waitSeconds(0.5)).repeatedly();
+        return this.setWheelsCommand(true).andThen((toggleInOut().andThen(Commands.waitSeconds(0.5)).repeatedly())).finallyDo(()->{shouldRunWheelsInIntakeDirection = false;});
     }
 
     public Command reverseCommand(){
