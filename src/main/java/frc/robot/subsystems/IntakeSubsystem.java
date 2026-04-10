@@ -104,7 +104,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 if (isStallReversing) {
                     wheelMotor.set(-0.5);
                 } else if (shouldRunWheelsInIntakeDirection) {
-                    wheelController.setSetpoint(2290.8, ControlType.kVelocity);
+                    wheelController.setSetpoint(2200, ControlType.kVelocity);
                 } else {
                     wheelMotor.stopMotor();
                 }
@@ -115,7 +115,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 if (isStallReversing) {
                     wheelMotor.set(-0.5);
                 } else if (shouldRunWheelsInIntakeDirection) {
-                    wheelController.setSetpoint(2290.8, ControlType.kVelocity);
+                    wheelController.setSetpoint(2200, ControlType.kVelocity);
                 } else {
                     wheelMotor.stopMotor();
                 }
@@ -126,7 +126,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 if (isStallReversing) {
                     wheelMotor.set(-0.5);
                 } else if (shouldRunWheelsInIntakeDirection) {
-                    wheelController.setSetpoint(2290.8, ControlType.kVelocity);
+                    wheelController.setSetpoint(2200, ControlType.kVelocity);
                 } else {
                     wheelMotor.stopMotor();
                 }
