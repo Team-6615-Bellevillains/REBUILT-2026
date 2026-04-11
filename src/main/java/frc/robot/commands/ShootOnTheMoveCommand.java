@@ -47,7 +47,7 @@ public class ShootOnTheMoveCommand extends Command {
     timeOfFlightMap.put(3.6576, 1.175); // 12 ft (previously 1.265)
     timeOfFlightMap.put(4.2672, 1.228); // 14 ft (previously 1.4)
     timeOfFlightMap.put(4.8768, 1.270); // 16 ft (previously 1.42)
-    timeOfFlightMap.put(5.4864, 1.3024); // 18 ft (REGRESSED: previously 1.47)
+    timeOfFlightMap.put(5.4864, 1.35762); // 18 ft (REGRESSED: previously 1.47)
   }
 
   public ShootOnTheMoveCommand(
