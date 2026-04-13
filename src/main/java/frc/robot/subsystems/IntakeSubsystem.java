@@ -61,7 +61,7 @@ public class IntakeSubsystem extends SubsystemBase{
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
-        angleMotorConfig.smartCurrentLimit(1);
+        angleMotorConfig.smartCurrentLimit(60);
         angleMotorConfig.closedLoop.pid(0.2,0,0, ClosedLoopSlot.kSlot0);
         angleMotorConfig.closedLoop.pid(0.15,0,0, ClosedLoopSlot.kSlot1);
         angleMotor.configure(angleMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
