@@ -21,7 +21,7 @@ public class LedSubsystem extends SubsystemBase {
 
   private static final double WARN_THRESHOLD = 10.0;
   private static final double SHOOT_ALERT_WINDOW = 2;
-  private static final double TRANSITION_ALERT_WINDOW = 3.0;
+  private static final double TRANSITION_ALERT_WINDOW = 4.0;
 
   private static final double FLASH_PERIOD = 0.12;
   private static final double RAINBOW_PERIOD = 2.0;
@@ -153,7 +153,7 @@ public class LedSubsystem extends SubsystemBase {
         if (getTimeToNextShift() <= SHOOT_ALERT_WINDOW) {
           flash(new RGBWColor(255, 255, 255, 0));
         } else {
-          gradient(GREEN, getWarningProgress());
+          flash(GREEN);
         }
       }
 
@@ -161,7 +161,7 @@ public class LedSubsystem extends SubsystemBase {
         if (getTimeToNextShift() <= SHOOT_ALERT_WINDOW) {
           flash(new RGBWColor(255, 255, 255, 0));
         } else {
-          gradient(RED, getWarningProgress());
+          flash(RED);
         }
       }
     }
@@ -199,16 +199,19 @@ public class LedSubsystem extends SubsystemBase {
   }
 
   // Visual Effects
-  private void gradient(RGBWColor base, double progress) {
-    progress = Math.max(0.0, Math.min(1.0, progress));
-    double smooth = progress * progress * (3 - 2 * progress);
+  private void gradient(RGBWColor from, RGBWColor to, double t) {
+    t = Math.pow(t, 2);
 
-    m_candle.setControl(m_solidControl.withColor(new RGBWColor(
-        (int)(base.Red * smooth),
-        (int)(base.Green * smooth),
-        (int)(base.Blue * smooth),
-        0
-    )));
+    double smooth = t * t * (3 - 2 * t);
+
+    RGBWColor blended = new RGBWColor(
+      (int)(from.Red + (to.Red - from.Red) * smooth),
+      (int)(from.Green + (to.Green - from.Green) * smooth),
+      (int)(from.Blue + (to.Blue - from.Blue) * smooth),
+      0
+    );
+
+    m_candle.setControl(m_solidControl.withColor(blended));
   }
 
   private void flash(RGBWColor color) {
