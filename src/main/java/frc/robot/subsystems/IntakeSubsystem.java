@@ -70,8 +70,8 @@ public class IntakeSubsystem extends SubsystemBase{
         wheelMotorConfig.idleMode(IdleMode.kCoast);
         wheelMotorConfig.smartCurrentLimit(60);
         wheelMotorConfig.closedLoop.pid(0.0002, 0, 0)
-        .feedForward.kS(0.18).kV(0.0026);
-        wheelMotorConfig.encoder.velocityConversionFactor((25.0/36.0));
+        .feedForward.kS(0.18).kV(0.00775);
+        wheelMotorConfig.encoder.velocityConversionFactor((25.0/36.0)*(1.0/3.0));
         wheelMotor.configure(wheelMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         this.getRobotRelativeVelocity = getRobotRelativeVelocity;
 
@@ -104,7 +104,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 if (isStallReversing) {
                     wheelMotor.set(-0.5);
                 } else if (shouldRunWheelsInIntakeDirection) {
-                    wheelController.setSetpoint(4000, ControlType.kVelocity);
+                    wheelController.setSetpoint(1400, ControlType.kVelocity);
                 } else {
                     wheelMotor.stopMotor();
                 }
@@ -115,7 +115,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 if (isStallReversing) {
                     wheelMotor.set(-0.5);
                 } else if (shouldRunWheelsInIntakeDirection) {
-                    wheelController.setSetpoint(4000, ControlType.kVelocity);
+                    wheelController.setSetpoint(1400, ControlType.kVelocity);
                 } else {
                     wheelMotor.stopMotor();
                 }
@@ -126,7 +126,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 if (isStallReversing) {
                     wheelMotor.set(-0.5);
                 } else if (shouldRunWheelsInIntakeDirection) {
-                    wheelController.setSetpoint(4000, ControlType.kVelocity);
+                    wheelController.setSetpoint(1700, ControlType.kVelocity);
                 } else {
                     wheelMotor.stopMotor();
                 }
