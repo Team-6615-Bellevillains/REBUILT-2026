@@ -226,7 +226,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void inPeriodic(){
-        angleMotor.set(0.35);
+        angleMotor.set(0.2);
     }
 
     private void pullInPeriodic(){
@@ -260,33 +260,20 @@ public class IntakeSubsystem extends SubsystemBase{
         this.state = state;
         switch (state){
             case IN:
-                setAngleCurrent(16);
-                updateWheelCurrent(8);
                 break;
             case OUT:
-                setAngleCurrent(60); //change
-                updateWheelCurrent(80);
                 setAngleSetpoint(-4, ClosedLoopSlot.kSlot1);
                 break; 
             case PULL_IN:
-                setAngleCurrent(PULL_IN_ANGLE_CURRENT);
-                updateWheelCurrent(10);
                 break;
             case MID_HOLD:
-                setAngleCurrent(PULL_IN_ANGLE_CURRENT);
                 setAngleSetpoint(-0.5, ClosedLoopSlot.kSlot1);
-                updateWheelCurrent(80);
                 break;
             case PUSH_OUT:
-                setAngleCurrent(35);
-                updateWheelCurrent(60);
                 break;
             case REVERSE:
-                setAngleCurrent(PULL_IN_ANGLE_CURRENT);
-                setAngleCurrent(80);
                 break;
             case FAST_AGITATE:
-                setAngleCurrent(60);
                 break;
         }
     }
@@ -328,18 +315,6 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public Command setStateCommand(State state){
         return this.runOnce(()->setState(state));
-    }
-
-    private void setAngleCurrent(int amps){
-        SparkFlexConfig config = new SparkFlexConfig();
-        config.smartCurrentLimit(amps);
-        angleMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    }
-
-    private void updateWheelCurrent(int newLimit){
-        SparkFlexConfig config = new SparkFlexConfig();
-        config.smartCurrentLimit(newLimit);
-        wheelMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     private double getActiveWheelDutyCycle(){
