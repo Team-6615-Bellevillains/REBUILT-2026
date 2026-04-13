@@ -49,10 +49,10 @@ public class IntakeSubsystem extends SubsystemBase{
     private boolean isStallReversing = false;
 
     // Fast agitate tuning
-    private static final double FAST_AGITATE_UP_DUTY    =  0.9;
-    private static final double FAST_AGITATE_DOWN_DUTY  = -0.9;
+    private static final double FAST_AGITATE_UP_DUTY    =  0.7;
+    private static final double FAST_AGITATE_DOWN_DUTY  = -0.7;
     private static final double FAST_AGITATE_DRIVE_TIME =  0.2;
-    private static final double FAST_AGITATE_PAUSE_TIME =  0.1;
+    private static final double FAST_AGITATE_PAUSE_TIME =  0.25;
 
     private final Timer fastAgitateTimer = new Timer();
     private int   fastAgitatePhase = 0; // 0=drive up, 1=pause, 2=drive down, 3=pause
