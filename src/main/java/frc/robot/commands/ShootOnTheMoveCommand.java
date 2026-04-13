@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Utils;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.LoggerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -127,6 +128,7 @@ public class ShootOnTheMoveCommand extends Command {
     
 
     SmartDashboard.putNumber("shoot-on-the-move/Distance to Target", lookaheadTurretToTargetDistance);
+    LoggerSubsystem.addFieldPose(lookaheadPose, "Lookahead Pose");
 
     if (turret.canShoot() & timer.get() > 0.5) {
       indexer.setState(IndexerSubsystem.State.SHOOT);
