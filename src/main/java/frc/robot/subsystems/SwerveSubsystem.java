@@ -122,17 +122,15 @@ public class SwerveSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         Pose2d currentPose = getPose();
-        SmartDashboard.putNumber("rotation fed to limelight", currentPose.getRotation().getDegrees());
+        SmartDashboard.putNumber("localization/rotation fed to limelight", currentPose.getRotation().getDegrees());
         LimelightHelpers.SetRobotOrientation(limelight4, currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.SetRobotOrientation(limelight3g, currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate limelight4Pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight4);
         LimelightHelpers.PoseEstimate limelight3gPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight3g);
 
 
-        limelight3gField.setRobotPose(limelight3gPose.pose);
-        limelight4Field.setRobotPose(limelight4Pose.pose);
-        SmartDashboard.putData("Limelight 4 Field", limelight4Field);
-        SmartDashboard.putData("Limelight 3g Field", limelight3gField);
+        field.getObject("limelight 4 pose").setPose(limelight4Pose.pose);
+        field.getObject("limelight 3g pose").setPose(limelight3gPose.pose);
 
         if(limelight4Pose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight4Pose.tagCount == 0)){
             drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
@@ -143,11 +141,11 @@ public class SwerveSubsystem extends SubsystemBase{
             drive.addVisionMeasurement(limelight3gPose.pose, limelight3gPose.timestampSeconds);
         }
         field.setRobotPose(currentPose);
-        SmartDashboard.putData("field", field);
+        SmartDashboard.putData("localization/field", field);
         Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));
         double hubDistance = currentPose.getTranslation().getDistance(hubPosition);
-        SmartDashboard.putNumber("feet to hub", Units.metersToFeet(hubDistance));
-        SmartDashboard.putNumber("measured speed, in meters/s", Math.hypot(drive.getFieldVelocity().vxMetersPerSecond, drive.getFieldVelocity().vyMetersPerSecond));
+        SmartDashboard.putNumber("localization/feet to hub", Units.metersToFeet(hubDistance));
+        SmartDashboard.putNumber("swerve/measured speed, in meters/s", Math.hypot(drive.getFieldVelocity().vxMetersPerSecond, drive.getFieldVelocity().vyMetersPerSecond));
     }
 
     public SwerveDrive getSwerveDrive(){
