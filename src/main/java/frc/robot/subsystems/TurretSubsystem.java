@@ -41,8 +41,8 @@ public class TurretSubsystem extends SubsystemBase {
     private static final double SNOWBLOWING_TOLERANCE   =  5.0;
 
     private static final double kP = 0.005;
-    private static final double kI = 0.0;  
-    private static final double kD = 0.0002; 
+    private static final double kI = 0.00001;  
+    private static final double kD = 0.0006; 
 
     private static final double STALL_CURRENT_THRESHOLD = 34.0;
     private static final double STALL_DEBOUNCE_TIME     = 0.1;
