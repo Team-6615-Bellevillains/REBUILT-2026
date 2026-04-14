@@ -141,7 +141,13 @@ public class IntakeSubsystem extends SubsystemBase{
 
             case FAST_AGITATE:
                 fastAgitatePeriodic();
-                wheelMotor.stopMotor();
+                if (isStallReversing) {
+                    wheelMotor.set(-0.5);
+                } else if (shouldRunWheelsInIntakeDirection) {
+                    wheelController.setSetpoint(1700, ControlType.kVelocity);
+                } else {
+                    wheelMotor.stopMotor();
+                }
                 break;
         }
         SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
@@ -351,6 +357,7 @@ public class IntakeSubsystem extends SubsystemBase{
             },
             () -> {
                 setState(stateBeforeFastAgitate);
+                shouldRunWheelsInIntakeDirection = false;
             }
         ));
     }
