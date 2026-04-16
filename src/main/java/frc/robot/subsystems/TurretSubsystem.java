@@ -28,6 +28,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils;
 
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import java.util.function.Supplier;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -47,7 +49,9 @@ public class TurretSubsystem extends SubsystemBase {
     private static final double kI = 0.0;  
     private static final double kD = 0.0002; 
     //TODO: properly tune feedforward
-    private static final double kV = 0.0;
+    //units: volts per rad/s (just an estimate for now)
+    private static final double kV = 0.168914444319;
+    //units: volts
     private static final double kS = 0.26;
 
     private static final double STALL_CURRENT_THRESHOLD = 20.0;
@@ -145,9 +149,13 @@ public class TurretSubsystem extends SubsystemBase {
                 ifAtSetpointTurnOff();
                 break;
             case TRACKING:
+                double arbFFVolts = 0;
+                if(targetAngle - encoder.getPosition() < 20){
+                    arbFFVolts = kV * fieldRelativeVelocitySupplier.get().omegaRadiansPerSecond;
+                } 
                 closedLoop.setSetpoint(
                     MathUtil.clamp(targetAngle, MIN_ANGLE, MAX_ANGLE),
-                    ControlType.kPosition, ClosedLoopSlot.kSlot0, kV * (fieldRelativeVelocitySupplier.get().omegaRadiansPerSecond/(Math.PI*2)), ArbFFUnits.kVoltage);
+                    ControlType.kPosition, ClosedLoopSlot.kSlot0);
                 shootAllowed = isTargetReachable(targetAngle);
                 ifAtSetpointTurnOff();
                 break;
