@@ -150,16 +150,14 @@ public class IntakeSubsystem extends SubsystemBase{
                 }
                 break;
         }
-        SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
-        SmartDashboard.putString("Intake state", state.toString());
-        SmartDashboard.putNumber("filtered current", filteredAngleCurrent);
-        SmartDashboard.putNumber("intake rpm", wheelMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("wheel varying duty cycle", getActiveWheelDutyCycle());
-        SmartDashboard.putNumber("intake leader current", wheelMotor.getOutputCurrent());
-        SmartDashboard.putNumber("intake follower current", speedMotor.getOutputCurrent());
-        SmartDashboard.putNumber("stall timer", stallTimer);
-        SmartDashboard.putBoolean("stall reversing", isStallReversing);
-        SmartDashboard.putNumber("fast agitate phase", fastAgitatePhase);
+        SmartDashboard.putNumber("intake/angle motor current", angleMotor.getOutputCurrent());
+        SmartDashboard.putString("intake/Intake state", state.toString());
+        SmartDashboard.putNumber("intake/intake rpm", wheelMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("intake/intake leader current", wheelMotor.getOutputCurrent());
+        SmartDashboard.putNumber("intake/intake follower current", speedMotor.getOutputCurrent());
+        SmartDashboard.putNumber("intake/autoreverse/stall timer", stallTimer);
+        SmartDashboard.putBoolean("intake/autoreverse/stall reversing", isStallReversing);
+        SmartDashboard.putNumber("intake/fast-agitate/fast agitate phase", fastAgitatePhase);
     }
 
     private void fastAgitatePeriodic() {
@@ -321,13 +319,6 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public Command setStateCommand(State state){
         return this.runOnce(()->setState(state));
-    }
-
-    private double getActiveWheelDutyCycle(){
-        ChassisSpeeds robotRelativeVelocity = getRobotRelativeVelocity.get();
-        SmartDashboard.putNumber("velocity in intake direction", robotRelativeVelocity.vxMetersPerSecond);
-        SmartDashboard.putNumber("intake lerp t", robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
-        return MathUtil.interpolate(0.5, 0.9, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond)); // Standard: 0.4
     }
 
     public void setAngleSetpoint(double setpoint, ClosedLoopSlot slot){
