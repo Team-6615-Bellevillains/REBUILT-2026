@@ -54,7 +54,7 @@ public class TurretSubsystem extends SubsystemBase {
     //units: volts
     private static final double kS = 0.26;
 
-    private static final double STALL_CURRENT_THRESHOLD = 34.0;
+    private static final double STALL_CURRENT_THRESHOLD = 0.0;
     private static final double STALL_DEBOUNCE_TIME     = 0.1;
 
     private static final double HOMING_SPEED = 0.1;
