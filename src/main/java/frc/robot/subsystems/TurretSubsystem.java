@@ -44,7 +44,7 @@ public class TurretSubsystem extends SubsystemBase {
     private static final double kI = 0.0;  
     private static final double kD = 0.0002; 
 
-    private static final double STALL_CURRENT_THRESHOLD = 34.0;
+    private static final double STALL_CURRENT_THRESHOLD = 0.0;
     private static final double STALL_DEBOUNCE_TIME     = 0.1;
 
     private static final double HOMING_SPEED = 0.1;
