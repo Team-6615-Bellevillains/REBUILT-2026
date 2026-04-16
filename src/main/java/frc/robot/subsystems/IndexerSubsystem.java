@@ -27,7 +27,7 @@ public class IndexerSubsystem extends SubsystemBase {
     // Burst mode tuning
     private static final double BURST_FEED_DURATION = 0.1;
     private static final double BURST_WAIT_DURATION = 0.25;
-    private static final double BURST_DISTANCE_THRESHOLD_FEET = 14.0;
+    private static final double BURST_DISTANCE_THRESHOLD_FEET = 16.0;
 
     // Stall detection tuning
     private static final double SPIN_STALL_RPM_THRESHOLD = 250.0;
@@ -72,7 +72,7 @@ public class IndexerSubsystem extends SubsystemBase {
     public void periodic() {
         checkSpindexerStall();
 
-        SmartDashboard.putString("indexer state", state.toString());
+        SmartDashboard.putString("indexer/indexer state", state.toString());
         switch (state) {
             case OFF:
                 off();
@@ -111,15 +111,15 @@ public class IndexerSubsystem extends SubsystemBase {
                 break;
         }
 
-        SmartDashboard.putNumber("spindexer rpm", spindexerMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("spindexer current", spindexerMotor.getOutputCurrent());
-        SmartDashboard.putNumber("road rpm", roadMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("road current", roadMotor.getOutputCurrent());
-        SmartDashboard.putNumber("spindexer stall timer", stallTimer);
-        SmartDashboard.putBoolean("spindexer stall reversing", isStallReversing);
-        SmartDashboard.putNumber("burst timer", burstTimer);
-        SmartDashboard.putBoolean("burst feeding", isBurstFeeding);
-        SmartDashboard.putNumber("hub distance feet", getHubDistanceFeet.get());
+        SmartDashboard.putNumber("indexer/spindexer rpm", spindexerMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("indexer/spindexer current", spindexerMotor.getOutputCurrent());
+        SmartDashboard.putNumber("indexer/road rpm", roadMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("indexer/road current", roadMotor.getOutputCurrent());
+        SmartDashboard.putNumber("indexer/autoreverse/spindexer stall timer", stallTimer);
+        SmartDashboard.putBoolean("indexer/autoreverse/spindexer stall reversing", isStallReversing);
+        SmartDashboard.putNumber("indexer/burst-feed/burst timer", burstTimer);
+        SmartDashboard.putBoolean("indexer/burst-feed/burst feeding", isBurstFeeding);
+        SmartDashboard.putNumber("indexer/burst-feed/hub distance feet", getHubDistanceFeet.get());
     }
 
     private void checkSpindexerStall() {

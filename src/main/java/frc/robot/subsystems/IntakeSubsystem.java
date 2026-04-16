@@ -49,10 +49,10 @@ public class IntakeSubsystem extends SubsystemBase{
     private boolean isStallReversing = false;
 
     // Fast agitate tuning
-    private static final double FAST_AGITATE_UP_DUTY    =  0.6;
-    private static final double FAST_AGITATE_DOWN_DUTY  = -0.6;
-    private static final double FAST_AGITATE_DRIVE_TIME =  0.15;
-    private static final double FAST_AGITATE_PAUSE_TIME =  0.05;
+    private static final double FAST_AGITATE_UP_DUTY    =  0.5;
+    private static final double FAST_AGITATE_DOWN_DUTY  = -0.5;
+    private static final double FAST_AGITATE_DRIVE_TIME =  0.05;
+    private static final double FAST_AGITATE_PAUSE_TIME =  0.25;
 
     private final Timer fastAgitateTimer = new Timer();
     private int   fastAgitatePhase = 0; // 0=drive up, 1=pause, 2=drive down, 3=pause
@@ -61,7 +61,7 @@ public class IntakeSubsystem extends SubsystemBase{
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
-        angleMotorConfig.smartCurrentLimit(1);
+        angleMotorConfig.smartCurrentLimit(60);
         angleMotorConfig.closedLoop.pid(0.2,0,0, ClosedLoopSlot.kSlot0);
         angleMotorConfig.closedLoop.pid(0.15,0,0, ClosedLoopSlot.kSlot1);
         angleMotor.configure(angleMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -70,8 +70,8 @@ public class IntakeSubsystem extends SubsystemBase{
         wheelMotorConfig.idleMode(IdleMode.kCoast);
         wheelMotorConfig.smartCurrentLimit(60);
         wheelMotorConfig.closedLoop.pid(0.0002, 0, 0)
-        .feedForward.kS(0.18).kV(0.0026);
-        wheelMotorConfig.encoder.velocityConversionFactor((25.0/36.0));
+        .feedForward.kS(0.18).kV(0.00775);
+        wheelMotorConfig.encoder.velocityConversionFactor((25.0/36.0)*(1.0/3.0));
         wheelMotor.configure(wheelMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         this.getRobotRelativeVelocity = getRobotRelativeVelocity;
 
@@ -104,7 +104,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 if (isStallReversing) {
                     wheelMotor.set(-0.5);
                 } else if (shouldRunWheelsInIntakeDirection) {
-                    wheelController.setSetpoint(2290.8, ControlType.kVelocity);
+                    wheelController.setSetpoint(1400, ControlType.kVelocity);
                 } else {
                     wheelMotor.stopMotor();
                 }
@@ -115,7 +115,7 @@ public class IntakeSubsystem extends SubsystemBase{
                 if (isStallReversing) {
                     wheelMotor.set(-0.5);
                 } else if (shouldRunWheelsInIntakeDirection) {
-                    wheelController.setSetpoint(2290.8, ControlType.kVelocity);
+                    wheelController.setSetpoint(1400, ControlType.kVelocity);
                 } else {
                     wheelMotor.stopMotor();
                 }
@@ -123,7 +123,13 @@ public class IntakeSubsystem extends SubsystemBase{
 
             case PUSH_OUT:
                 pushOutPeriodic();
-                wheelMotor.set(-IN_WHEEL_DUTY_CYCLE);
+                if (isStallReversing) {
+                    wheelMotor.set(-0.5);
+                } else if (shouldRunWheelsInIntakeDirection) {
+                    wheelController.setSetpoint(1700, ControlType.kVelocity);
+                } else {
+                    wheelMotor.stopMotor();
+                }
                 if (angleMotor.getEncoder().getPosition() < -3.2) {
                     setState(State.OUT);
                 }
@@ -135,20 +141,23 @@ public class IntakeSubsystem extends SubsystemBase{
 
             case FAST_AGITATE:
                 fastAgitatePeriodic();
-                wheelMotor.stopMotor();
+                if (isStallReversing) {
+                    wheelMotor.set(-0.5);
+                } else if (shouldRunWheelsInIntakeDirection) {
+                    wheelController.setSetpoint(1700, ControlType.kVelocity);
+                } else {
+                    wheelMotor.stopMotor();
+                }
                 break;
         }
-        updateAngleCurrent();
-        SmartDashboard.putNumber("angle motor current", angleMotor.getOutputCurrent());
-        SmartDashboard.putString("Intake state", state.toString());
-        SmartDashboard.putNumber("filtered current", filteredAngleCurrent);
-        SmartDashboard.putNumber("intake rpm", wheelMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("wheel varying duty cycle", getActiveWheelDutyCycle());
-        SmartDashboard.putNumber("intake leader current", wheelMotor.getOutputCurrent());
-        SmartDashboard.putNumber("intake follower current", speedMotor.getOutputCurrent());
-        SmartDashboard.putNumber("stall timer", stallTimer);
-        SmartDashboard.putBoolean("stall reversing", isStallReversing);
-        SmartDashboard.putNumber("fast agitate phase", fastAgitatePhase);
+        SmartDashboard.putNumber("intake/angle motor current", angleMotor.getOutputCurrent());
+        SmartDashboard.putString("intake/Intake state", state.toString());
+        SmartDashboard.putNumber("intake/intake rpm", wheelMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("intake/intake leader current", wheelMotor.getOutputCurrent());
+        SmartDashboard.putNumber("intake/intake follower current", speedMotor.getOutputCurrent());
+        SmartDashboard.putNumber("intake/autoreverse/stall timer", stallTimer);
+        SmartDashboard.putBoolean("intake/autoreverse/stall reversing", isStallReversing);
+        SmartDashboard.putNumber("intake/fast-agitate/fast agitate phase", fastAgitatePhase);
     }
 
     private void fastAgitatePeriodic() {
@@ -221,7 +230,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void inPeriodic(){
-        angleMotor.set(0.35);
+        angleMotor.set(0.2);
     }
 
     private void pullInPeriodic(){
@@ -255,33 +264,20 @@ public class IntakeSubsystem extends SubsystemBase{
         this.state = state;
         switch (state){
             case IN:
-                setAngleCurrent(16);
-                updateWheelCurrent(8);
                 break;
             case OUT:
-                setAngleCurrent(60); //change
-                updateWheelCurrent(80);
                 setAngleSetpoint(-4, ClosedLoopSlot.kSlot1);
                 break; 
             case PULL_IN:
-                setAngleCurrent(PULL_IN_ANGLE_CURRENT);
-                updateWheelCurrent(10);
                 break;
             case MID_HOLD:
-                setAngleCurrent(PULL_IN_ANGLE_CURRENT);
                 setAngleSetpoint(-0.5, ClosedLoopSlot.kSlot1);
-                updateWheelCurrent(80);
                 break;
             case PUSH_OUT:
-                setAngleCurrent(35);
-                updateWheelCurrent(8);
                 break;
             case REVERSE:
-                setAngleCurrent(PULL_IN_ANGLE_CURRENT);
-                setAngleCurrent(80);
                 break;
             case FAST_AGITATE:
-                setAngleCurrent(60);
                 break;
         }
     }
@@ -325,35 +321,12 @@ public class IntakeSubsystem extends SubsystemBase{
         return this.runOnce(()->setState(state));
     }
 
-    private void setAngleCurrent(int amps){
-        nonLimitedAngleCurrent = amps;
-    }
-
-    private void updateAngleCurrent(){
-        SparkFlexConfig config = new SparkFlexConfig();
-        config.smartCurrentLimit(nonLimitedAngleCurrent);
-        angleMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    }
-
-    private void updateWheelCurrent(int newLimit){
-        SparkFlexConfig config = new SparkFlexConfig();
-        config.smartCurrentLimit(newLimit);
-        wheelMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    }
-
-    private double getActiveWheelDutyCycle(){
-        ChassisSpeeds robotRelativeVelocity = getRobotRelativeVelocity.get();
-        SmartDashboard.putNumber("velocity in intake direction", robotRelativeVelocity.vxMetersPerSecond);
-        SmartDashboard.putNumber("intake lerp t", robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond));
-        return MathUtil.interpolate(0.5, 0.9, robotRelativeVelocity.vxMetersPerSecond/Constants.MAX_SPEED.in(MetersPerSecond)); // Standard: 0.4
-    }
-
     public void setAngleSetpoint(double setpoint, ClosedLoopSlot slot){
         angleController.setSetpoint(setpoint, ControlType.kPosition, slot);
     }
 
     public Command agitateCommand(){
-        return this.toggleInOut().andThen(Commands.waitSeconds(0.5)).repeatedly();
+        return this.setWheelsCommand(true).andThen((toggleInOut().andThen(Commands.waitSeconds(0.5)).repeatedly())).finallyDo(()->{shouldRunWheelsInIntakeDirection = false;});
     }
 
     public Command reverseCommand(){
@@ -365,7 +338,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     public Command fastAgitateCommand() {
-        return this.startEnd(
+        return this.setWheelsCommand(true).andThen(startEnd(
             () -> {
                 stateBeforeFastAgitate = state;
                 fastAgitatePhase = 0;
@@ -373,7 +346,10 @@ public class IntakeSubsystem extends SubsystemBase{
                 fastAgitateTimer.start();
                 setState(State.FAST_AGITATE);
             },
-            () -> setState(stateBeforeFastAgitate)
-        );
+            () -> {
+                setState(stateBeforeFastAgitate);
+                shouldRunWheelsInIntakeDirection = false;
+            }
+        ));
     }
 }

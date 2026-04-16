@@ -47,8 +47,6 @@ public class SwerveSubsystem extends SubsystemBase{
     String limelight4 = "limelight-four";
     private Pigeon2 gyro = new Pigeon2(0);
     private Field2d field = new Field2d();
-    private Field2d limelight3gField = new Field2d();
-    private Field2d limelight4Field = new Field2d();
     private AccelerationLimiter accelLimiter = new AccelerationLimiter(FeetPerSecondPerSecond.of(15), DegreesPerSecondPerSecond.of(360));
 
     public SwerveSubsystem(){
@@ -122,17 +120,15 @@ public class SwerveSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         Pose2d currentPose = getPose();
-        SmartDashboard.putNumber("rotation fed to limelight", currentPose.getRotation().getDegrees());
+        SmartDashboard.putNumber("localization/rotation fed to limelight", currentPose.getRotation().getDegrees());
         LimelightHelpers.SetRobotOrientation(limelight4, currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.SetRobotOrientation(limelight3g, currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate limelight4Pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight4);
         LimelightHelpers.PoseEstimate limelight3gPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight3g);
 
 
-        limelight3gField.setRobotPose(limelight3gPose.pose);
-        limelight4Field.setRobotPose(limelight4Pose.pose);
-        SmartDashboard.putData("Limelight 4 Field", limelight4Field);
-        SmartDashboard.putData("Limelight 3g Field", limelight3gField);
+        LoggerSubsystem.addFieldPose(limelight4Pose.pose, limelight4);
+        LoggerSubsystem.addFieldPose(limelight3gPose.pose, limelight3g);
 
         if(limelight4Pose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight4Pose.tagCount == 0)){
             drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
@@ -142,12 +138,11 @@ public class SwerveSubsystem extends SubsystemBase{
             drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
             drive.addVisionMeasurement(limelight3gPose.pose, limelight3gPose.timestampSeconds);
         }
-        field.setRobotPose(currentPose);
-        SmartDashboard.putData("field", field);
+        LoggerSubsystem.setRobotPose(currentPose);
         Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));
         double hubDistance = currentPose.getTranslation().getDistance(hubPosition);
-        SmartDashboard.putNumber("feet to hub", Units.metersToFeet(hubDistance));
-        SmartDashboard.putNumber("measured speed, in meters/s", Math.hypot(drive.getFieldVelocity().vxMetersPerSecond, drive.getFieldVelocity().vyMetersPerSecond));
+        SmartDashboard.putNumber("localization/feet to hub", Units.metersToFeet(hubDistance));
+        SmartDashboard.putNumber("swerve/measured speed, in meters/s", Math.hypot(drive.getFieldVelocity().vxMetersPerSecond, drive.getFieldVelocity().vyMetersPerSecond));
     }
 
     public SwerveDrive getSwerveDrive(){
@@ -161,7 +156,7 @@ public class SwerveSubsystem extends SubsystemBase{
             if (turbo.getAsBoolean() && !accelLimit.getAsBoolean()) 
                 adjustedSwerve = swerveInput.scaleTranslation(1.5/Constants.MAX_SPEED.in(MetersPerSecond));
             else if (accelLimit.getAsBoolean()) 
-                adjustedSwerve = swerveInput.scaleTranslation(0.5);
+                adjustedSwerve = swerveInput.scaleTranslation(1.5/Constants.MAX_SPEED.in(MetersPerSecond));
             else 
                 adjustedSwerve = swerveInput.scaleTranslation(0.9);
 
