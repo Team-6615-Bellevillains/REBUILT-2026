@@ -56,7 +56,7 @@ public class SwerveSubsystem extends SubsystemBase{
             //robot.explode();
             throw new RuntimeException("swerve config file missing");
         }
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.INFO;
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
         
         //LL4 setup
         LimelightHelpers.setCameraPose_RobotSpace(
