@@ -43,7 +43,7 @@ public class SwerveSubsystem extends SubsystemBase{
     
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     private SwerveDrive drive;
-    // String limelight3g = "limelight-threeg";
+    String limelight3g = "limelight-threeg";
     String limelight4 = "limelight-four";
     private Pigeon2 gyro = new Pigeon2(0);
     private Field2d field = new Field2d();
@@ -70,15 +70,15 @@ public class SwerveSubsystem extends SubsystemBase{
         );
 
         //LL3G setup
-        // LimelightHelpers.setCameraPose_RobotSpace(
-        //     limelight3g, 
-        //     -Inches.of(2.9).in(Meters), 
-        //     Inches.of(12.977).in(Meters), 
-        //     Inches.of(8.65).in(Meters), 
-        //     0, 
-        //     20, 
-        //     270
-        // );
+        LimelightHelpers.setCameraPose_RobotSpace(
+            limelight3g, 
+            -Inches.of(2.9).in(Meters), 
+            Inches.of(12.977).in(Meters), 
+            Inches.of(8.65).in(Meters), 
+            0, 
+            20, 
+            270
+        );
 
         drive.zeroGyro();
         gyro.setYaw(Degrees.of(0));
@@ -122,22 +122,21 @@ public class SwerveSubsystem extends SubsystemBase{
         Pose2d currentPose = getPose();
         SmartDashboard.putNumber("localization/rotation fed to limelight", currentPose.getRotation().getDegrees());
         LimelightHelpers.SetRobotOrientation(limelight4, currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        // LimelightHelpers.SetRobotOrientation(limelight3g, currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation(limelight3g, currentPose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate limelight4Pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight4);
-        // LimelightHelpers.PoseEstimate limelight3gPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight3g);
+        LimelightHelpers.PoseEstimate limelight3gPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight3g);
 
 
         LoggerSubsystem.addFieldPose(limelight4Pose.pose, limelight4);
-        // LoggerSubsystem.addFieldPose(limelight3gPose.pose, limelight3g);
+        LoggerSubsystem.addFieldPose(limelight3gPose.pose, limelight3g);
 
         if(limelight4Pose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight4Pose.tagCount == 0)){
             drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
             drive.addVisionMeasurement(limelight4Pose.pose, limelight4Pose.timestampSeconds);
+        }else if(limelight3gPose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight3gPose.tagCount == 0)){
+            drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
+            drive.addVisionMeasurement(limelight3gPose.pose, limelight3gPose.timestampSeconds);
         }
-        // if(limelight3gPose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight3gPose.tagCount == 0)){
-        //     drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
-        //     drive.addVisionMeasurement(limelight3gPose.pose, limelight3gPose.timestampSeconds);
-        // }
         LoggerSubsystem.setRobotPose(currentPose);
         Translation2d hubPosition = Utils.getHubCenter(DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue));
         double hubDistance = currentPose.getTranslation().getDistance(hubPosition);
