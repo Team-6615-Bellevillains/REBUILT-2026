@@ -133,7 +133,8 @@ public class SwerveSubsystem extends SubsystemBase{
         if(limelight4Pose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight4Pose.tagCount == 0)){
             drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
             drive.addVisionMeasurement(limelight4Pose.pose, limelight4Pose.timestampSeconds);
-        }else if(limelight3gPose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight3gPose.tagCount == 0)){
+        }
+        if(limelight3gPose != null && !(Math.abs(gyro.getAngularVelocityYWorld().getValueAsDouble())>360 || limelight3gPose.tagCount == 0)){
             drive.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, 9999999));
             drive.addVisionMeasurement(limelight3gPose.pose, limelight3gPose.timestampSeconds);
         }
