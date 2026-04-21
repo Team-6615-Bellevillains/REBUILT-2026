@@ -93,6 +93,7 @@ public class ShooterSubsystem extends SubsystemBase{
             this.addPoint(Feet.of(14), RPM.of(3450));
             this.addPoint(Feet.of(16), RPM.of(3675));
             this.addPoint(Feet.of(18), RPM.of(4250));
+            this.addPoint(Feet.of(20), RPM.of(4500));
         }};
     }
 
