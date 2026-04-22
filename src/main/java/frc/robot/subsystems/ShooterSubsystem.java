@@ -18,6 +18,7 @@ import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,6 +33,9 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 
 public class ShooterSubsystem extends SubsystemBase{
+
+    private double kV = 0.125;
+    private double kS = 0.1546;
 
     private SparkMax shooterLeft = new SparkMax(12, MotorType.kBrushless);
     private SparkMax shooterRight = new SparkMax(10, MotorType.kBrushless);
@@ -56,7 +60,7 @@ public class ShooterSubsystem extends SubsystemBase{
         .withClosedLoopController(0.06, 0, 0)
         .withSimClosedLoopController(0, 0, 0)
         // feedforward constants
-        .withFeedforward(new SimpleMotorFeedforward(0.1546, 0.125, 0.0))
+        .withFeedforward(new SimpleMotorFeedforward(kS, kV, 0.0))
         .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
         // telemetry
         .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
@@ -139,6 +143,10 @@ public class ShooterSubsystem extends SubsystemBase{
         return this.run(()->{
             setPoint(RPM.of(SmartDashboard.getNumber("rpm to run", 0)));
         });
+    }
+
+    public Command idleAtVelocityCommand(AngularVelocity velocity){
+        return shooter.setVoltage(Volts.of(velocity.in(RotationsPerSecond)*kV+kS));
     }
 
     

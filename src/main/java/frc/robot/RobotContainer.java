@@ -103,7 +103,7 @@ public class RobotContainer {
           () -> Utils.calculateShotTarget(swerveSubsystem.getPose())
       )
     );
-    operatorController.rightBumper().onFalse(shooterSubsystem.stopCommand());
+    operatorController.rightBumper().whileFalse(shooterSubsystem.idleAtVelocityCommand(RPM.of(2500)));
 
     turretSubsystem.setDefaultCommand(new AlwaysAimCommand(swerveSubsystem, turretSubsystem));
     
