@@ -155,7 +155,7 @@ public class TurretSubsystem extends SubsystemBase {
                 } 
                 closedLoop.setSetpoint(
                     MathUtil.clamp(targetAngle, MIN_ANGLE, MAX_ANGLE),
-                    ControlType.kPosition, ClosedLoopSlot.kSlot0);
+                    ControlType.kPosition, ClosedLoopSlot.kSlot0, arbFFVolts, ArbFFUnits.kVoltage);
                 shootAllowed = isTargetReachable(targetAngle);
                 ifAtSetpointTurnOff();
                 break;
