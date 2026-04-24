@@ -61,7 +61,7 @@ public class IntakeSubsystem extends SubsystemBase{
     public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
-        angleMotorConfig.smartCurrentLimit(60);
+        angleMotorConfig.smartCurrentLimit(50);
         angleMotorConfig.closedLoop.pid(0.2,0,0, ClosedLoopSlot.kSlot0);
         angleMotorConfig.closedLoop.pid(0.15,0,0, ClosedLoopSlot.kSlot1);
         angleMotor.configure(angleMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -158,6 +158,8 @@ public class IntakeSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("intake/autoreverse/stall timer", stallTimer);
         SmartDashboard.putBoolean("intake/autoreverse/stall reversing", isStallReversing);
         SmartDashboard.putNumber("intake/fast-agitate/fast agitate phase", fastAgitatePhase);
+        SmartDashboard.putNumber("intake/angle-motor/encoder-position", angleMotor.getEncoder().getPosition());
+        SmartDashboard.putNumber("intake/angle-motor/setpoint", angleController.getSetpoint());
     }
 
     private void fastAgitatePeriodic() {

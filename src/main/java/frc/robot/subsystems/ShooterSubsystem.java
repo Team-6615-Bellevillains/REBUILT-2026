@@ -18,6 +18,7 @@ import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,6 +33,9 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 
 public class ShooterSubsystem extends SubsystemBase{
+
+    private double kV = 0.125;
+    private double kS = 0.1546;
 
     private SparkMax shooterLeft = new SparkMax(12, MotorType.kBrushless);
     private SparkMax shooterRight = new SparkMax(10, MotorType.kBrushless);
@@ -56,7 +60,7 @@ public class ShooterSubsystem extends SubsystemBase{
         .withClosedLoopController(0.06, 0, 0)
         .withSimClosedLoopController(0, 0, 0)
         // feedforward constants
-        .withFeedforward(new SimpleMotorFeedforward(0.1546, 0.125, 0.0))
+        .withFeedforward(new SimpleMotorFeedforward(kS, kV, 0.0))
         .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
         // telemetry
         .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
@@ -86,13 +90,13 @@ public class ShooterSubsystem extends SubsystemBase{
         setPoint = RPM.of(0);
         SmartDashboard.putNumber("rpm to run", 0);
         distanceToFlywheelVelocityInterpolator = new MeasureInterpolatingTreeMap<DistanceUnit, AngularVelocityUnit>(){{
-            this.addPoint(Feet.of(6), RPM.of(2500));
-            this.addPoint(Feet.of(8), RPM.of(2650));
-            this.addPoint(Feet.of(10), RPM.of(2900));
-            this.addPoint(Feet.of(12), RPM.of(3100));
-            this.addPoint(Feet.of(14), RPM.of(3250));
-            this.addPoint(Feet.of(16), RPM.of(3700));
-            this.addPoint(Feet.of(18), RPM.of(4150));
+            this.addPoint(Feet.of(6), RPM.of(2625));
+            this.addPoint(Feet.of(8), RPM.of(2725));
+            this.addPoint(Feet.of(10), RPM.of(3000));
+            this.addPoint(Feet.of(12), RPM.of(3225));
+            this.addPoint(Feet.of(14), RPM.of(3450));
+            this.addPoint(Feet.of(16), RPM.of(3675));
+            this.addPoint(Feet.of(18), RPM.of(4250));
             this.addPoint(Feet.of(20), RPM.of(4500));
         }};
     }
@@ -139,6 +143,10 @@ public class ShooterSubsystem extends SubsystemBase{
         return this.run(()->{
             setPoint(RPM.of(SmartDashboard.getNumber("rpm to run", 0)));
         });
+    }
+
+    public Command idleAtVelocityCommand(AngularVelocity velocity){
+        return shooter.setVoltage(Volts.of(velocity.in(RotationsPerSecond)*kV+kS));
     }
 
     

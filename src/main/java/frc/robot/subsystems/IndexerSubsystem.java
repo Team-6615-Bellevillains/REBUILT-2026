@@ -157,22 +157,23 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     private void shootBurst() {
-        burstTimer += 0.02;
-        roadController.setSetpoint(3000, ControlType.kVelocity);
+        // burstTimer += 0.02;
+        // roadController.setSetpoint(3000, ControlType.kVelocity);
 
-        if (isBurstFeeding) {
-            spinController.setSetpoint(3000, ControlType.kVelocity);
-            if (burstTimer >= BURST_FEED_DURATION) {
-                isBurstFeeding = false;
-                burstTimer = 0;
-            }
-        } else {
-            spindexerMotor.stopMotor();
-            if (burstTimer >= BURST_WAIT_DURATION) {
-                isBurstFeeding = true;
-                burstTimer = 0;
-            }
-        }
+        // if (isBurstFeeding) {
+        //     spinController.setSetpoint(3000, ControlType.kVelocity);
+        //     if (burstTimer >= BURST_FEED_DURATION) {
+        //         isBurstFeeding = false;
+        //         burstTimer = 0;
+        //     }
+        // } else {
+        //     spindexerMotor.stopMotor();
+        //     if (burstTimer >= BURST_WAIT_DURATION) {
+        //         isBurstFeeding = true;
+        //         burstTimer = 0;
+        //     }
+        // }
+        shoot();
     }
 
     private void shoot(){
