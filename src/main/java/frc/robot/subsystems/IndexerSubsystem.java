@@ -30,9 +30,9 @@ public class IndexerSubsystem extends SubsystemBase {
     private static final double BURST_DISTANCE_THRESHOLD_FEET = 16.0;
 
     // Stall detection tuning
-    private static final double SPIN_STALL_RPM_THRESHOLD = 250.0;
-    private static final double STALL_TRIGGER_DURATION = 0.2;
-    private static final double STALL_REVERSE_DURATION = 0.2;
+    private static final double SPIN_STALL_RPM_THRESHOLD = 1000.0;
+    private static final double STALL_TRIGGER_DURATION = 0.5;
+    private static final double STALL_REVERSE_DURATION = 0.5;
 
     private double stallTimer = 0;
     private double stallReverseTimer = 0;
@@ -80,7 +80,7 @@ public class IndexerSubsystem extends SubsystemBase {
         
             case INDEX:
                 if (isStallReversing) {
-                    spinController.setSetpoint(-3000, ControlType.kVelocity);
+                    spindexerMotor.set(-0.99);
                 } else {
                     index();
                 }
@@ -88,7 +88,7 @@ public class IndexerSubsystem extends SubsystemBase {
             
             case SHOOT:
                 if (isStallReversing) {
-                    spinController.setSetpoint(-3000, ControlType.kVelocity);
+                    spindexerMotor.set(-0.99);
                     roadController.setSetpoint(3000, ControlType.kVelocity);
                 } else if (isInAllianceZone.get() && getHubDistanceFeet.get() > BURST_DISTANCE_THRESHOLD_FEET) {
                     shootBurst();
@@ -99,7 +99,7 @@ public class IndexerSubsystem extends SubsystemBase {
                 
             case SLOW:
                 if (isStallReversing) {
-                    spinController.setSetpoint(-3000, ControlType.kVelocity);
+                    spindexerMotor.set(-0.99);
                 } else {
                     slow();
                 }
@@ -128,7 +128,7 @@ public class IndexerSubsystem extends SubsystemBase {
             return;
         }
 
-        if (state == State.SHOOT && !isBurstFeeding && isInAllianceZone.get() && getHubDistanceFeet.get() > BURST_DISTANCE_THRESHOLD_FEET) {
+        if (state == State.SHOOT && !isBurstFeeding && isInAllianceZone.get()) {
             stallTimer = 0;
             return;
         }
