@@ -43,6 +43,7 @@ public class SwerveSubsystem extends SubsystemBase{
     
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     private SwerveDrive drive;
+    //contrary to the name it's a limelight 4
     String limelight3g = "limelight-threeg";
     String limelight4 = "limelight-four";
     private Pigeon2 gyro = new Pigeon2(0);
@@ -84,6 +85,7 @@ public class SwerveSubsystem extends SubsystemBase{
         gyro.setYaw(Degrees.of(0));
 
         LimelightHelpers.SetIMUMode(limelight4, 0);
+        LimelightHelpers.SetIMUMode(limelight3g, 0);
 
     } 
 
