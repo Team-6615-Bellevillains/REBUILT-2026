@@ -34,6 +34,18 @@
                 }
               },
               {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.5
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Straight on Depot to April Tags"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
                   "name": "shoot continuous"
