@@ -4,6 +4,8 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -15,6 +17,7 @@ import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,6 +27,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils;
+
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import java.util.function.Supplier;
 
@@ -43,6 +48,11 @@ public class TurretSubsystem extends SubsystemBase {
     private static final double kP = 0.005;
     private static final double kI = 0.0;  
     private static final double kD = 0.0002; 
+    //TODO: properly tune feedforward
+    //units: volts per rad/s (just an estimate for now)
+    private static final double kV = 0.168914444319;
+    //units: volts
+    private static final double kS = 0.26;
 
     private static final double STALL_CURRENT_THRESHOLD = 0.0;
     private static final double STALL_DEBOUNCE_TIME     = 0.1;
@@ -57,8 +67,9 @@ public class TurretSubsystem extends SubsystemBase {
     private final SparkClosedLoopController closedLoop;
     private final RelativeEncoder           encoder;
 
-    // Robot pose supplier from RobotContainer
+    // Robot pose and velocity suppliers from RobotContainer
     private final Supplier<Pose2d> robotPoseSupplier;
+    private final Supplier<ChassisSpeeds> fieldRelativeVelocitySupplier;
 
     // State machine
     private enum TurretState { HOMING_TO_MIN, HOMING_TO_CENTER, HOMED, TRACKING }
@@ -85,8 +96,9 @@ public class TurretSubsystem extends SubsystemBase {
 
     private double filteredCurrent;
 
-    public TurretSubsystem(Supplier<Pose2d> robotPoseSupplier) {
+    public TurretSubsystem(Supplier<Pose2d> robotPoseSupplier, Supplier<ChassisSpeeds> fieldRelativeVelocitySupplier) {
         this.robotPoseSupplier = robotPoseSupplier;
+        this.fieldRelativeVelocitySupplier = fieldRelativeVelocitySupplier;
 
         motor = new SparkFlex(14, MotorType.kBrushless);
 
@@ -102,7 +114,7 @@ public class TurretSubsystem extends SubsystemBase {
             .p(kP).i(kI).d(kD)
             .outputRange(-OUTPUT_LIMIT, OUTPUT_LIMIT)
             .feedForward
-                .kS(0.26);
+                .kS(kS);
         config.softLimit
             .forwardSoftLimit((float)(MAX_ANGLE - SOFT_LIMIT_BUFFER))
             .reverseSoftLimit((float)(MIN_ANGLE + SOFT_LIMIT_BUFFER))
@@ -137,9 +149,13 @@ public class TurretSubsystem extends SubsystemBase {
                 ifAtSetpointTurnOff();
                 break;
             case TRACKING:
+                double arbFFVolts = 0;
+                if(targetAngle - encoder.getPosition() < 20){
+                    arbFFVolts = kV * fieldRelativeVelocitySupplier.get().omegaRadiansPerSecond;
+                } 
                 closedLoop.setSetpoint(
                     MathUtil.clamp(targetAngle, MIN_ANGLE, MAX_ANGLE),
-                    ControlType.kPosition);
+                    ControlType.kPosition, ClosedLoopSlot.kSlot0, arbFFVolts, ArbFFUnits.kVoltage);
                 shootAllowed = isTargetReachable(targetAngle);
                 ifAtSetpointTurnOff();
                 break;
