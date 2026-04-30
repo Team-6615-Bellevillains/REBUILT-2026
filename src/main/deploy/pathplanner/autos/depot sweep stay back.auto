@@ -5,32 +5,31 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "start sweep"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Copy of Neutral Depot"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "shoot continuous"
+                  "pathName": "return to shoot"
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "start sweep"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Neutral Depot"
-                      }
-                    }
-                  ]
+                  "name": "shoot continuous"
                 }
               }
             ]
