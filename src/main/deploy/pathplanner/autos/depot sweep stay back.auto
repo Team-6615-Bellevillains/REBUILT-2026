@@ -13,7 +13,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of Copy of Neutral Depot"
+            "pathName": "Depot Sweep"
           }
         },
         {
@@ -27,9 +27,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "shoot continuous"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shoot continuous"
+                      }
+                    }
+                  ]
                 }
               }
             ]
