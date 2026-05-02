@@ -179,12 +179,12 @@ public class IndexerSubsystem extends SubsystemBase {
     private void shoot(){
         burstTimer = 0;
         isBurstFeeding = true;
-        spinController.setSetpoint(3000, ControlType.kVelocity);
+        spinController.setSetpoint(3000f*(5f/3f), ControlType.kVelocity);
         roadController.setSetpoint(3000, ControlType.kVelocity);
     }
 
     private void index(){
-        spinController.setSetpoint(3000, ControlType.kVelocity);
+        spinController.setSetpoint(3000f*(5f/3f), ControlType.kVelocity);
         roadMotor.stopMotor();
     }
 
@@ -194,7 +194,7 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     private void slow(){
-        spinController.setSetpoint(500, ControlType.kVelocity);
+        spinController.setSetpoint(500f*(5f/3f), ControlType.kVelocity);
         roadMotor.stopMotor();
     }
 
@@ -203,7 +203,7 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     private void reverse(){
-        spinController.setSetpoint(-3000, ControlType.kVelocity);
+        spinController.setSetpoint(-3000f*(5f/3f), ControlType.kVelocity);
         roadMotor.stopMotor();
     }
 
