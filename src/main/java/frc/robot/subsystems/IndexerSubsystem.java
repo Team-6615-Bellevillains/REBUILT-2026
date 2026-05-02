@@ -24,23 +24,6 @@ public class IndexerSubsystem extends SubsystemBase {
     private final Supplier<Double> getHubDistanceFeet;
     private final Supplier<Boolean> isInAllianceZone;
 
-    // Burst mode tuning
-    private static final double BURST_FEED_DURATION = 0.1;
-    private static final double BURST_WAIT_DURATION = 0.25;
-    private static final double BURST_DISTANCE_THRESHOLD_FEET = 16.0;
-
-    // Stall detection tuning
-    private static final double SPIN_STALL_RPM_THRESHOLD = 1000.0;
-    private static final double STALL_TRIGGER_DURATION = 0.5;
-    private static final double STALL_REVERSE_DURATION = 0.5;
-
-    private double stallTimer = 0;
-    private double stallReverseTimer = 0;
-    private boolean isStallReversing = false;
-
-    private double burstTimer = 0;
-    private boolean isBurstFeeding = true;
-
     public IndexerSubsystem(Supplier<Double> getHubDistanceFeet, Supplier<Boolean> isInAllianceZone) {
         this.getHubDistanceFeet = getHubDistanceFeet;
         this.isInAllianceZone = isInAllianceZone;
@@ -70,8 +53,6 @@ public class IndexerSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        checkSpindexerStall();
-
         SmartDashboard.putString("indexer/indexer state", state.toString());
         switch (state) {
             case OFF:
@@ -79,30 +60,15 @@ public class IndexerSubsystem extends SubsystemBase {
                 break;
         
             case INDEX:
-                if (isStallReversing) {
-                    spindexerMotor.set(-0.99);
-                } else {
-                    index();
-                }
+                index();
                 break;
             
             case SHOOT:
-                if (isStallReversing) {
-                    spindexerMotor.set(-0.99);
-                    roadController.setSetpoint(3000, ControlType.kVelocity);
-                } else if (isInAllianceZone.get() && getHubDistanceFeet.get() > BURST_DISTANCE_THRESHOLD_FEET) {
-                    shootBurst();
-                } else {
-                    shoot();
-                }
+                shoot();
                 break;
-                
+  
             case SLOW:
-                if (isStallReversing) {
-                    spindexerMotor.set(-0.99);
-                } else {
-                    slow();
-                }
+                slow();
                 roadMotor.stopMotor();
                 break;
             
@@ -115,70 +81,10 @@ public class IndexerSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("indexer/spindexer current", spindexerMotor.getOutputCurrent());
         SmartDashboard.putNumber("indexer/road rpm", roadMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("indexer/road current", roadMotor.getOutputCurrent());
-        SmartDashboard.putNumber("indexer/autoreverse/spindexer stall timer", stallTimer);
-        SmartDashboard.putBoolean("indexer/autoreverse/spindexer stall reversing", isStallReversing);
-        SmartDashboard.putNumber("indexer/burst-feed/burst timer", burstTimer);
-        SmartDashboard.putBoolean("indexer/burst-feed/burst feeding", isBurstFeeding);
         SmartDashboard.putNumber("indexer/burst-feed/hub distance feet", getHubDistanceFeet.get());
     }
 
-    private void checkSpindexerStall() {
-        if (state == State.OFF || state == State.REVERSE) {
-            stallTimer = 0;
-            return;
-        }
-
-        if (state == State.SHOOT && !isBurstFeeding && isInAllianceZone.get()) {
-            stallTimer = 0;
-            return;
-        }
-
-        if (isStallReversing) {
-            stallReverseTimer += 0.02;
-            if (stallReverseTimer >= STALL_REVERSE_DURATION) {
-                isStallReversing = false;
-                stallReverseTimer = 0;
-                stallTimer = 0;
-            }
-            return;
-        }
-
-        double rpm = Math.abs(spindexerMotor.getEncoder().getVelocity());
-        if (rpm < SPIN_STALL_RPM_THRESHOLD) {
-            stallTimer += 0.02;
-            if (stallTimer >= STALL_TRIGGER_DURATION) {
-                isStallReversing = true;
-                stallReverseTimer = 0;
-                stallTimer = 0;
-            }
-        } else {
-            stallTimer = 0;
-        }
-    }
-
-    private void shootBurst() {
-        // burstTimer += 0.02;
-        // roadController.setSetpoint(3000, ControlType.kVelocity);
-
-        // if (isBurstFeeding) {
-        //     spinController.setSetpoint(3000, ControlType.kVelocity);
-        //     if (burstTimer >= BURST_FEED_DURATION) {
-        //         isBurstFeeding = false;
-        //         burstTimer = 0;
-        //     }
-        // } else {
-        //     spindexerMotor.stopMotor();
-        //     if (burstTimer >= BURST_WAIT_DURATION) {
-        //         isBurstFeeding = true;
-        //         burstTimer = 0;
-        //     }
-        // }
-        shoot();
-    }
-
     private void shoot(){
-        burstTimer = 0;
-        isBurstFeeding = true;
         spinController.setSetpoint(3000f*(5f/3f), ControlType.kVelocity);
         roadController.setSetpoint(3000, ControlType.kVelocity);
     }
