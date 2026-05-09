@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -98,20 +100,20 @@ public class RobotContainer {
 
     // Operator - Shooter
     operatorController.rightBumper().whileTrue(
-      new ShootOnTheMoveCommand(
-          swerveSubsystem, turretSubsystem, shooterSubsystem, indexerSubsystem,
-          () -> Utils.calculateShotTarget(swerveSubsystem.getPose())
-      )
+      new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))
     );
     operatorController.rightBumper().whileFalse(shooterSubsystem.idleAtVelocityCommand(RPM.of(2500)));
 
-    turretSubsystem.setDefaultCommand(new AlwaysAimCommand(swerveSubsystem, turretSubsystem));
+    turretSubsystem.setDefaultCommand(turretSubsystem.run(() ->
+        turretSubsystem.manualAim(-
+        operatorController.getRightX())
+    ));
     
     // Operator - Indexer
     operatorController.povUp().whileTrue(indexerSubsystem.indexerReverseCommand());
 
     operatorController.povLeft().whileTrue(intakeSubsystem.agitateCommand());
-    operatorController.povRight().whileTrue(intakeSubsystem.reverseCommand());
+    // operatorController.povRight().whileTrue(intakeSubsystem.reverseCommand());
 
     // Named Commands
     NamedCommands.registerCommand("shootfor10s", Commands.deadline(Commands.waitSeconds(10), new ShootAtRPMCommand(shooterSubsystem, indexerSubsystem, RPM.of(3000))));

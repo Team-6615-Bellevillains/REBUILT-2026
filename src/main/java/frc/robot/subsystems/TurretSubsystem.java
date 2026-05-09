@@ -1,12 +1,14 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -27,8 +29,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Utils;
-
-import java.util.function.Supplier;
 
 public class TurretSubsystem extends SubsystemBase {
 
@@ -262,6 +262,19 @@ public class TurretSubsystem extends SubsystemBase {
 
     public Command staticAim(){
         return this.run(this::aimAtHub);
+    }
+
+    public void manualAim(double controllerInput) {
+        if (!isHomed()) return;
+
+        double deadband = 0.05;
+
+        double value = MathUtil.applyDeadband(controllerInput, deadband);
+
+        // Map stick input directly to turret angle range
+        targetAngle = MathUtil.interpolate(MIN_ANGLE, MAX_ANGLE, (value + 1.0) / 2.0);
+
+        state = TurretState.TRACKING;
     }
 
     public double  getDistanceToHub()            { return robotPoseSupplier.get().getTranslation().getDistance(getActiveHub()); }
