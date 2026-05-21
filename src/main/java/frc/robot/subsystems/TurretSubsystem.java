@@ -65,10 +65,6 @@ public class TurretSubsystem extends SubsystemBase {
     private final SparkClosedLoopController closedLoop;
     private final RelativeEncoder           encoder;
 
-    // Robot pose and velocity suppliers from RobotContainer
-    private final Supplier<Pose2d> robotPoseSupplier;
-    private final Supplier<ChassisSpeeds> fieldRelativeVelocitySupplier;
-
     // State machine
     private enum TurretState { HOMING_TO_MIN, HOMING_TO_CENTER, HOMED, TRACKING }
     private TurretState state          = TurretState.HOMING_TO_MIN;
@@ -94,9 +90,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     private double filteredCurrent;
 
-    public TurretSubsystem(Supplier<Pose2d> robotPoseSupplier, Supplier<ChassisSpeeds> fieldRelativeVelocitySupplier) {
-        this.robotPoseSupplier = robotPoseSupplier;
-        this.fieldRelativeVelocitySupplier = fieldRelativeVelocitySupplier;
+    public TurretSubsystem() {
 
         motor = new SparkFlex(14, MotorType.kBrushless);
 
@@ -148,9 +142,6 @@ public class TurretSubsystem extends SubsystemBase {
                 break;
             case TRACKING:
                 double arbFFVolts = 0;
-                if(targetAngle - encoder.getPosition() < 20){
-                    arbFFVolts = kV * fieldRelativeVelocitySupplier.get().omegaRadiansPerSecond;
-                } 
                 closedLoop.setSetpoint(
                     MathUtil.clamp(targetAngle, MIN_ANGLE, MAX_ANGLE),
                     ControlType.kPosition, ClosedLoopSlot.kSlot0, arbFFVolts, ArbFFUnits.kVoltage);
@@ -168,38 +159,6 @@ public class TurretSubsystem extends SubsystemBase {
         if (snowblowingMode ? atSnowblowingTarget() : atTarget()){
             motor.set(0);
         }
-    }
-
-    // Calculates robot-relative angle to hub and commands the turret
-    public void aimAt(Translation2d target) {
-        if (!isHomed()) return;
-        snowblowingMode = false;
-        Translation2d turret = Utils.calculateTurretTranslation(robotPoseSupplier.get());
-        Translation2d diff = target.minus(turret);
-        Rotation2d fieldAngle = diff.getAngle();
-        Rotation2d turretAngle = fieldAngle.minus(robotPoseSupplier.get().getRotation());
-        double turretAngleDouble = MathUtil.inputModulus(turretAngle.getDegrees(), 0, 360);
-        setTargetAngle(-turretAngleDouble+2.5);
-    }
-
-    public void aimAtFromTurretPosition(Translation2d target, Pose2d position) {
-        if (!isHomed()) return;
-        snowblowingMode = false;
-        Translation2d turret = position.getTranslation();
-        Translation2d diff = target.minus(turret);
-        Rotation2d fieldAngle = diff.getAngle();
-        Rotation2d turretAngle = fieldAngle.minus(position.getRotation());
-        double turretAngleDouble = MathUtil.inputModulus(turretAngle.getDegrees(), 0, 360);
-        setTargetAngle(-turretAngleDouble);
-    }
-
-    public void aimAtSnowblowing(Translation2d target) {
-        aimAt(target);
-        snowblowingMode = true;
-    }
-
-    public void aimAtHub() {
-        aimAt(getActiveHub());
     }
 
     // Returns active hub, falls back to last known if FMS drops
@@ -260,11 +219,6 @@ public class TurretSubsystem extends SubsystemBase {
         state = TurretState.TRACKING;
     }
 
-    public Command staticAim(){
-        return this.run(this::aimAtHub);
-    }
-
-    public double  getDistanceToHub()            { return robotPoseSupplier.get().getTranslation().getDistance(getActiveHub()); }
     public boolean canShoot()                    { return isHomed() && shootAllowed; }
     public boolean isTargetReachable(double deg) { return deg >= MIN_ANGLE && deg <= MAX_ANGLE; }
     public double  getCurrentAngleDegrees()             { return encoder.getPosition(); }
@@ -276,7 +230,6 @@ public class TurretSubsystem extends SubsystemBase {
         ntCurrentAngle.set(getCurrentAngleDegrees());
         ntTargetAngle.set(targetAngle);
         ntMotorCurrent.set(motor.getOutputCurrent());
-        ntDistanceToHub.set(getDistanceToHub());
         ntIsHomed.set(isHomed());
         ntAtTarget.set(atTarget());
         ntCanShoot.set(canShoot());
