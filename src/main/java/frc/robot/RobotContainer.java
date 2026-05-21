@@ -37,8 +37,6 @@ public class RobotContainer {
   TurretSubsystem  turretSubsystem  = new TurretSubsystem();
   LedSubsystem     ledSubsystem     = new LedSubsystem();
   LoggerSubsystem  loggerSubsystem  = new LoggerSubsystem(driverController, operatorController);
-
-  private final SendableChooser<Command> autoChooser;
   
 
 
@@ -46,9 +44,7 @@ public class RobotContainer {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
     turretSubsystem.rehome();
-    
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+
 
     configureBindings();
   }
@@ -67,8 +63,9 @@ public class RobotContainer {
 
     operatorController.povLeft().whileTrue(intakeSubsystem.agitateCommand());
     operatorController.povRight().whileTrue(intakeSubsystem.reverseCommand());
+    operatorController.rightBumper().whileTrue(indexerSubsystem.indexerRunCommand());
     
-    shooterSubsystem.setDefaultCommand(new ManualFlywheelsCommand(shooterSubsystem, operatorController::getLeftX, operatorController.rightBumper()));
+    shooterSubsystem.setDefaultCommand(new ManualFlywheelsCommand(shooterSubsystem, operatorController::getLeftX));
     turretSubsystem.setDefaultCommand(new ManualAimCommand(turretSubsystem, operatorController::getRightY));
   }
 

@@ -118,7 +118,7 @@ public class IndexerSubsystem extends SubsystemBase {
 
     public Command indexerRunCommand(){
         return this.runEnd(()->{
-            this.setState(State.SLOW);
+            this.setState(State.SHOOT);
         }, ()->{
             this.setState(State.OFF);
         });
