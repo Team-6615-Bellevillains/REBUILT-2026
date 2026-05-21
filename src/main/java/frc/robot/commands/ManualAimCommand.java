@@ -20,6 +20,7 @@ public class ManualAimCommand extends Command {
     public ManualAimCommand(TurretSubsystem turret, DoubleSupplier aimAxis){
         this.turret = turret;
         this.aimAxis = aimAxis;
+        this.addRequirements(turret);
     }
 
     @Override

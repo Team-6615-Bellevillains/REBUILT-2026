@@ -63,10 +63,10 @@ public class RobotContainer {
 
     operatorController.povLeft().whileTrue(intakeSubsystem.agitateCommand());
     operatorController.povRight().whileTrue(intakeSubsystem.reverseCommand());
-    operatorController.rightBumper().whileTrue(indexerSubsystem.indexerRunCommand());
+    driverController.rightBumper().whileTrue(indexerSubsystem.indexerRunCommand());
     
-    shooterSubsystem.setDefaultCommand(new ManualFlywheelsCommand(shooterSubsystem, operatorController::getLeftX));
-    turretSubsystem.setDefaultCommand(new ManualAimCommand(turretSubsystem, operatorController::getRightY));
+    shooterSubsystem.setDefaultCommand(new ManualFlywheelsCommand(shooterSubsystem, driverController::getLeftY));
+    turretSubsystem.setDefaultCommand(new ManualAimCommand(turretSubsystem, operatorController::getRightX));
   }
 
   public Command getAutonomousCommand() {

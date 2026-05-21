@@ -80,7 +80,7 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     private void shoot(){
-        spinController.setSetpoint(3000f*(5f/3f), ControlType.kVelocity);
+        spinController.setSetpoint(500f*(5f/3f), ControlType.kVelocity);
         roadController.setSetpoint(3000, ControlType.kVelocity);
     }
 
