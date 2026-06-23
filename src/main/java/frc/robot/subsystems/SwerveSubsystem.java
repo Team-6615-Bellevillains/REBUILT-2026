@@ -44,7 +44,7 @@ public class SwerveSubsystem extends SubsystemBase{
     String limelight4 = "limelight-four";
     private Pigeon2 gyro = new Pigeon2(0);
     private Field2d field = new Field2d();
-    private AccelerationLimiter accelLimiter = new AccelerationLimiter(FeetPerSecondPerSecond.of(15), DegreesPerSecondPerSecond.of(360));
+    private AccelerationLimiter accelLimiter = new AccelerationLimiter(FeetPerSecondPerSecond.of(17.6), DegreesPerSecondPerSecond.of(360));
 
     public SwerveSubsystem(){
         try {
