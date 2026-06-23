@@ -21,8 +21,12 @@ public class IndexerSubsystem extends SubsystemBase {
     private final SparkClosedLoopController spinController = spindexerMotor.getClosedLoopController();
     private final SparkClosedLoopController roadController = roadMotor.getClosedLoopController();
     private State state = State.OFF;
+    private final Supplier<Double> getHubDistanceFeet;
+    private final Supplier<Boolean> isInAllianceZone;
 
-    public IndexerSubsystem() {
+    public IndexerSubsystem(Supplier<Double> getHubDistanceFeet, Supplier<Boolean> isInAllianceZone) {
+        this.getHubDistanceFeet = getHubDistanceFeet;
+        this.isInAllianceZone = isInAllianceZone;
 
         SparkMaxConfig spinConfig = new SparkMaxConfig();
         SparkMaxConfig roadConfig = new SparkMaxConfig();
@@ -77,6 +81,7 @@ public class IndexerSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("indexer/spindexer current", spindexerMotor.getOutputCurrent());
         SmartDashboard.putNumber("indexer/road rpm", roadMotor.getEncoder().getVelocity());
         SmartDashboard.putNumber("indexer/road current", roadMotor.getOutputCurrent());
+        SmartDashboard.putNumber("indexer/burst-feed/hub distance feet", getHubDistanceFeet.get());
     }
 
     private void shoot(){

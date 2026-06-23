@@ -32,6 +32,7 @@ public class IntakeSubsystem extends SubsystemBase{
     private double filteredAngleCurrent = 0;
     private int nonLimitedAngleCurrent = PULL_IN_ANGLE_CURRENT;
     private boolean shouldRunWheelsInIntakeDirection = false;
+    private final Supplier<ChassisSpeeds> getRobotRelativeVelocity;
     private final double IN_WHEEL_DUTY_CYCLE = -0.20;
     private final SparkClosedLoopController wheelController = wheelMotor.getClosedLoopController();
 
@@ -53,7 +54,7 @@ public class IntakeSubsystem extends SubsystemBase{
     private int   fastAgitatePhase = 0; // 0=drive up, 1=pause, 2=drive down, 3=pause
     private State stateBeforeFastAgitate = State.MID_HOLD;
 
-    public IntakeSubsystem(){
+    public IntakeSubsystem(Supplier<ChassisSpeeds> getRobotRelativeVelocity){
         SparkFlexConfig angleMotorConfig = new SparkFlexConfig();
         angleMotorConfig.idleMode(IdleMode.kBrake);
         angleMotorConfig.smartCurrentLimit(50);
@@ -68,6 +69,7 @@ public class IntakeSubsystem extends SubsystemBase{
         .feedForward.kS(0.18).kV(0.00775);
         wheelMotorConfig.encoder.velocityConversionFactor((25.0/36.0)*(1.0/3.0));
         wheelMotor.configure(wheelMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        this.getRobotRelativeVelocity = getRobotRelativeVelocity;
 
         SparkFlexConfig speedMotorConfig = new SparkFlexConfig();
         speedMotorConfig.follow(24);
