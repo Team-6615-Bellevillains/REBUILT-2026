@@ -125,7 +125,7 @@ public class LedSubsystem extends SubsystemBase {
   private void render(LedState state) {
     switch (state) {
       case DISCONNECTED -> pulse(NO_COMMS, 2.0);
-      case DISABLED -> rainbow();
+      case DISABLED -> setColor(IDLE);
       case AUTO -> setColor(GREEN);
 
       case TRANSITION -> {
@@ -146,8 +146,8 @@ public class LedSubsystem extends SubsystemBase {
         }
       }
 
-      case TELEOP_SAFE_ACTIVE -> rainbow();
-      case TELEOP_SAFE_INACTIVE -> rainbow();
+      case TELEOP_SAFE_ACTIVE -> setColor(GREEN);
+      case TELEOP_SAFE_INACTIVE -> setColor(RED);
 
       case TELEOP_WARNING_ACTIVE -> {
         if (getTimeToNextShift() <= SHOOT_ALERT_WINDOW) {
