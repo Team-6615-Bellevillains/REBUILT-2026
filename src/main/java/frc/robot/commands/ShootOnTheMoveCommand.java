@@ -42,13 +42,13 @@ public class ShootOnTheMoveCommand extends Command {
   static {
     phaseDelay = 0;
 
-    timeOfFlightMap.put(1.8288, 0.87); // 6 ft (NEW)
-    timeOfFlightMap.put(2.4384, 0.98); // 8 ft (UNCHANGED: Data Correlated)
-    timeOfFlightMap.put(3.048, 1.070); // 10 ft (previously 1.16)
-    timeOfFlightMap.put(3.6576, 1.175); // 12 ft (previously 1.265)
-    timeOfFlightMap.put(4.2672, 1.228); // 14 ft (previously 1.4)
-    timeOfFlightMap.put(4.8768, 1.270); // 16 ft (previously 1.42)
-    timeOfFlightMap.put(5.4864, 1.35762); // 18 ft (REGRESSED: previously 1.47)
+    timeOfFlightMap.put(1.8288, 0.82); // 6 ft (NEW) // 8/4 0.82s
+    timeOfFlightMap.put(2.4384, 0.92); // 8 ft (UNCHANGED: Data Correlated) // 8/4 0.92s
+    timeOfFlightMap.put(3.048, 1.07); // 10 ft (previously 1.16) // 8/4 stayed
+    timeOfFlightMap.put(3.6576, 1.04); // 12 ft (previously 1.265) // 8/4 1.04s
+    timeOfFlightMap.put(4.2672, 1.14); // 14 ft (previously 1.4) // 8/4 1.14s
+    timeOfFlightMap.put(4.8768, 1.08); // 16 ft (previously 1.42) // 8/4 1.08s
+    timeOfFlightMap.put(5.4864, 1.35762); // 18 ft (REGRESSED: previously 1.47) // 8/4 unrecorded (stayed)
   }
 
   public ShootOnTheMoveCommand(
