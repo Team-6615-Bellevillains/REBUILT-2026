@@ -59,7 +59,7 @@ public class RobotContainer {
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(swerveSubsystem.getSwerveDrive(),
                                                               () -> driverController.getLeftY() * -1,
                                                               () -> driverController.getLeftX() * -1)
-                                                          .withControllerRotationAxis(()-> 1 * driverController.getRightX())
+                                                          .withControllerRotationAxis(()-> -1 * driverController.getRightX())
                                                           .allianceRelativeControl(true);
 
   private final SendableChooser<Command> autoChooser;
