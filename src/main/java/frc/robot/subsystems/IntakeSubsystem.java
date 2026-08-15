@@ -264,7 +264,7 @@ public class IntakeSubsystem extends SubsystemBase{
             case IN:
                 break;
             case OUT:
-                setAngleSetpoint(-4, ClosedLoopSlot.kSlot1);
+                setAngleSetpoint(-4.2, ClosedLoopSlot.kSlot1);
                 break; 
             case PULL_IN:
                 break;
