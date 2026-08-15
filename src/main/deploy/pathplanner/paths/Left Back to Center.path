@@ -48,12 +48,28 @@
     },
     {
       "anchor": {
-        "x": 6.743238231098432,
-        "y": 6.913851640513553
+        "x": 7.040827389443652,
+        "y": 6.991483594864479
       },
       "prevControl": {
-        "x": 5.823491710065805,
-        "y": 7.531159651646523
+        "x": 6.639728958630526,
+        "y": 7.2890727532097
+      },
+      "nextControl": {
+        "x": 7.798801650281984,
+        "y": 6.429115594887654
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.648944365192582,
+        "y": 4.701340941512126
+      },
+      "prevControl": {
+        "x": 7.67482168330956,
+        "y": 5.542353780313838
       },
       "nextControl": null,
       "isLocked": false,
@@ -64,11 +80,58 @@
     {
       "waypointRelativePos": 0.05,
       "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.0213219616204747,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 3.4285714285714075,
+      "rotationDegrees": -86.46210278653992
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 3.2410533423362176,
+      "maxWaypointRelativePos": 4.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "in neutral zone",
+      "waypointRelativePos": 1.23160027008775,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake down"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "intake run"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -79,7 +142,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": null,

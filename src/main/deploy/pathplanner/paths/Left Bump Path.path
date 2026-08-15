@@ -112,8 +112,8 @@
   ],
   "constraintZones": [
     {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.4719783929777042,
+      "name": "Intaking",
+      "minWaypointRelativePos": 1.1343686698177096,
       "maxWaypointRelativePos": 1.944632005401758,
       "constraints": {
         "maxVelocity": 1.0,
@@ -125,8 +125,8 @@
       }
     },
     {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 3.01147873058744,
+      "name": "Over Bump",
+      "minWaypointRelativePos": 3.01,
       "maxWaypointRelativePos": 3.9162727886563125,
       "constraints": {
         "maxVelocity": 1.5,
