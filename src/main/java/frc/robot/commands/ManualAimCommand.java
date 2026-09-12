@@ -9,8 +9,8 @@ import frc.robot.subsystems.TurretSubsystem;
 
 public class ManualAimCommand extends Command {
 
-    private static final double MIN_ANGLE = 130;
-    private static final double MAX_ANGLE = 230;
+    private static final double MIN_ANGLE = 0;
+    private static final double MAX_ANGLE = 360;
 
     private final TurretSubsystem turret;
     private final DoubleSupplier aimAxis;
