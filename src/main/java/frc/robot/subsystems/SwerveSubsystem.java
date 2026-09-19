@@ -45,6 +45,7 @@ public class SwerveSubsystem extends SubsystemBase{
     private Pigeon2 gyro = new Pigeon2(0);
     private Field2d field = new Field2d();
     private AccelerationLimiter accelLimiter = new AccelerationLimiter(FeetPerSecondPerSecond.of(17.6), DegreesPerSecondPerSecond.of(360));
+    private double driveScalar = 0.9;
 
     public SwerveSubsystem(){
         try {
@@ -147,18 +148,21 @@ public class SwerveSubsystem extends SubsystemBase{
         return drive;
     }
 
+    public void setDriveScalar(double scalar){
+        driveScalar = scalar;
+    }
+
     public Command driveCommand(SwerveInputStream swerveInput, BooleanSupplier slow, BooleanSupplier accelLimit){
         return this.run(() -> {
             SmartDashboard.putBoolean("swerve/slow button", slow.getAsBoolean());
             SmartDashboard.putBoolean("swerve/acceleration limit", accelLimit.getAsBoolean());
             SwerveInputStream adjustedSwerve;
             if (slow.getAsBoolean() && !accelLimit.getAsBoolean()) 
-                adjustedSwerve = swerveInput.scaleTranslation(1.5/Constants.MAX_SPEED.in(MetersPerSecond));
+                adjustedSwerve = swerveInput.scaleTranslation((1.5/Constants.MAX_SPEED.in(MetersPerSecond))).scaleRotation(1);
             else if (accelLimit.getAsBoolean()) 
-                adjustedSwerve = swerveInput.scaleTranslation(1.5/Constants.MAX_SPEED.in(MetersPerSecond));
+                adjustedSwerve = swerveInput.scaleTranslation((1.5/Constants.MAX_SPEED.in(MetersPerSecond))).scaleRotation(1);
             else 
-                adjustedSwerve = swerveInput.scaleTranslation(0.9);
-
+                adjustedSwerve = swerveInput.scaleTranslation(driveScalar).scaleRotation(driveScalar);
             ChassisSpeeds velocity = adjustedSwerve.get();
             if (accelLimit.getAsBoolean()) 
                 velocity = accelLimiter.calculate(velocity);

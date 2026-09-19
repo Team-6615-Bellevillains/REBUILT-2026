@@ -88,6 +88,12 @@ public class RobotContainer {
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
     driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
     SmartDashboard.putNumber("Starting Angle (Degrees)", 0);
+    SmartDashboard.putNumber("drive scalar", 0.9);
+    driverController.povUp().onTrue(Commands.runOnce(()->{
+      double driveScalar = SmartDashboard.getNumber("drive scalar", 1);
+      swerveSubsystem.setDriveScalar(driveScalar);
+      System.out.println("drive scalar set to " + driveScalar);
+    }));
 
     // Operator - Intake
     operatorController.b().onTrue(intakeSubsystem.toggleInOut());
