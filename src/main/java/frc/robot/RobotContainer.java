@@ -90,9 +90,20 @@ public class RobotContainer {
     SmartDashboard.putNumber("Starting Angle (Degrees)", 0);
     SmartDashboard.putNumber("drive scalar", 0.9);
     driverController.povUp().onTrue(Commands.runOnce(()->{
-      double driveScalar = SmartDashboard.getNumber("drive scalar", 1);
+      double driveScalar = SmartDashboard.getNumber("drive scalar", 0.5);
       swerveSubsystem.setDriveScalar(driveScalar);
-      System.out.println("drive scalar set to " + driveScalar);
+    }));
+    driverController.povRight().onTrue(Commands.runOnce(()->{
+      double driveScalar = SmartDashboard.getNumber("drive scalar", 0.5);
+      driveScalar = driveScalar + 0.1;
+      swerveSubsystem.setDriveScalar(driveScalar);
+      SmartDashboard.putNumber("drive scalar", driveScalar);
+    }));
+    driverController.povLeft().onTrue(Commands.runOnce(()->{
+      double driveScalar = SmartDashboard.getNumber("drive scalar", 0.5);
+      driveScalar = driveScalar - 0.1;
+      swerveSubsystem.setDriveScalar(driveScalar);
+      SmartDashboard.putNumber("drive scalar", driveScalar);
     }));
 
     // Operator - Intake
