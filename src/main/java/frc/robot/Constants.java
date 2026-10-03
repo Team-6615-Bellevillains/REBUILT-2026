@@ -9,6 +9,7 @@ public final class Constants {
 
     public static final LinearVelocity MAX_SPEED = FeetPerSecond.of(15);
     public static final Translation2d TURRET_OFFSET = new Translation2d(-0.1714, -0.1714);
+    public static final double defaultDriveScalar = 0.5;
 
     // Knowing where you are on the field
     public static final double BLUE_ALLIANCE_ZONE_MAX_X = 4.03;

@@ -5,10 +5,12 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.defaultDriveScalar;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -88,20 +90,20 @@ public class RobotContainer {
     driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
     driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
     SmartDashboard.putNumber("Starting Angle (Degrees)", 0);
-    SmartDashboard.putNumber("drive scalar", 0.9);
+    SmartDashboard.putNumber("drive scalar", defaultDriveScalar);
     driverController.povUp().onTrue(Commands.runOnce(()->{
       double driveScalar = SmartDashboard.getNumber("drive scalar", 0.5);
       swerveSubsystem.setDriveScalar(driveScalar);
     }));
     driverController.povRight().onTrue(Commands.runOnce(()->{
       double driveScalar = SmartDashboard.getNumber("drive scalar", 0.5);
-      driveScalar = driveScalar + 0.1;
+      driveScalar = MathUtil.clamp(driveScalar + 0.1, 0.2, 1);
       swerveSubsystem.setDriveScalar(driveScalar);
       SmartDashboard.putNumber("drive scalar", driveScalar);
     }));
     driverController.povLeft().onTrue(Commands.runOnce(()->{
       double driveScalar = SmartDashboard.getNumber("drive scalar", 0.5);
-      driveScalar = driveScalar - 0.1;
+      driveScalar = MathUtil.clamp(driveScalar - 0.1, 0.2, 1);
       swerveSubsystem.setDriveScalar(driveScalar);
       SmartDashboard.putNumber("drive scalar", driveScalar);
     }));

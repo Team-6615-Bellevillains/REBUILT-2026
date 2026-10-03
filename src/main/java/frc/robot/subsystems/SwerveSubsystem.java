@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.*;
 
 import java.io.File;
 import java.util.Optional;
@@ -45,8 +46,7 @@ public class SwerveSubsystem extends SubsystemBase{
     private Pigeon2 gyro = new Pigeon2(0);
     private Field2d field = new Field2d();
     private AccelerationLimiter accelLimiter = new AccelerationLimiter(FeetPerSecondPerSecond.of(17.6), DegreesPerSecondPerSecond.of(360));
-    private double driveScalar = 0.9;
-
+    private double driveScalar = defaultDriveScalar;
     public SwerveSubsystem(){
         try {
             drive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(Constants.MAX_SPEED.in(MetersPerSecond));
