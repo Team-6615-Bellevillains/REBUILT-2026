@@ -87,7 +87,7 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(swerveSubsystem.driveCommand(driveAngularVelocity, driverController.leftBumper(), driverController.rightBumper()));
 
     // Driver Controls
-    driverController.a().onTrue(swerveSubsystem.resetGyroCommand());
+    driverController.a().and(driverController.back()).onTrue(swerveSubsystem.resetGyroCommand());
     driverController.x().whileTrue(swerveSubsystem.lockPoseCommand());
     SmartDashboard.putNumber("Starting Angle (Degrees)", 0);
     SmartDashboard.putNumber("drive scalar", defaultDriveScalar);
