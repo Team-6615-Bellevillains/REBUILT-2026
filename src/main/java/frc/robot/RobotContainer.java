@@ -108,13 +108,13 @@ public class RobotContainer {
       SmartDashboard.putNumber("drive scalar", driveScalar);
     }));
     SmartDashboard.putNumber("rpm scalar", 1.0);
-    operatorController.povRight().onTrue(Commands.runOnce(()->{
+    operatorController.start().onTrue(Commands.runOnce(()->{
       double RPMScalar = SmartDashboard.getNumber("rpm scalar", 1.0);
       RPMScalar = MathUtil.clamp(RPMScalar + 0.1, 0.5, 1.5);
       shooterSubsystem.setRPMScalar(RPMScalar);
       SmartDashboard.putNumber("rpm scalar", RPMScalar);
     }));
-    operatorController.povLeft().onTrue(Commands.runOnce(()->{
+    operatorController.back().onTrue(Commands.runOnce(()->{
       double RPMScalar = SmartDashboard.getNumber("rpm scalar", 1.0);
       RPMScalar = MathUtil.clamp(RPMScalar - 0.1, 0.5, 1.5);
       shooterSubsystem.setRPMScalar(RPMScalar);
