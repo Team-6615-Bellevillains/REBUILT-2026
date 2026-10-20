@@ -49,6 +49,8 @@ public class ShooterSubsystem extends SubsystemBase{
         .quadratureMeasurementPeriod(8);
         return config;
     }
+
+    private double RPMScalar = 1.0;
     
     
     private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
@@ -146,9 +148,11 @@ public class ShooterSubsystem extends SubsystemBase{
         return shooter.setVoltage(Volts.of(velocity.in(RotationsPerSecond)*kV+kS));
     }
 
-    
-
     public AngularVelocity getRPMFromDistance(Distance distance){
-        return RPM.of(distanceToFlywheelVelocityInterpolator.getValue(distance).in(RPM));
+        return RPM.of(distanceToFlywheelVelocityInterpolator.getValue(distance).in(RPM)).times(RPMScalar);
+    }
+
+    public void setRPMScalar(double newRPMScalar){
+        RPMScalar = newRPMScalar;
     }
 }
